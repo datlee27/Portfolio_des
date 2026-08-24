@@ -1,0 +1,140 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.windowContainer {
+  width: 100%;
+  max-width: 880px;
+  max-height: 88vh;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.titleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  user-select: none;
+}
+
+.trafficLights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trafficLight {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease;
+}
+
+.trafficLight:hover {
+  opacity: 0.8;
+}
+
+.closeLight { background-color: #ff5f57; }
+.minLight { background-color: #ffbd2e; }
+.maxLight { background-color: #28ca42; }
+
+.titleBarText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.content {
+  overflow-y: auto;
+  padding: 36px 40px;
+}
+
+.projectTitle {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px 0;
+}
+
+.projectSubtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0 0 18px 0;
+}
+
+.tagRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4b5563;
+  margin-bottom: 30px;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.galleryImage {
+  width: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 24px 18px;
+  }
+}

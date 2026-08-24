@@ -1,0 +1,170 @@
+{
+  "project": "Creatie® – Creative Designer Portfolio Homepage React Recreation",
+  "generatedAt": "2026-08-24T16:55:00.000Z",
+  "downloadInstructions": "Run `node scripts/download_assets.js` or use `curl`/`wget` to fetch remote Framer assets into the `public/assets` directory prior to bundling.",
+  "assets": [
+    {
+      "id": "hero-bg",
+      "remoteUrl": "https://framerusercontent.com/images/02RFtEx03DTNa37qOwrWcR7cP8.png",
+      "localPath": "/assets/02RFtEx03DTNa37qOwrWcR7cP8.png",
+      "alias": "/assets/hero-background.png",
+      "width": 4320,
+      "height": 3612,
+      "usedIn": ["HeroSection", "FooterSection"],
+      "description": "Primary hero and footer landscape abstract 3D backdrop"
+    },
+    {
+      "id": "project-bg",
+      "remoteUrl": "https://framerusercontent.com/images/iheh57SbwDCbLIJPfTCJqC9yGG4.png",
+      "localPath": "/assets/iheh57SbwDCbLIJPfTCJqC9yGG4.png",
+      "width": 4320,
+      "height": 3612,
+      "usedIn": ["ProjectSection"],
+      "description": "Project section ambient textured backdrop"
+    },
+    {
+      "id": "project-banner-1",
+      "remoteUrl": "https://framerusercontent.com/images/2y9hWY2pBjaONGzPRqdv67woE.png",
+      "localPath": "/assets/2y9hWY2pBjaONGzPRqdv67woE.png",
+      "width": 4320,
+      "height": 2253,
+      "usedIn": ["ProjectSection", "ProjectCard Stack"],
+      "description": "Project showcase banner and stack card imagery"
+    },
+    {
+      "id": "project-preview-1",
+      "remoteUrl": "https://framerusercontent.com/images/Be455u4BRYelSl1NS32A0tLSZU.png",
+      "localPath": "/assets/Be455u4BRYelSl1NS32A0tLSZU.png",
+      "width": 4140,
+      "height": 1887,
+      "usedIn": ["ProjectCard", "ProjectPopup"],
+      "description": "High-res project case study mockups"
+    },
+    {
+      "id": "project-preview-2",
+      "remoteUrl": "https://framerusercontent.com/images/jC3NYM1gkKdVNzokU0ojtj01asg.png",
+      "localPath": "/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png",
+      "width": 2496,
+      "height": 2475,
+      "usedIn": ["DockNavigation", "ProjectCard"],
+      "description": "Finder icon / macOS case study screenshot"
+    },
+    {
+      "id": "project-preview-3",
+      "remoteUrl": "https://framerusercontent.com/images/N2w6GD9OJ32bkpXkfMSCXEAtsY.png",
+      "localPath": "/assets/N2w6GD9OJ32bkpXkfMSCXEAtsY.png",
+      "width": 1600,
+      "height": 1404,
+      "usedIn": ["ProjectCard", "ProjectCardStack"],
+      "description": "UI mockup graphic"
+    },
+    {
+      "id": "dock-icon-notes",
+      "remoteUrl": "https://framerusercontent.com/images/ZAH3C8amQUigspCjEG1FJWPjI.png",
+      "localPath": "/assets/ZAH3C8amQUigspCjEG1FJWPjI.png",
+      "width": 180,
+      "height": 180,
+      "usedIn": ["DockNavigation", "ReviewCard"],
+      "description": "macOS Notes 3D glass dock icon / reviewer avatar"
+    },
+    {
+      "id": "dock-icon-photos",
+      "remoteUrl": "https://framerusercontent.com/images/VCIQF7ylF9U0o5QZkTgji0mxx28.png",
+      "localPath": "/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png",
+      "width": 180,
+      "height": 180,
+      "usedIn": ["DockNavigation", "ReviewCard"],
+      "description": "macOS Photos 3D flower dock icon / reviewer avatar"
+    },
+    {
+      "id": "dock-icon-mail",
+      "remoteUrl": "https://framerusercontent.com/images/EVSY45U60gTa9UjvovzPTZx7Hw.png",
+      "localPath": "/assets/EVSY45U60gTa9UjvovzPTZx7Hw.png",
+      "width": 180,
+      "height": 180,
+      "usedIn": ["DockNavigation", "ReviewCard"],
+      "description": "macOS Mail 3D glass dock icon / reviewer avatar"
+    },
+    {
+      "id": "sticker-1",
+      "remoteUrl": "https://framerusercontent.com/images/eOYxEIuj9eit1MkxUJQwRtgpmw.png",
+      "localPath": "/assets/eOYxEIuj9eit1MkxUJQwRtgpmw.png",
+      "width": 4320,
+      "height": 4320,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "High resolution geometric sticker graphic"
+    },
+    {
+      "id": "sticker-2",
+      "remoteUrl": "https://framerusercontent.com/images/4FBbf4WZcrn8dK3FlA2Mzd21XSU.png",
+      "localPath": "/assets/4FBbf4WZcrn8dK3FlA2Mzd21XSU.png",
+      "width": 930,
+      "height": 921,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-3",
+      "remoteUrl": "https://framerusercontent.com/images/cq5QJAT41B3uEalepXxZ1xzIFmU.png",
+      "localPath": "/assets/cq5QJAT41B3uEalepXxZ1xzIFmU.png",
+      "width": 840,
+      "height": 795,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-4",
+      "remoteUrl": "https://framerusercontent.com/images/rSV8scREB8oa33rmCe6aKwYvNA.png",
+      "localPath": "/assets/rSV8scREB8oa33rmCe6aKwYvNA.png",
+      "width": 567,
+      "height": 942,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-5",
+      "remoteUrl": "https://framerusercontent.com/images/Th3QEx0L91no7qCoJwVGnsQ4A.png",
+      "localPath": "/assets/Th3QEx0L91no7qCoJwVGnsQ4A.png",
+      "width": 624,
+      "height": 717,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-6",
+      "remoteUrl": "https://framerusercontent.com/images/zLP5ArGJ7hRzp9j67em5xLB9lk.png",
+      "localPath": "/assets/zLP5ArGJ7hRzp9j67em5xLB9lk.png",
+      "width": 930,
+      "height": 921,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-7",
+      "remoteUrl": "https://framerusercontent.com/images/RwKHVR3FyIMRIxdPMY5G15IYs.png",
+      "localPath": "/assets/RwKHVR3FyIMRIxdPMY5G15IYs.png",
+      "width": 930,
+      "height": 732,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Creative decorative sticker badge"
+    },
+    {
+      "id": "sticker-8",
+      "remoteUrl": "https://framerusercontent.com/images/rgYxF9l8RqCw4sA13nn9mebjBM4.png",
+      "localPath": "/assets/rgYxF9l8RqCw4sA13nn9mebjBM4.png",
+      "width": 289,
+      "height": 168,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Mini decorative tag sticker"
+    },
+    {
+      "id": "sticker-9",
+      "remoteUrl": "https://framerusercontent.com/images/qS3oEPOyjasx1PFSn1iz2kRT7w.png",
+      "localPath": "/assets/qS3oEPOyjasx1PFSn1iz2kRT7w.png",
+      "width": 344,
+      "height": 300,
+      "usedIn": ["StickerDrag", "HeroSection"],
+      "description": "Mini decorative sticker badge"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+.projectCard {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 12px 12px 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.projectCard:hover {
+  transform: translateY(-10px) scale(1.04) rotate(0deg) !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.32);
+  z-index: 20;
+}
+
+/* Paperclip on top */
+.paperclip {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 32px;
+  border-width: 3.5px;
+  border-style: solid;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.windowHeader {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px 10px;
+}
+
+.trafficDots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dotRed { background-color: #ff5f56; }
+.dotYellow { background-color: #ffbd2e; }
+.dotGreen { background-color: #27c93f; }
+
+.imageContainer {
+  width: 100%;
+  height: 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  position: relative;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+
+.projectCard:hover .thumbnail {
+  transform: scale(1.06);
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 8px 2px;
+}
+
+.projectName {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1f2937;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.projectMeta {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}

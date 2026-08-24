@@ -1,0 +1,50 @@
+:root {
+  /* Surface and Backgrounds */
+  --bg-cream: #f5f3ea;
+  --bg-card: #ffffff;
+  --bg-dark: #121212;
+  --bg-glass: rgba(255, 255, 255, 0.22);
+  --bg-glass-heavy: rgba(255, 255, 255, 0.42);
+
+  /* Brand and Pastel Tokens */
+  --color-pink: #fedcdd;
+  --color-blue: #bbdafe;
+  --color-blue-dark: #1e3a8a;
+  --color-yellow: #f3ea9a;
+  --color-lime: #e0fd72;
+  --color-mint: #c7f8d9;
+  --color-lavender: #e2dcfd;
+  --color-coral: #fd5d5c;
+  --color-green: #34c75a;
+  --color-orange: #f97316;
+
+  /* Typography Colors */
+  --text-primary: #252525;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+  --text-light-muted: rgba(255, 255, 255, 0.78);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.24);
+  --shadow-glass: 0 12px 36px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+
+  /* Border Radii */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Fonts */
+  --font-heading: 'Mona Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Transitions */
+  --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}

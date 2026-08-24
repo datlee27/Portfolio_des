@@ -1,0 +1,43 @@
+.servicesWrapper {
+  position: relative;
+  background-color: #f5f3ea;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  padding: 100px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sectionTitle {
+  font-size: clamp(38px, 6vw, 68px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #252525;
+  text-transform: uppercase;
+  max-width: 800px;
+  line-height: 1.05;
+  margin: 0 0 50px 0;
+}
+
+.servicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 860px;
+}
+
+@media (max-width: 809.98px) {
+  .servicesWrapper {
+    padding: 60px 16px 60px;
+  }
+  .sectionTitle {
+    margin-bottom: 36px;
+  }
+}

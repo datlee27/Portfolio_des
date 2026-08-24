@@ -1,0 +1,74 @@
+.faqCard {
+  border-radius: 18px;
+  padding: 20px 26px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.faqCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.question {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.toggleIcon {
+  font-size: 18px;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.faqCard:hover .toggleIcon {
+  transform: scale(1.15);
+}
+
+.answer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: left;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.answerText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .faqCard {
+    padding: 16px 20px;
+  }
+  .question {
+    font-size: 16px;
+  }
+}
