@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './ProfileCard.module.css';
 
 export interface ProfileCardProps {
@@ -7,62 +7,98 @@ export interface ProfileCardProps {
   role?: string;
   status?: string;
   bio?: string;
-  tags?: string[];
+  skills?: string;
   className?: string;
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
   avatarUrl = '/assets/avatar.png',
-  name = 'Dat Lee',
-  role = 'Product & Brand Designer',
+  name = 'DATLE - PRODUCT DESIGNER',
+  role = 'Product Designer',
   status = 'Available for work',
-  bio = 'Crafting bold visual identities, intuitive UI/UX systems & responsive Framer builds.',
-  tags = ['UI/UX', 'Framer', 'Branding', 'Motion'],
+  bio = 'I design clean websites, landing pages, and product interfaces that look sharper, feel clearer, and convert better.',
+  skills = 'UI/UX Design · Framer · Web Design',
   className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const getPupilOffset = () => {
+    if (!cardRef.current) return { x: 0, y: 0 };
+    const rect = cardRef.current.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (mousePos.x - cx) / rect.width;
+    const dy = (mousePos.y - cy) / rect.height;
+    return {
+      x: Math.max(-1, Math.min(1, dx)) * 6,
+      y: Math.max(-1, Math.min(1, dy)) * 6,
+    };
+  };
+
+  const pupil = getPupilOffset();
+  const pupilStyle = { transform: `translate(${pupil.x}px, ${pupil.y}px)` };
 
   return (
-    <div className={`${styles.profileCardWrapper} ${className}`}>
-      <div
-        className={`${styles.profileCard} ${isExpanded ? styles.expanded : ''}`}
-        onClick={() => setIsExpanded(!isExpanded)}
-        role="button"
-        tabIndex={0}
-        aria-expanded={isExpanded}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setIsExpanded(!isExpanded);
-          }
-        }}
-      >
-        <div className={styles.headerRow}>
-          <img src={avatarUrl} alt={name} className={styles.avatar} />
-          <div className={styles.infoColumn}>
-            <div className={styles.nameRow}>
-              <span className={styles.nameText}>{name}</span>
-              <span className={styles.statusDot} />
+    <div
+      className={`${styles.profileCardWrapper} ${className}`}
+      ref={cardRef}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
+    >
+      <div className={`${styles.profileCard} ${isExpanded ? styles.expanded : ''}`}>
+        {/* Top row: avatar + info (collapsed) OR avatar + eyes (expanded) */}
+        <div className={styles.topRow}>
+          <div className={styles.leftGroup}>
+            <img
+              src={avatarUrl}
+              alt={role}
+              className={`${styles.avatar} ${isExpanded ? styles.avatarExpanded : ''}`}
+              onError={(e) => { (e.target as HTMLImageElement).src = '/assets/avatar-cap.png'; }}
+            />
+            {!isExpanded && (
+              <div className={styles.badgeInfo}>
+                <span className={styles.statusLine}>
+                  <span className={styles.statusDot} />
+                  {status}
+                </span>
+                <span className={styles.designerName}>{name}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Googly Eyes (visible on expand) */}
+          <div className={`${styles.eyesBox} ${isExpanded ? styles.eyesVisible : ''}`}>
+            <div className={styles.eye}>
+              <div className={styles.pupil} style={pupilStyle} />
             </div>
-            <span className={styles.statusText}>{status}</span>
+            <div className={styles.eye}>
+              <div className={styles.pupil} style={pupilStyle} />
+            </div>
           </div>
         </div>
 
-        {isExpanded && (
-          <div className={styles.expandDetails}>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: 700 }}>
-              {role}
-            </div>
-            <p className={styles.bioText}>{bio}</p>
-            <div className={styles.badgeRow}>
-              {tags.map((tag, i) => (
-                <span key={i} className={styles.badge}>
-                  {tag}
-                </span>
-              ))}
-            </div>
+        {/* Expanded body */}
+        <div className={`${styles.expandedBody} ${isExpanded ? styles.expandedBodyVisible : ''}`}>
+          <div className={styles.badgeInfo}>
+            <span className={styles.statusLine}>
+              <span className={styles.statusDot} />
+              {status}
+            </span>
+            <span className={styles.designerName}>{name}</span>
           </div>
-        )}
+          <p className={styles.bioText}>{bio}</p>
+          <span className={styles.skillsText}>{skills}</span>
+        </div>
       </div>
     </div>
   );

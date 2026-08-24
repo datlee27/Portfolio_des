@@ -1,90 +1,140 @@
-.stackContainer {
+.stackAnchor {
   position: relative;
-  width: 300px;
-  height: 120px;
-  cursor: pointer;
-  user-select: none;
+  width: 290px;
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
-.stackedCard {
+.deckContainer {
   position: absolute;
-  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 290px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 40;
+  cursor: pointer;
+}
+
+.stackCard {
+  position: absolute;
+  bottom: 0;
   left: 0;
   width: 100%;
-  border-radius: 16px;
-  background: #ffffff;
   padding: 12px 16px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
+  gap: 14px;
   align-items: center;
-  gap: 12px;
-  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: 
+    transform 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.38s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.35s ease;
 }
 
+.stackCard:hover {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
+}
+
+/* Card 1 (Top / furthest back) */
 .card1 {
   z-index: 3;
-  transform: rotate(-3deg);
+  transform: translateY(-14px) scale(0.92);
+  opacity: 0.65;
 }
 
+.card1.deckExpanded {
+  transform: translateY(-172px) scale(1);
+  opacity: 1;
+  transition-delay: 0.04s;
+}
+
+/* Card 2 (Middle) */
 .card2 {
-  z-index: 2;
-  transform: rotate(4deg) translateY(6px);
-  background: #fdfbf7;
+  z-index: 4;
+  transform: translateY(-7px) scale(0.96);
+  opacity: 0.82;
 }
 
+.card2.deckExpanded {
+  transform: translateY(-86px) scale(1);
+  opacity: 1;
+  transition-delay: 0.02s;
+}
+
+/* Card 3 (Front / bottom) */
 .card3 {
-  z-index: 1;
-  transform: rotate(-7deg) translateY(12px);
-  background: #f8f6f0;
+  z-index: 5;
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
-.stackContainer:hover .card1 {
-  transform: rotate(-6deg) translateY(-8px) scale(1.02);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
-}
-
-.stackContainer:hover .card2 {
-  transform: rotate(6deg) translateY(8px) translateX(12px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-}
-
-.stackContainer:hover .card3 {
-  transform: rotate(-10deg) translateY(20px) translateX(-12px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-}
-
-.thumbnailBox {
-  width: 44px;
-  height: 44px;
+.cardThumb {
+  width: 52px;
+  height: 52px;
   border-radius: 10px;
-  overflow: hidden;
-  background: #e2e8f0;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
 }
 
-.thumbnailImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.contentBox {
+.cardDetails {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  text-align: left;
+  gap: 2px;
 }
 
-.stackTitle {
-  font-size: 13.5px;
+.cardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
   font-weight: 800;
-  color: #1f2937;
-  margin: 0 0 2px 0;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.stackSubtitle {
-  font-size: 11px;
-  font-weight: 600;
-  color: #6b7280;
-  margin: 0;
+.cardTitle {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.caseStudyLink {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.caseStudyLink svg {
+  width: 12px;
+  height: 12px;
 }
