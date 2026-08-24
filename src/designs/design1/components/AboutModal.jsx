@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import MacWindow from './MacWindow';
-import profile from '../data/profile';
+import profile from '../../../data/profile';
 
 const Content = styled.div`
   padding: 30px;

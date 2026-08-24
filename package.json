@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "des1": "vite --open /des1",
+    "des2": "vite --open /des2",
+    "des3": "vite --open /des3",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"

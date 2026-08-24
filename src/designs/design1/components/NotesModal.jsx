@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import MacWindow from './MacWindow';
-import notes from '../data/experience';
+import notes from '../../../data/experience';
 
 const NotesLayout = styled.div`
   display: flex;
