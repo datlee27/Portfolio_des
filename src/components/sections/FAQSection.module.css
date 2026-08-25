@@ -10,7 +10,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -22,22 +22,71 @@
   text-transform: uppercase;
   max-width: 800px;
   line-height: 1.05;
-  margin: 0 0 60px 0;
+  margin: 0;
 }
 
-.faqList {
+/* ---- scattered layout ---- */
+.faqScatter {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 580px;
+  margin: 0 auto;
+}
+
+.faqScatter .titleBlock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 820px;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
 }
 
+/* Each FAQ "pill" gets an absolute position */
+.faqPill {
+  position: absolute;
+  z-index: 2;
+}
+
+/* positions for each card (desktop) */
+.pill1 { top: 4%;   left: 14%;  transform: rotate(-1deg); }
+.pill2 { top: 10%;  right: 8%;  transform: rotate(1deg);  }
+.pill3 { top: 46%;  left: 2%;   transform: rotate(-2deg); }
+.pill4 { top: 62%;  right: 4%;  transform: rotate(1.5deg);}
+.pill5 { top: 78%;  left: 50%;  transform: translateX(-50%) rotate(-0.5deg); }
+/* ---- fallback: stacked on mobile ---- */
 @media (max-width: 809.98px) {
   .faqWrapper {
     padding: 60px 16px 80px;
   }
   .sectionTitle {
     margin-bottom: 36px;
+  }
+
+  .faqScatter {
+    position: static;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .faqScatter .titleBlock {
+    position: static;
+    transform: none;
+    margin-bottom: 28px;
+  }
+
+  .faqPill {
+    position: static;
+    transform: none !important;
+    width: 100%;
+    max-width: 520px;
   }
 }

@@ -4,6 +4,14 @@ import TitleChip from '../shared/TitleChip';
 import FAQItem, { FAQItemData } from '../shared/FAQItem';
 import { faqsData } from '../../data/homeData';
 
+const pillPositions = [
+  styles.pill1,
+  styles.pill2,
+  styles.pill3,
+  styles.pill4,
+  styles.pill5,
+];
+
 export const FAQSection: React.FC = () => {
   const [openId, setOpenId] = useState<number | string | null>(null);
 
@@ -11,22 +19,33 @@ export const FAQSection: React.FC = () => {
     setOpenId(openId === id ? null : id);
   };
 
+  /* We only place the first 5 in the scatter layout
+     (the 6th one would crowd the layout; drop it or add if needed). */
+  const visibleFaqs = faqsData.slice(0, 5);
+
   return (
     <section className={styles.faqWrapper} id="faqs">
-      <TitleChip label="FAQs" variant="Blue" rotation="-2deg" />
+      <div className={styles.faqScatter}>
+        {/* Center title block */}
+        <div className={styles.titleBlock}>
+          <TitleChip label="FAQs" variant="Blue" rotation="-2deg" />
+          <h2 className={styles.sectionTitle}>
+            Answer Before<br />We Starts
+          </h2>
+        </div>
 
-      <h2 className={styles.sectionTitle}>
-        Answer Before<br />We Starts
-      </h2>
-
-      <div className={styles.faqList}>
-        {faqsData.map((faq: FAQItemData) => (
-          <FAQItem
+        {/* Floating FAQ pills */}
+        {visibleFaqs.map((faq: FAQItemData, i: number) => (
+          <div
             key={faq.id}
-            faq={faq}
-            isOpen={openId === faq.id}
-            onToggle={() => toggleOpen(faq.id)}
-          />
+            className={`${styles.faqPill} ${pillPositions[i] || ''}`}
+          >
+            <FAQItem
+              faq={faq}
+              isOpen={openId === faq.id}
+              onToggle={() => toggleOpen(faq.id)}
+            />
+          </div>
         ))}
       </div>
     </section>

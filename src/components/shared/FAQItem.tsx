@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './FAQItem.module.css';
-import { FiMinus, FiPlus } from 'react-icons/fi';
+import { FiX, FiPlus } from 'react-icons/fi';
 
 export interface FAQItemData {
   id: number | string;
@@ -26,7 +26,7 @@ export const FAQItem: React.FC<FAQItemProps> = ({
 
   return (
     <div
-      className={`${styles.faqCard} ${className}`}
+      className={`${styles.faqCard} ${isOpen ? styles.expanded : ''} ${className}`}
       style={{ backgroundColor: bg }}
       onClick={onToggle}
       role="button"
@@ -42,14 +42,12 @@ export const FAQItem: React.FC<FAQItemProps> = ({
       <div className={styles.cardHeader}>
         <h3 className={styles.question}>{faq.q}</h3>
         <div className={styles.toggleIcon}>
-          {isOpen ? <FiMinus /> : <FiPlus />}
+          {isOpen ? <FiX /> : <FiPlus />}
         </div>
       </div>
 
       {isOpen && (
-        <div className={styles.answer}>
-          <p className={styles.answerText}>{faq.a}</p>
-        </div>
+        <p className={styles.answerText}>{faq.a}</p>
       )}
     </div>
   );

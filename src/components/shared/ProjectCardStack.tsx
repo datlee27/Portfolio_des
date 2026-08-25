@@ -14,6 +14,7 @@ export interface StackProject {
 export interface ProjectCardStackProps {
   projects?: StackProject[];
   onOpenProject?: (project: StackProject) => void;
+  onClick?: () => void;
   className?: string;
 }
 
@@ -50,12 +51,13 @@ const defaultProjects: StackProject[] = [
 export const ProjectCardStack: React.FC<ProjectCardStackProps> = ({
   projects = defaultProjects,
   onOpenProject,
+  onClick,
   className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={`${styles.stackAnchor} ${className}`}>
+    <div className={`${styles.stackAnchor} ${className}`} onClick={onClick}>
       <div
         className={styles.deckContainer}
         onMouseEnter={() => setIsExpanded(true)}
