@@ -1,16 +1,86 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FiBox, FiFolder, FiMail } from 'react-icons/fi';
+import { FiBox, FiFolder } from 'react-icons/fi';
 import d3Projects from '../../design3/data/d3Projects';
 import profile from '../../../data/profile';
 import ProjectModalD3 from '../../design3/components/ProjectModalD3';
 
-// Floating animations
-const floatAnim = keyframes`
-  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-  50% { transform: translateY(-8px) rotate(calc(var(--rot, 0deg) + 2deg)); }
-`;
+/* ─── Pointer Drag Hook for Free Canvas Movement ─── */
+function usePointerDrag() {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ mouseX: 0, mouseY: 0, startX: 0, startY: 0, hasMoved: false });
 
+  const onPointerDown = useCallback((e) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+    dragRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      startX: offset.x,
+      startY: offset.y,
+      hasMoved: false,
+    };
+  }, [offset]);
+
+  const onPointerMove = useCallback((e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragRef.current.mouseX;
+    const dy = e.clientY - dragRef.current.mouseY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      dragRef.current.hasMoved = true;
+    }
+    setOffset({
+      x: dragRef.current.startX + dx,
+      y: dragRef.current.startY + dy,
+    });
+  }, [isDragging]);
+
+  const onPointerUp = useCallback((e) => {
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+    setIsDragging(false);
+  }, []);
+
+  return { offset, isDragging, onPointerDown, onPointerMove, onPointerUp, dragRef };
+}
+
+/* ─── Draggable Wrapper Component ─── */
+function DraggableItem({ children, style, onDoubleClick, onClick }) {
+  const { offset, isDragging, onPointerDown, onPointerMove, onPointerUp, dragRef } = usePointerDrag();
+
+  const handleClick = (e) => {
+    if (!dragRef.current.hasMoved && onClick) {
+      onClick(e);
+    }
+  };
+
+  return (
+    <div
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClick={handleClick}
+      onDoubleClick={onDoubleClick}
+      style={{
+        position: 'absolute',
+        ...style,
+        transform: `translate(${offset.x}px, ${offset.y}px) ${style?.transform || ''} ${isDragging ? 'scale(1.1)' : 'scale(1)'}`,
+        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        touchAction: 'none',
+        userSelect: 'none',
+        zIndex: isDragging ? 100 : (style?.zIndex || 25),
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ─── Animations ─── */
 const pulse = keyframes`
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.35; transform: scale(0.8); }
@@ -21,6 +91,7 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: scale(1) translateY(0); }
 `;
 
+/* ─── Layout ─── */
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
@@ -36,49 +107,66 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 32px 40px 100px;
+  padding: 44px 40px 100px;
 
   @media (max-width: 768px) {
-    padding: 24px 16px 100px;
+    padding: 40px 16px 100px;
   }
 `;
 
-/* Top Header Bar */
-const TopHeader = styled.header`
+/* ─── macOS Top Menu Bar ─── */
+const MenuBar = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  z-index: 50;
-  position: relative;
+  padding: 0 24px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.01em;
 `;
 
-/* Back to overview button */
-const BackButton = styled.button`
-  display: inline-flex;
+const MenuBarLeft = styled.div`
+  display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #ffffff;
-  padding: 8px 18px;
-  border-radius: 100px;
+  gap: 16px;
+`;
+
+const MenuBarRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+`;
+
+const MenuLink = styled.button`
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  transition: all 0.25s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  font-family: inherit;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.75);
-    border-color: rgba(255, 255, 255, 0.7);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
   }
 `;
 
-/* Profile Pill (Top Left) */
+/* ─── Profile Card (Top Left) ─── */
 const ProfileCard = styled.div`
   width: ${props => (props.$expanded ? '330px' : '254px')};
   height: ${props => (props.$expanded ? '210px' : '48px')};
@@ -187,7 +275,7 @@ const LocationText = styled.div`
   color: rgba(255, 255, 255, 0.9);
 `;
 
-/* Top Right Actions (Eyes & Start Project) */
+/* ─── Top Right Actions (Eyes + Start Project) ─── */
 const TopRightActions = styled.div`
   display: flex;
   align-items: center;
@@ -249,13 +337,14 @@ const StartProjectBtn = styled.button`
   }
 `;
 
-/* Center Giant Headline */
+/* ─── Center Headline ─── */
 const CenterHeadline = styled.div`
   text-align: center;
   margin: auto 0;
   position: relative;
   z-index: 20;
   padding: 40px 0;
+  pointer-events: none;
 `;
 
 const HeadlineText = styled.h1`
@@ -269,28 +358,7 @@ const HeadlineText = styled.h1`
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
 `;
 
-/* Draggable & Floating Sticky Notes */
-const FloatingSticker = styled.div`
-  position: absolute;
-  top: ${props => props.$top};
-  left: ${props => props.$left};
-  right: ${props => props.$right};
-  bottom: ${props => props.$bottom};
-  z-index: ${props => props.$zIndex || 25};
-  --rot: ${props => props.$rot || '0deg'};
-  animation: ${floatAnim} ${props => props.$duration || '5s'} ease-in-out infinite;
-  cursor: grab;
-  transition: transform 0.2s ease;
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  &:hover {
-    transform: scale(1.1) rotate(calc(var(--rot) + 4deg)) !important;
-  }
-`;
-
+/* ─── Sticky Pill Notes ─── */
 const PillNote = styled.div`
   display: inline-flex;
   align-items: center;
@@ -305,9 +373,10 @@ const PillNote = styled.div`
   font-size: 13.5px;
   font-weight: 800;
   white-space: nowrap;
+  pointer-events: none;
 `;
 
-/* Bottom Row */
+/* ─── Bottom Row ─── */
 const BottomRow = styled.div`
   display: flex;
   align-items: flex-end;
@@ -327,7 +396,7 @@ const MissionText = styled.p`
   font-weight: 500;
 `;
 
-/* macOS Floating Dock */
+/* ─── macOS Dock ─── */
 const Dock = styled.div`
   position: fixed;
   bottom: 24px;
@@ -369,7 +438,7 @@ const DockButton = styled.button`
   }
 `;
 
-/* Project Card Stack (Bottom Right) */
+/* ─── Project Card Stack ─── */
 const StackContainer = styled.div`
   position: relative;
   width: 280px;
@@ -399,25 +468,20 @@ const StackCard = styled.div`
     transform: ${props => (props.$expanded ? 'translateY(-160px) scale(1)' : 'translateY(-12px) scale(0.92)')};
     opacity: ${props => (props.$expanded ? '1' : '0.65')};
   }
-
   &.card-mid {
     z-index: 4;
     transform: ${props => (props.$expanded ? 'translateY(-80px) scale(1)' : 'translateY(-6px) scale(0.96)')};
     opacity: ${props => (props.$expanded ? '1' : '0.82')};
   }
-
   &.card-bot {
     z-index: 5;
     transform: translateY(0) scale(1);
     opacity: 1;
   }
-
   &:hover {
     background: rgba(255, 255, 255, 0.42);
     border-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   }
-
   img {
     width: 52px;
     height: 52px;
@@ -427,7 +491,7 @@ const StackCard = styled.div`
   }
 `;
 
-/* macOS Popup Modal Windows */
+/* ─── macOS Popup Modal ─── */
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -467,26 +531,179 @@ const WindowHeader = styled.div`
 const TrafficDots = styled.div`
   display: flex;
   gap: 8px;
-
   span {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     cursor: pointer;
-
     &.red { background: #ff5f57; }
     &.yellow { background: #ffbd2e; }
     &.green { background: #28ca42; }
   }
 `;
 
+/* ─── Scattered Desktop Files (Natural scattered positions across canvas) ─── */
+const scatteredFiles = [
+  {
+    id: 'potato',
+    name: 'Potato.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/iDpKtY2oV6OvljhJW4kHNQGjI.jpg',
+    thumb: 'https://framerusercontent.com/images/iDpKtY2oV6OvljhJW4kHNQGjI.jpg',
+    pos: { top: '14%', right: '14%' },
+  },
+  {
+    id: 'render-module',
+    name: 'RenderModule.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    pos: { top: '15%', right: '5%' },
+  },
+  {
+    id: 'z08',
+    name: 'Z08.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    pos: { top: '32%', right: '13%' },
+  },
+  {
+    id: 'uber-ride',
+    name: 'UberRide.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    pos: { top: '33%', right: '4%' },
+  },
+  {
+    id: 'r02',
+    name: 'R02.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    pos: { top: '50%', right: '14%' },
+  },
+  {
+    id: 'byte-events',
+    name: 'ByteEvents.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    pos: { top: '51%', right: '5%' },
+  },
+  {
+    id: 'purple-cat',
+    name: 'PurpleCat.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    pos: { top: '68%', right: '14%' },
+  },
+  {
+    id: 'panic-crew',
+    name: 'PanicCrew.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/hUcPxBgIpauMuzlmdEcZWvFiQMU.jpg',
+    thumb: 'https://framerusercontent.com/images/hUcPxBgIpauMuzlmdEcZWvFiQMU.jpg',
+    pos: { top: '69%', right: '5%' },
+  },
+];
+
+/* ─── Scattered Desktop File Icon Component ─── */
+function ScatteredFileItem({ file, onPreview }) {
+  const typeIcon = file.type === 'video' ? '🎬' : file.type === 'gif' ? '✨' : '🖼️';
+  return (
+    <DraggableItem
+      style={{
+        ...file.pos,
+        zIndex: 28,
+      }}
+      onClick={() => onPreview(file)}
+      onDoubleClick={() => onPreview(file)}
+    >
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 5,
+        width: 80,
+        pointerEvents: 'none',
+      }}>
+        <div style={{
+          width: 68,
+          height: 52,
+          borderRadius: 8,
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.45)',
+          boxShadow: '0 8px 22px rgba(0,0,0,0.3)',
+          position: 'relative',
+          background: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(10px)',
+        }}>
+          <img
+            src={file.thumb}
+            alt={file.name}
+            draggable={false}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+          <span style={{
+            position: 'absolute',
+            bottom: 2,
+            right: 3,
+            fontSize: 10,
+          }}>
+            {typeIcon}
+          </span>
+        </div>
+        <span style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: '#ffffff',
+          textShadow: '0 1px 4px rgba(0,0,0,0.7)',
+          textAlign: 'center',
+          lineHeight: 1.15,
+          maxWidth: 80,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {file.name}
+        </span>
+      </div>
+    </DraggableItem>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ─── MAIN COMPONENT ─── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Des4LabView({ onBack }) {
   const [profileExpanded, setProfileExpanded] = useState(false);
   const [stackExpanded, setStackExpanded] = useState(false);
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
   const [selectedProject, setSelectedProject] = useState(null);
-  const [activePopup, setActivePopup] = useState(null); // 'notes' | 'photos' | 'finder' | 'mail'
+  const [activePopup, setActivePopup] = useState(null);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [currentTime, setCurrentTime] = useState('');
 
+  // Clock
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const h = now.getHours();
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      setCurrentTime(`${months[now.getMonth()]} ${now.getDate()}  ${h12}:${m} ${ampm}`);
+    };
+    tick();
+    const id = setInterval(tick, 10000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Googly eyes
   useEffect(() => {
     const handleMouseMove = (e) => {
       const { innerWidth, innerHeight } = window;
@@ -494,162 +711,144 @@ export default function Des4LabView({ onBack }) {
       const y = ((e.clientY - innerHeight / 2) / (innerHeight / 2)) * 4;
       setPupilPos({ x, y });
     };
-
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const projects = d3Projects.slice(0, 3); // ABC3, ABC2, ABC1
+  const projects = d3Projects.slice(0, 3);
 
   return (
     <Wrapper>
-      {/* Top Header */}
-      <TopHeader>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {/* Back Button */}
-          <BackButton onClick={onBack}>
-            <span>← back to overview</span>
-          </BackButton>
 
-          {/* Profile Card Pill */}
-          <ProfileCard
-            $expanded={profileExpanded}
-            onClick={() => setProfileExpanded(!profileExpanded)}
-          >
-            <ProfileTopRow $expanded={profileExpanded}>
-              <ProfileLeftGroup>
-                <AvatarImg
-                  src={profile.avatar}
-                  alt={profile.name}
-                  $expanded={profileExpanded}
-                />
-                <BadgeInfo>
-                  <Status>Available for work</Status>
-                  <Name>DATLE - PRODUCT DESIGNER</Name>
-                </BadgeInfo>
-              </ProfileLeftGroup>
-            </ProfileTopRow>
+      {/* ─── macOS Top Menu Bar ─── */}
+      <MenuBar>
+        <MenuBarLeft>
+          <span style={{ fontSize: 16, cursor: 'pointer' }} onClick={onBack} title="Back to Home">🍎</span>
+          <MenuLink onClick={onBack} style={{ fontWeight: 800 }}>← Back to Overview</MenuLink>
+          <MenuLink onClick={onBack}>Work</MenuLink>
+          <MenuLink onClick={() => setActivePopup('notes')}>About</MenuLink>
+        </MenuBarLeft>
+        <MenuBarRight>
+          <span>🔋</span>
+          <span>📶</span>
+          <span style={{ fontWeight: 600 }}>{currentTime}</span>
+        </MenuBarRight>
+      </MenuBar>
 
-            <ExpandedDetails $expanded={profileExpanded}>
-              <Bio>{profile.bio[0]}</Bio>
-              <LocationText>📍 {profile.location.name}</LocationText>
-            </ExpandedDetails>
-          </ProfileCard>
-        </div>
+      {/* ─── Top Row: Profile + Eyes + Start Project ─── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', zIndex: 50, position: 'relative' }}>
+        {/* Profile Card */}
+        <ProfileCard
+          $expanded={profileExpanded}
+          onClick={() => setProfileExpanded(!profileExpanded)}
+        >
+          <ProfileTopRow $expanded={profileExpanded}>
+            <ProfileLeftGroup>
+              <AvatarImg
+                src={profile.avatar}
+                alt={profile.name}
+                $expanded={profileExpanded}
+              />
+              <BadgeInfo>
+                <Status>Available for work</Status>
+                <Name>DATLE - PRODUCT DESIGNER</Name>
+              </BadgeInfo>
+            </ProfileLeftGroup>
+          </ProfileTopRow>
+          <ExpandedDetails $expanded={profileExpanded}>
+            <Bio>{profile.bio[0]}</Bio>
+            <LocationText>📍 {profile.location.name}</LocationText>
+          </ExpandedDetails>
+        </ProfileCard>
 
-        {/* Top Right: Eyes & Start Project */}
+        {/* Eyes & Start Project */}
         <TopRightActions>
           <EyesWrapper>
-            <Eye>
-              <Pupil $x={pupilPos.x} $y={pupilPos.y} />
-            </Eye>
-            <Eye>
-              <Pupil $x={pupilPos.x} $y={pupilPos.y} />
-            </Eye>
+            <Eye><Pupil $x={pupilPos.x} $y={pupilPos.y} /></Eye>
+            <Eye><Pupil $x={pupilPos.x} $y={pupilPos.y} /></Eye>
           </EyesWrapper>
-
           <StartProjectBtn onClick={() => setActivePopup('mail')}>
             <span>Start a Project</span>
             <FiBox />
           </StartProjectBtn>
         </TopRightActions>
-      </TopHeader>
+      </div>
 
-      {/* Draggable / Floating Sticky Notes */}
+      {/* ─── Draggable Sticky Notes & Icons ─── */}
 
-      {/* 1. Purple Note: "Not Just Visuals." */}
-      <FloatingSticker $top="18%" $left="10%" $rot="-6deg" $duration="5s">
+      {/* 1. Purple: "Not Just Visuals." */}
+      <DraggableItem style={{ top: '18%', left: '10%' }}>
         <PillNote $bg="rgba(192, 132, 252, 0.45)" $color="#ffffff">
-          <span>📎</span>
-          <span>Not Just Visuals.</span>
+          <span>📎</span><span>Not Just Visuals.</span>
         </PillNote>
-      </FloatingSticker>
+      </DraggableItem>
 
-      {/* 2. Cursor Arrow (Blue/Yellow) */}
-      <FloatingSticker $top="26%" $left="9%" $rot="-15deg" $duration="4.2s">
-        <div style={{ fontSize: 32, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}>
-          ↖️
-        </div>
-      </FloatingSticker>
+      {/* 2. Cursor Arrow */}
+      <DraggableItem style={{ top: '26%', left: '9%' }}>
+        <div style={{ fontSize: 32, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))', pointerEvents: 'none' }}>↖️</div>
+      </DraggableItem>
 
-      {/* 3. Cloud Sticker */}
-      <FloatingSticker $top="17%" $left="30%" $rot="4deg" $duration="6s">
-        <div style={{ fontSize: 28, opacity: 0.85 }}>☁️</div>
-      </FloatingSticker>
+      {/* 3. Cloud */}
+      <DraggableItem style={{ top: '17%', left: '30%' }}>
+        <div style={{ fontSize: 28, opacity: 0.85, pointerEvents: 'none' }}>☁️</div>
+      </DraggableItem>
 
       {/* 4. Striped Pink Circle */}
-      <FloatingSticker $top="20%" $right="15%" $rot="12deg" $duration="5.5s">
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            background: 'repeating-linear-gradient(45deg, #f472b6, #f472b6 4px, #db2777 4px, #db2777 8px)',
-            boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
-          }}
-        />
-      </FloatingSticker>
+      <DraggableItem style={{ top: '22%', right: '22%' }}>
+        <div style={{
+          width: 44, height: 44, borderRadius: '50%',
+          background: 'repeating-linear-gradient(45deg, #f472b6, #f472b6 4px, #db2777 4px, #db2777 8px)',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.25)', pointerEvents: 'none',
+        }} />
+      </DraggableItem>
 
-      {/* 5. Pink Note: "I Make Digital Things Look Alive" */}
-      <FloatingSticker $top="28%" $right="12%" $rot="6deg" $duration="4.8s">
+      {/* 5. Pink: "I Make Digital Things Look Alive" */}
+      <DraggableItem style={{ top: '38%', right: '18%' }}>
         <PillNote $bg="rgba(251, 207, 232, 0.55)" $color="#111827">
-          <span>📎</span>
-          <span>I Make Digital Things Look Alive</span>
+          <span>📎</span><span>I Make Digital Things Look Alive</span>
         </PillNote>
-      </FloatingSticker>
+      </DraggableItem>
 
-      {/* 6. Red Asterisk/Flower */}
-      <FloatingSticker $top="40%" $right="11%" $rot="18deg" $duration="4s">
-        <div style={{ fontSize: 32, color: '#ef4444', filter: 'drop-shadow(0 4px 12px rgba(239,68,68,0.4))' }}>
-          ✹
-        </div>
-      </FloatingSticker>
+      {/* 6. Red flower */}
+      <DraggableItem style={{ top: '48%', right: '24%' }}>
+        <div style={{ fontSize: 32, color: '#ef4444', filter: 'drop-shadow(0 4px 12px rgba(239,68,68,0.4))', pointerEvents: 'none' }}>✹</div>
+      </DraggableItem>
 
-      {/* 7. Pen Tool Icon */}
-      <FloatingSticker $bottom="30%" $left="16%" $rot="-12deg" $duration="5.2s">
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 12,
-            background: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 22,
-            boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
-            border: '1px solid rgba(255,255,255,0.6)',
-          }}
-        >
-          ✒️
-        </div>
-      </FloatingSticker>
+      {/* 7. Pen Tool */}
+      <DraggableItem style={{ bottom: '30%', left: '16%' }}>
+        <div style={{
+          width: 44, height: 44, borderRadius: 12,
+          background: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 22, boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
+          border: '1px solid rgba(255,255,255,0.6)', pointerEvents: 'none',
+        }}>✒️</div>
+      </DraggableItem>
 
-      {/* 8. Green Note: "UI/UX & Brand Systems" */}
-      <FloatingSticker $bottom="25%" $left="22%" $rot="8deg" $duration="4.6s">
+      {/* 8. Green: "UI/UX & Brand Systems" */}
+      <DraggableItem style={{ bottom: '25%', left: '22%' }}>
         <PillNote $bg="rgba(187, 247, 208, 0.55)" $color="#111827">
-          <span>📎</span>
-          <span>UI/UX & Brand Systems</span>
+          <span>📎</span><span>UI/UX & Brand Systems</span>
         </PillNote>
-      </FloatingSticker>
+      </DraggableItem>
 
       {/* 9. Lightbulb & Pencil */}
-      <FloatingSticker $bottom="32%" $right="22%" $rot="-8deg" $duration="5s">
-        <div
-          style={{
-            display: 'flex',
-            gap: 4,
-            fontSize: 28,
-            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))',
-          }}
-        >
-          <span>💡</span>
-          <span>✏️</span>
+      <DraggableItem style={{ bottom: '26%', right: '26%' }}>
+        <div style={{ display: 'flex', gap: 4, fontSize: 28, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))', pointerEvents: 'none' }}>
+          <span>💡</span><span>✏️</span>
         </div>
-      </FloatingSticker>
+      </DraggableItem>
 
-      {/* Center Giant Headline */}
+      {/* ─── 8 Scattered Desktop File Icons (Right Side Area) ─── */}
+      {scatteredFiles.map((file) => (
+        <ScatteredFileItem
+          key={file.id}
+          file={file}
+          onPreview={setPreviewFile}
+        />
+      ))}
+
+      {/* ─── Center Headline ─── */}
       <CenterHeadline>
         <HeadlineText>
           <div>DESIGN THAT</div>
@@ -658,28 +857,19 @@ export default function Des4LabView({ onBack }) {
         </HeadlineText>
       </CenterHeadline>
 
-      {/* Bottom Row */}
+      {/* ─── Bottom Row ─── */}
       <BottomRow>
-        {/* Mission Text (Bottom Left) */}
         <MissionText>
           I design clean websites, apps, and brand systems that help ideas look sharper, feel trusted, and work with purpose.
         </MissionText>
 
-        {/* Project Card Stack (Bottom Right) */}
+        {/* Project Card Stack */}
         <StackContainer
           onMouseEnter={() => setStackExpanded(true)}
           onMouseLeave={() => setStackExpanded(false)}
           onClick={() => setStackExpanded(!stackExpanded)}
         >
-          {/* Card 1: ABC1 (Top when expanded) */}
-          <StackCard
-            className="card-top"
-            $expanded={stackExpanded}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedProject(projects[2]);
-            }}
-          >
+          <StackCard className="card-top" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[2]); }}>
             <img src={projects[2]?.thumbnail || projects[2]?.image} alt={projects[2]?.name} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>FIGMA • 2026</span>
@@ -687,16 +877,7 @@ export default function Des4LabView({ onBack }) {
               <span style={{ fontSize: 11, fontWeight: 600, color: '#ffe815' }}>VIEW CASE STUDY →</span>
             </div>
           </StackCard>
-
-          {/* Card 2: ABC2 (Mid when expanded) */}
-          <StackCard
-            className="card-mid"
-            $expanded={stackExpanded}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedProject(projects[1]);
-            }}
-          >
+          <StackCard className="card-mid" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[1]); }}>
             <img src={projects[1]?.thumbnail || projects[1]?.image} alt={projects[1]?.name} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>BRAND • 2026</span>
@@ -704,16 +885,7 @@ export default function Des4LabView({ onBack }) {
               <span style={{ fontSize: 11, fontWeight: 600, color: '#ffe815' }}>VIEW CASE STUDY →</span>
             </div>
           </StackCard>
-
-          {/* Card 3: ABC3 (Bottom / default visible) */}
-          <StackCard
-            className="card-bot"
-            $expanded={stackExpanded}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedProject(projects[0]);
-            }}
-          >
+          <StackCard className="card-bot" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[0]); }}>
             <img src={projects[0]?.thumbnail || projects[0]?.image} alt={projects[0]?.name} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>FIGMA • 2026</span>
@@ -724,34 +896,54 @@ export default function Des4LabView({ onBack }) {
         </StackContainer>
       </BottomRow>
 
-      {/* Floating macOS Dock (Center Bottom - Triggers Popups!) */}
+      {/* ─── macOS Dock ─── */}
       <Dock>
-        <DockButton onClick={() => setActivePopup('mail')} title="Mail / Contact">
-          <img src="/assets/mail.png" alt="Mail" onError={(e) => (e.target.src = 'https://framerusercontent.com/images/EVSY45U60gTa9UjvovzPTZx7Hw.png?width=180&height=180')} />
+        <DockButton onClick={() => setActivePopup('mail')} title="Mail">
+          <img src="https://framerusercontent.com/images/EVSY45U60gTa9UjvovzPTZx7Hw.png?width=180&height=180" alt="Mail" />
         </DockButton>
-
-        <DockButton onClick={() => setActivePopup('notes')} title="Notes / About">
-          <img src="/assets/notes.png" alt="Notes" onError={(e) => (e.target.src = 'https://framerusercontent.com/images/ZAH3C8amQUigspCjEG1FJWPjI.png?width=180&height=180')} />
+        <DockButton onClick={() => setActivePopup('notes')} title="Notes">
+          <img src="https://framerusercontent.com/images/ZAH3C8amQUigspCjEG1FJWPjI.png?width=180&height=180" alt="Notes" />
         </DockButton>
-
-        <DockButton onClick={() => setActivePopup('photos')} title="Photos / Gallery">
-          <img src="/assets/photos.png" alt="Photos" onError={(e) => (e.target.src = 'https://framerusercontent.com/images/VCIQF7ylF9U0o5QZkTgji0mxx28.png?width=180&height=180')} />
+        <DockButton onClick={() => setActivePopup('photos')} title="Photos">
+          <img src="https://framerusercontent.com/images/VCIQF7ylF9U0o5QZkTgji0mxx28.png?width=180&height=180" alt="Photos" />
         </DockButton>
-
-        <DockButton onClick={() => setActivePopup('finder')} title="Finder / Capabilities">
-          <img src="/assets/finder.png" alt="Finder" onError={(e) => (e.target.src = 'https://framerusercontent.com/images/jC3NYM1gkKdVNzokU0ojtj01asg.png?width=180&height=180')} />
+        <DockButton onClick={() => setActivePopup('finder')} title="Finder">
+          <img src="https://framerusercontent.com/images/jC3NYM1gkKdVNzokU0ojtj01asg.png?width=180&height=180" alt="Finder" />
         </DockButton>
       </Dock>
 
-      {/* Project Modal Case Study */}
+      {/* ─── Project Case Study Modal ─── */}
       {selectedProject && (
-        <ProjectModalD3
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ProjectModalD3 project={selectedProject} onClose={() => setSelectedProject(null)} />
       )}
 
-      {/* macOS Dock Popup Modals */}
+      {/* ─── File Preview Modal ─── */}
+      {previewFile && (
+        <ModalOverlay onClick={() => setPreviewFile(null)}>
+          <MacOSWindow $width="750px" onClick={(e) => e.stopPropagation()}>
+            <WindowHeader>
+              <TrafficDots>
+                <span className="red" onClick={() => setPreviewFile(null)} />
+                <span className="yellow" onClick={() => setPreviewFile(null)} />
+                <span className="green" />
+              </TrafficDots>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Preview – {previewFile.name}
+              </span>
+              <div style={{ width: 40 }} />
+            </WindowHeader>
+            <div style={{ padding: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 380 }}>
+              <img
+                src={previewFile.src}
+                alt={previewFile.name}
+                style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', display: 'block' }}
+              />
+            </div>
+          </MacOSWindow>
+        </ModalOverlay>
+      )}
+
+      {/* ─── Dock Popup Modals (Notes / Photos / Finder / Mail) ─── */}
       {activePopup && (
         <ModalOverlay onClick={() => setActivePopup(null)}>
           <MacOSWindow onClick={(e) => e.stopPropagation()}>
@@ -769,23 +961,17 @@ export default function Des4LabView({ onBack }) {
               </span>
               <div style={{ width: 40 }} />
             </WindowHeader>
-
             <div style={{ padding: '28px 32px', overflowY: 'auto', maxHeight: '70vh' }}>
-              {/* Notes Popup */}
               {activePopup === 'notes' && (
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 12px 0' }}>About Dat Le</h3>
-                  <p style={{ lineHeight: 1.7, color: '#4b5563', fontSize: 15 }}>
-                    {profile.bio.join(' ')}
-                  </p>
+                  <p style={{ lineHeight: 1.7, color: '#4b5563', fontSize: 15 }}>{profile.bio.join(' ')}</p>
                   <div style={{ marginTop: 20, padding: 16, background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb' }}>
-                    <strong>📍 Location:</strong> {profile.location.name} <br />
+                    <strong>📍 Location:</strong> {profile.location.name}<br />
                     <strong>✉️ Email:</strong> {profile.email}
                   </div>
                 </div>
               )}
-
-              {/* Photos Popup */}
               {activePopup === 'photos' && (
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 16px 0' }}>Featured Experiments & Shots</h3>
@@ -799,8 +985,6 @@ export default function Des4LabView({ onBack }) {
                   </div>
                 </div>
               )}
-
-              {/* Finder Popup */}
               {activePopup === 'finder' && (
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 16px 0' }}>Services & System Capabilities</h3>
@@ -814,21 +998,15 @@ export default function Des4LabView({ onBack }) {
                   </div>
                 </div>
               )}
-
-              {/* Mail Popup */}
               {activePopup === 'mail' && (
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px 0' }}>Start a Project</h3>
-                  <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 20 }}>
-                    Have an exciting idea or need design leadership? Send a message directly.
-                  </p>
+                  <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 20 }}>Have an exciting idea? Send a message directly.</p>
                   <form onSubmit={(e) => { e.preventDefault(); alert('Message sent! Thank you.'); setActivePopup(null); }} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <input type="text" placeholder="Your Name" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                     <input type="email" placeholder="Your Email" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                     <textarea rows="4" placeholder="Tell me about your project..." required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <button type="submit" style={{ padding: '12px', background: '#111827', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>
-                      Send Message
-                    </button>
+                    <button type="submit" style={{ padding: '12px', background: '#111827', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Send Message</button>
                   </form>
                 </div>
               )}

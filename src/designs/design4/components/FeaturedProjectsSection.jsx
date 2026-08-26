@@ -1,4 +1,5 @@
 import React from 'react';
+import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { featuredProjects } from '../data/homeData';
 
 export default function FeaturedProjectsSection() {
@@ -11,19 +12,19 @@ export default function FeaturedProjectsSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Giant Marquee Header */}
+      {/* Giant Smooth Marquee Header */}
       <div
         style={{
           width: '100%',
           overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          display: 'flex',
           marginBottom: 40,
         }}
       >
-        <div
+        <ScrollBaseAnimation
+          delay={200}
+          baseVelocity={-0.6}
+          clasname="font-bold tracking-[-0.04em] leading-none"
           style={{
-            display: 'inline-block',
             fontFamily: 'var(--font-outfit)',
             fontSize: 'clamp(54px, 10vw, 140px)',
             fontWeight: 800,
@@ -33,10 +34,8 @@ export default function FeaturedProjectsSection() {
             textTransform: 'lowercase',
           }}
         >
-          featured work<span style={{ color: '#fe3c01', marginLeft: 8 }}>*</span>{' '}
-          featured work<span style={{ color: '#fe3c01', marginLeft: 8 }}>*</span>{' '}
-          featured work<span style={{ color: '#fe3c01', marginLeft: 8 }}>*</span>
-        </div>
+          featured work<span style={{ color: '#fe3c01', marginLeft: 8, marginRight: 24 }}>*</span>
+        </ScrollBaseAnimation>
       </div>
 
       <div className="des4-container">
