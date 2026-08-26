@@ -1,0 +1,206 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Design 4 — 100% Faithful Recreation of YanXin Zhang (yanxinzhang.com)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@1,600;1,700&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+:root {
+  /* Framer Tokens */
+  --token-black: #000000;
+  --token-white: #ffffff;
+  --token-gray-text: #ababab;
+  --token-gray-border: #e0e0e0;
+  --token-red-orange: #fe3c01;
+  --token-yellow: #ffe815;
+  --token-blue: #0b1dff;
+  --token-pink: #ff75f6;
+  --token-green: #45ff08;
+  --token-surface: #fafafa;
+  --token-orange: #ff6200;
+  --token-lime: #8bc200;
+  --token-hotpink: #ff30b3;
+  --token-crimson: #e3091d;
+
+  --font-outfit: 'Outfit', sans-serif;
+  --font-garamond: 'EB Garamond', serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+.des4-root {
+  background-color: var(--token-white);
+  color: var(--token-black);
+  font-family: var(--font-inter);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.des4-root *,
+.des4-root *::before,
+.des4-root *::after {
+  box-sizing: border-box;
+}
+
+.des4-root ::selection {
+  background: var(--token-red-orange);
+  color: var(--token-black);
+}
+
+/* Container */
+.des4-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+}
+
+@media (max-width: 809.98px) {
+  .des4-container {
+    padding: 0 20px;
+  }
+}
+
+/* Typography Utilities */
+.des4-title-giant {
+  font-family: var(--font-outfit);
+  font-weight: 900;
+  font-size: clamp(64px, 14vw, 200px);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--token-black);
+  margin: 0;
+}
+
+.des4-section-heading {
+  font-family: var(--font-outfit);
+  font-weight: 600;
+  font-size: clamp(48px, 9vw, 120px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--token-black);
+  margin: 0;
+}
+
+.des4-asterisk {
+  color: var(--token-red-orange);
+  font-family: var(--font-outfit);
+  font-weight: 900;
+}
+
+/* Fixed Header Nav */
+.des4-nav-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 999;
+  mix-blend-mode: difference;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  pointer-events: auto;
+}
+
+.des4-nav-logo {
+  font-family: var(--font-outfit);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.des4-nav-logo:hover {
+  transform: scale(1.05);
+}
+
+.des4-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.des4-nav-link {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease;
+}
+
+.des4-nav-link:hover {
+  opacity: 0.7;
+}
+
+/* Fixed Bottom Dock */
+.des4-dock-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 999;
+  mix-blend-mode: difference;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  pointer-events: none;
+}
+
+.des4-dock-bottom > * {
+  pointer-events: auto;
+}
+
+.des4-dock-item {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.des4-dock-badge {
+  font-family: var(--font-outfit);
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* Animations */
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes floatInverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(10px) rotate(-2deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.9; }
+}
+
+@keyframes rotateInfinite {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

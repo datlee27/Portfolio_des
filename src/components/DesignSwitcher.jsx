@@ -161,6 +161,15 @@ export default function DesignSwitcher({ currentDesign, onSelectDesign }) {
           <span>Design 3</span>
         </SwitchButton>
 
+        <SwitchButton
+          $active={currentDesign === 'des4'}
+          onClick={() => onSelectDesign('des4')}
+          title="Switch to Design 4: YanXin Zhang (/des4)"
+        >
+          <span className="icon">⚡</span>
+          <span>Design 4</span>
+        </SwitchButton>
+
         <CollapseToggle
           onClick={() => setMinimized(true)}
           title="Minimize Switcher"
