@@ -1,17 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { clientsData } from '../data/homeData';
 
 export default function ClientsSection() {
   const [rotation, setRotation] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startRotation, setStartRotation] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const autoRotateRef = useRef(null);
 
+  // Auto rotation when not dragging or hovering
   useEffect(() => {
-    if (isHovered) return;
+    if (isDragging || isHovered) return;
     const interval = setInterval(() => {
-      setRotation((prev) => (prev + 0.3) % 360);
-    }, 20);
+      setRotation((prev) => (prev + 0.35) % 360);
+    }, 25);
     return () => clearInterval(interval);
-  }, [isHovered]);
+  }, [isDragging, isHovered]);
+
+  // Drag handlers
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setStartRotation(rotation);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - startX;
+    setRotation(startRotation + deltaX * 0.35);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const count = clientsData.length;
+  // Card dimensions and exact cylinder radius calculation:
+  // For 8 cards to sit flush without intersecting, R must be > (cardWidth / 2) / tan(22.5deg)
+  // cardWidth = 300px => minimum R = 150 / 0.4142 = 362.1px.
+  // We use cardWidth = 290px and radius = 420px for a clean, non-overlapping gap!
+  const cardWidth = 290;
+  const cardHeight = 190;
+  const radius = 420;
 
   return (
     <section
@@ -49,7 +80,7 @@ export default function ClientsSection() {
             fontWeight: 500,
             color: '#888888',
             maxWidth: 480,
-            marginBottom: 100,
+            marginBottom: 90,
             lineHeight: 1.5,
           }}
         >
@@ -59,32 +90,37 @@ export default function ClientsSection() {
 
         {/* 3D Cylinder Rotating Stage */}
         <div
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={() => {
+            handleMouseUp();
+            setIsHovered(false);
+          }}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
           style={{
-            perspective: 1200,
+            perspective: 1600,
             width: '100%',
-            height: 480,
+            height: 440,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
+            cursor: isDragging ? 'grabbing' : 'grab',
           }}
         >
           <div
             style={{
               position: 'relative',
-              width: 320,
-              height: 220,
+              width: cardWidth,
+              height: cardHeight,
               transformStyle: 'preserve-3d',
               transform: `rotateY(${rotation}deg)`,
-              transition: isHovered ? 'transform 0.5s ease-out' : 'none',
+              transition: isDragging ? 'none' : isHovered ? 'transform 0.3s ease-out' : 'none',
             }}
           >
             {clientsData.map((client, idx) => {
-              const count = clientsData.length;
               const angle = (360 / count) * idx;
-              const radius = 380; // cylinder radius
 
               return (
                 <div
@@ -93,20 +129,28 @@ export default function ClientsSection() {
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: 320,
-                    height: 220,
-                    borderRadius: 24,
+                    width: cardWidth,
+                    height: cardHeight,
+                    borderRadius: 22,
                     overflow: 'hidden',
-                    background: '#181818',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+                    background: '#151515',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: 24,
-                    cursor: 'pointer',
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    backfaceVisibility: 'visible',
+                    backfaceVisibility: 'hidden', // Hides the back side of cylinder to avoid overlap!
+                    transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#fe3c01';
+                    e.currentTarget.style.boxShadow = '0 24px 60px rgba(254,60,1,0.25)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                    e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.7)';
                   }}
                 >
                   {/* Background Video / Image preview */}
@@ -124,7 +168,7 @@ export default function ClientsSection() {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        opacity: 0.65,
+                        opacity: 0.6,
                       }}
                     />
                   ) : client.previewImg ? (
@@ -138,12 +182,12 @@ export default function ClientsSection() {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        opacity: 0.65,
+                        opacity: 0.6,
                       }}
                     />
                   ) : null}
 
-                  {/* Dark overlay for contrast */}
+                  {/* Dark gradient overlay for clear logo contrast */}
                   <div
                     style={{
                       position: 'absolute',
@@ -151,7 +195,7 @@ export default function ClientsSection() {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      background: 'rgba(0,0,0,0.3)',
+                      background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
                     }}
                   />
 
@@ -160,8 +204,8 @@ export default function ClientsSection() {
                     src={client.logo}
                     alt={client.name}
                     style={{
-                      maxWidth: '85%',
-                      maxHeight: '65%',
+                      maxWidth: '82%',
+                      maxHeight: '60%',
                       objectFit: 'contain',
                       position: 'relative',
                       zIndex: 2,
@@ -172,6 +216,21 @@ export default function ClientsSection() {
               );
             })}
           </div>
+        </div>
+
+        {/* Drag Hint */}
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-inter)',
+              fontSize: 12,
+              color: '#666666',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            ← Drag to rotate cylinder →
+          </span>
         </div>
       </div>
     </section>
