@@ -1,73 +1,67 @@
-// Design 4 — Complete Data extracted from yanxinzhang.com
+// Design 4 — Complete Data for Dat Le (YanXin Zhang style)
 
 export const siteMeta = {
-  name: 'YanXin Zhang',
-  shortName: 'yx',
-  title: 'YanXin Zhang - Turning Creative Chaos into Reality',
+  name: 'Dat Le',
+  shortName: 'dl',
+  title: 'Dat Le - Turning Creative Chaos into Reality',
   tagline: 'Turning Creative Chaos into Reality',
   bio: 'Multidisciplinary experiential designer and creative lead who blends art direction, branding, 2D/3D motion, and UI/UX into cohesive visual storytelling.',
-  location: 'Singapore (+65)',
-  email: 'hello@yanxinzhang.com',
-  altEmail: 'hi@yanxinzhang.com',
+  location: 'Singapore / Brooklyn',
+  email: 'hello@datle.design',
+  altEmail: 'hi@datle.design',
   year: '2026',
-  badge: 'YX*',
+  badge: 'DL*',
   badgeYear: '/26',
 };
 
 export const heroData = {
-  firstName: 'YanXin',
-  lastName: 'Zhang',
+  firstName: 'Dat',
+  lastName: 'Le',
+  fullName: 'DAT LE',
   role: 'Multidisciplinary Experiential Designer & Creative Lead',
   subtitle: 'Turning Creative Chaos into Reality',
   stickers: [
     {
       id: 'sticker-1',
       src: 'https://framerusercontent.com/images/51CetPzSFpvaraczTEtCz0jCo.png?width=1366&height=1000',
-      alt: '3D Render',
-      className: 'hero-sticker-main',
+      alt: '3D Artwork',
     },
     {
       id: 'sticker-star',
       src: 'https://framerusercontent.com/images/CrQdgMKOAf5N4duSXjc76KKJlw.png?width=43&height=45',
       alt: 'Star badge',
-      className: 'hero-sticker-star',
     },
     {
       id: 'sticker-face',
       src: 'https://framerusercontent.com/images/z7iqm9BwewMwg1PC3K9MnyaC7JE.png?width=56&height=45',
       alt: 'Cute face',
-      className: 'hero-sticker-face',
     },
     {
       id: 'sticker-flower',
       src: 'https://framerusercontent.com/images/n3VTfiXUGql3C0TJIFvXgs8Ko.png?width=46&height=45',
       alt: 'Flower',
-      className: 'hero-sticker-flower',
     },
     {
       id: 'sticker-gif1',
       src: 'https://framerusercontent.com/images/Z0oPD4aqeRrqmX19aQu0j7wCDiA.gif?width=90&height=45',
       alt: 'Motion Gif',
-      className: 'hero-sticker-gif1',
     },
     {
       id: 'sticker-gif2',
       src: 'https://framerusercontent.com/images/xfnsTlzEew5abOSsoTwi2MDXM4.gif?width=60&height=45',
       alt: 'Sparkle Gif',
-      className: 'hero-sticker-gif2',
     },
     {
       id: 'sticker-gif3',
       src: 'https://framerusercontent.com/images/eyywHU5EahGjcyhpTfFeFWC2m20.gif?width=75&height=45',
       alt: 'Eye Gif',
-      className: 'hero-sticker-gif3',
     },
   ],
 };
 
 export const introData = {
   textParts: [
-    { text: 'YanXin Zhang is a ', highlight: false },
+    { text: 'Dat Le is a ', highlight: false },
     { text: 'multidisciplinary designer', highlight: true, color: '#fe3c01' },
     { text: ' and ', highlight: false },
     { text: 'creative lead', highlight: true, color: '#0b1dff' },
@@ -79,7 +73,7 @@ export const introData = {
     { text: 'Interactive Design', highlight: true, color: '#45ff08' },
     { text: ' into cohesive ', highlight: false },
     { text: 'visual storytelling.', highlight: true, italic: true },
-    { text: ' Leads projects ', highlight: false },
+    { text: ' He leads projects ', highlight: false },
     { text: 'End-to-End,', highlight: true, color: '#fe3c01' },
     { text: ' from discovery to implementation, guiding teams while staying hands-on, with a deep love for turning ideas into ', highlight: false },
     { text: 'realities.', highlight: true, italic: true, color: '#0b1dff' },
@@ -261,50 +255,5 @@ export const clientsData = [
     logo: 'https://framerusercontent.com/images/v8I6SIsDNsHaPX5yny09Dqupi3s.png?width=400&height=156',
     previewImg: 'https://framerusercontent.com/images/XjwPzi2YSxoT7gtF3dSedIiadM.jpg?width=600&height=403',
     bg: '#e3091d',
-  },
-];
-
-export const stickerGallery = [
-  {
-    id: 'gallery-1',
-    src: 'https://framerusercontent.com/images/bssDxEIkplBAwpalnxd7jncvrpA.jpg?width=720&height=1024',
-    title: 'Visual Experiment #01',
-    width: 320,
-    rotate: '-3deg',
-  },
-  {
-    id: 'gallery-2',
-    src: 'https://framerusercontent.com/images/ScU99IyOsTtb1lxML9872VIoxU.jpg?width=1251&height=928',
-    title: 'Render Module',
-    width: 380,
-    rotate: '2deg',
-  },
-  {
-    id: 'gallery-3',
-    src: 'https://framerusercontent.com/images/JOYEDJGngCqgqUqMFY63032jAr4.jpg?width=1200&height=675',
-    title: 'Metaspace 3D',
-    width: 360,
-    rotate: '-1.5deg',
-  },
-  {
-    id: 'gallery-4',
-    src: 'https://framerusercontent.com/images/wMsJeUgDAt07Spb9jgbEdL7tifs.jpg?width=1920&height=1280',
-    title: 'Botanical 3D',
-    width: 340,
-    rotate: '3.5deg',
-  },
-  {
-    id: 'gallery-5',
-    src: 'https://framerusercontent.com/images/rk7FEMbmcIVV3cz36NBzqcnCmI.jpg?width=620&height=658',
-    title: 'Character Design',
-    width: 280,
-    rotate: '-2deg',
-  },
-  {
-    id: 'gallery-6',
-    src: 'https://framerusercontent.com/images/eworU6xoE2plzVUmMOPx9rIp7pY.jpg?width=1024&height=919',
-    title: 'Spatial Exploration',
-    width: 320,
-    rotate: '1deg',
   },
 ];

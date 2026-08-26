@@ -10,7 +10,7 @@ export default function CornerNav() {
 
   return (
     <>
-      {/* Top Left: yx* */}
+      {/* Top Left: dl* */}
       <a
         href="#top"
         onClick={(e) => {
@@ -19,22 +19,25 @@ export default function CornerNav() {
         }}
         style={{
           position: 'fixed',
-          top: 28,
+          top: 32,
           left: 36,
           zIndex: 9999,
           mixBlendMode: 'difference',
           color: '#ffffff',
           fontFamily: 'var(--font-outfit)',
-          fontSize: 22,
+          fontSize: 24,
           fontWeight: 900,
           letterSpacing: '-0.03em',
           textDecoration: 'none',
           cursor: 'pointer',
           userSelect: 'none',
           lineHeight: 1,
+          transition: 'transform 0.2s ease',
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
-        yx<span style={{ color: '#fe3c01' }}>*</span>
+        dl<span style={{ color: '#fe3c01' }}>*</span>
       </a>
 
       {/* Top Right: work */}
@@ -42,7 +45,7 @@ export default function CornerNav() {
         onClick={() => scrollTo('d4-work')}
         style={{
           position: 'fixed',
-          top: 28,
+          top: 32,
           right: 36,
           zIndex: 9999,
           mixBlendMode: 'difference',
@@ -57,7 +60,10 @@ export default function CornerNav() {
           padding: 0,
           userSelect: 'none',
           lineHeight: 1,
+          transition: 'transform 0.2s ease',
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         work
       </button>
@@ -67,7 +73,7 @@ export default function CornerNav() {
         onClick={() => scrollTo('d4-intro')}
         style={{
           position: 'fixed',
-          bottom: 28,
+          bottom: 32,
           left: 36,
           zIndex: 9999,
           mixBlendMode: 'difference',
@@ -82,7 +88,10 @@ export default function CornerNav() {
           padding: 0,
           userSelect: 'none',
           lineHeight: 1,
+          transition: 'transform 0.2s ease',
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         about
       </button>
@@ -92,7 +101,7 @@ export default function CornerNav() {
         onClick={() => scrollTo('d4-whatido')}
         style={{
           position: 'fixed',
-          bottom: 28,
+          bottom: 32,
           right: 36,
           zIndex: 9999,
           mixBlendMode: 'difference',
@@ -107,7 +116,10 @@ export default function CornerNav() {
           padding: 0,
           userSelect: 'none',
           lineHeight: 1,
+          transition: 'transform 0.2s ease',
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         lab
       </button>

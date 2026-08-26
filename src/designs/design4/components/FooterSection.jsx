@@ -45,7 +45,7 @@ export default function FooterSection() {
           </div>
         </div>
 
-        {/* Giant Centered Emblem */}
+        {/* Giant Centered Emblem DL* /26 */}
         <div
           style={{
             display: 'flex',
@@ -64,9 +64,13 @@ export default function FooterSection() {
               lineHeight: 0.82,
               letterSpacing: '-0.05em',
               color: '#ffffff',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
-            YX<span style={{ color: '#fe3c01' }}>*</span>
+            DL<span style={{ color: '#fe3c01' }}>*</span>
           </div>
           <div
             style={{

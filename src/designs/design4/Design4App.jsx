@@ -11,7 +11,7 @@ import FooterSection from './components/FooterSection';
 
 export default function Design4App() {
   useEffect(() => {
-    document.title = 'YanXin Zhang - Turning Creative Chaos into Reality';
+    document.title = 'Dat Le - Turning Creative Chaos into Reality';
   }, []);
 
   return (

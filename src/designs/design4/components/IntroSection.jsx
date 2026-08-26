@@ -30,7 +30,7 @@ export default function IntroSection() {
           }}
         >
           <span style={{ color: '#fe3c01', fontWeight: 900, marginRight: 8 }}>*</span>
-          YanXin Zhang is a multidisciplinary designer{' '}
+          Dat Le is a multidisciplinary designer{' '}
           {/* Tomato Sticker */}
           <span
             style={{
