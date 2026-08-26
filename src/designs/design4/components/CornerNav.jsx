@@ -1,12 +1,23 @@
 import React from 'react';
 
-export default function CornerNav() {
+export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
   const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    if (activeView === 'lab') {
+      if (onGoHome) onGoHome();
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  if (activeView === 'lab') {
+    // In Lab View, Des4LabView has its own top header with back button and ProfileCard
+    return null;
+  }
 
   return (
     <>
@@ -98,7 +109,9 @@ export default function CornerNav() {
 
       {/* Bottom Right: lab */}
       <button
-        onClick={() => scrollTo('d4-whatido')}
+        onClick={() => {
+          if (onOpenLab) onOpenLab();
+        }}
         style={{
           position: 'fixed',
           bottom: 32,

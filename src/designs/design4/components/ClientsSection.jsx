@@ -218,7 +218,7 @@ export default function ClientsSection() {
           </div>
         </div>
 
-        {/* Drag Hint */}
+        {/* Drag Hint
         <div style={{ textAlign: 'center', marginTop: 32 }}>
           <span
             style={{
@@ -231,7 +231,7 @@ export default function ClientsSection() {
           >
             ← Drag to rotate cylinder →
           </span>
-        </div>
+        </div> */}
       </div>
     </section>
   );
