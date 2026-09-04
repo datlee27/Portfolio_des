@@ -7,7 +7,7 @@ export default function FeaturedProjectsSection() {
     <section
       id="d4-work"
       style={{
-        padding: '80px 0 120px',
+        padding: '50px 0 60px',
         background: '#ffffff',
         overflow: 'hidden',
       }}
@@ -17,7 +17,7 @@ export default function FeaturedProjectsSection() {
         style={{
           width: '100%',
           overflow: 'hidden',
-          marginBottom: 32,
+          marginBottom: 24,
         }}
       >
         <ScrollBaseAnimation
@@ -26,7 +26,7 @@ export default function FeaturedProjectsSection() {
           clasname="font-bold tracking-[-0.04em] leading-none"
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(44px, 10vw, 140px)',
+            fontSize: 'clamp(40px, 9vw, 130px)',
             fontWeight: 800,
             lineHeight: 1,
             letterSpacing: '-0.04em',
@@ -47,7 +47,7 @@ export default function FeaturedProjectsSection() {
             fontWeight: 500,
             color: '#000000',
             maxWidth: 540,
-            marginBottom: 48,
+            marginBottom: 36,
             lineHeight: 1.6,
           }}
         >
@@ -87,8 +87,8 @@ export default function FeaturedProjectsSection() {
                   <div
                     style={{
                       position: 'absolute',
-                      top: 16,
-                      left: 16,
+                      top: 14,
+                      left: 14,
                       zIndex: 10,
                       background: project.status === 'Latest' ? '#fe3c01' : '#000000',
                       color: '#ffffff',
@@ -159,7 +159,7 @@ export default function FeaturedProjectsSection() {
                       display: 'flex',
                       flexWrap: 'wrap',
                       gap: 6,
-                      marginBottom: 20,
+                      marginBottom: 16,
                     }}
                   >
                     {project.tags.map((tag, idx) => (
@@ -199,7 +199,7 @@ export default function FeaturedProjectsSection() {
                           fontSize: 13,
                           fontWeight: 600,
                           minHeight: 44,
-                          padding: '10px 20px',
+                          padding: '8px 18px',
                           borderRadius: 100,
                           textDecoration: 'none',
                           transition: 'all 0.2s ease',

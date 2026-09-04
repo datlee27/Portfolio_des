@@ -6,7 +6,7 @@ export default function WhatIDoSection() {
     <section
       id="d4-whatido"
       style={{
-        padding: '100px 0 140px',
+        padding: '60px 0',
         background: '#ff5500',
         color: '#000000',
         position: 'relative',
@@ -18,12 +18,12 @@ export default function WhatIDoSection() {
         <h2
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(44px, 9vw, 140px)',
+            fontSize: 'clamp(40px, 9vw, 140px)',
             fontWeight: 900,
             lineHeight: 0.9,
             letterSpacing: '-0.04em',
             color: '#000000',
-            margin: '0 0 24px 0',
+            margin: '0 0 20px 0',
           }}
         >
           what i do<span style={{ color: '#0b1dff' }}>*</span>
@@ -37,7 +37,7 @@ export default function WhatIDoSection() {
             fontWeight: 500,
             color: '#000000',
             maxWidth: 540,
-            marginBottom: 64,
+            marginBottom: 40,
             lineHeight: 1.6,
           }}
         >
@@ -66,18 +66,18 @@ export default function WhatIDoSection() {
           </div>
 
           {/* Right: 3 Interactive Capability Blocks */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
             {whatIDoData.columns.map((col, idx) => (
               <div key={idx}>
                 <h3
                   style={{
                     fontFamily: 'var(--font-outfit)',
-                    fontSize: 'clamp(24px, 3.5vw, 48px)',
+                    fontSize: 'clamp(22px, 3.5vw, 44px)',
                     fontWeight: 800,
                     lineHeight: 1.1,
                     letterSpacing: '-0.03em',
                     color: '#000000',
-                    margin: '0 0 14px 0',
+                    margin: '0 0 12px 0',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
@@ -88,14 +88,14 @@ export default function WhatIDoSection() {
                   <span
                     style={{
                       display: 'inline-flex',
-                      width: 32,
-                      height: 32,
+                      width: 28,
+                      height: 28,
                       borderRadius: '50%',
                       background: col.color || '#0b1dff',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: '#fff',
-                      fontSize: 14,
+                      fontSize: 13,
                     }}
                   >
                     ✦
@@ -103,7 +103,7 @@ export default function WhatIDoSection() {
                   <span>{col.subtitle}</span>
                 </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 10, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 10, marginBottom: 12 }}>
                   <span style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700, color: '#000' }}>
                     {col.num}
                   </span>
@@ -119,7 +119,7 @@ export default function WhatIDoSection() {
                     color: '#111111',
                     lineHeight: 1.8,
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
                     gap: 6,
                   }}
                 >

@@ -62,7 +62,7 @@ export default function ClientsSection() {
     <section
       id="d4-clients"
       style={{
-        padding: '100px 0 140px',
+        padding: '60px 0',
         background: '#000000',
         color: '#ffffff',
         overflow: 'hidden',
@@ -75,12 +75,12 @@ export default function ClientsSection() {
         <h2
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(44px, 9vw, 150px)',
+            fontSize: 'clamp(40px, 9vw, 140px)',
             fontWeight: 900,
             lineHeight: 0.9,
             letterSpacing: '-0.04em',
             color: '#ffffff',
-            margin: '0 0 20px 0',
+            margin: '0 0 16px 0',
           }}
         >
           clients<span style={{ color: '#fe3c01' }}>*</span>
@@ -94,7 +94,7 @@ export default function ClientsSection() {
             fontWeight: 500,
             color: '#888888',
             maxWidth: 480,
-            marginBottom: 60,
+            marginBottom: 40,
             lineHeight: 1.5,
           }}
         >
@@ -118,7 +118,7 @@ export default function ClientsSection() {
           style={{
             perspective: 1200,
             width: '100%',
-            height: windowWidth < 600 ? 280 : 380,
+            height: windowWidth < 600 ? 260 : 360,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -223,7 +223,7 @@ export default function ClientsSection() {
         </div>
 
         {/* Drag / Swipe Hint */}
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
           <span
             style={{
               fontFamily: 'var(--font-inter)',

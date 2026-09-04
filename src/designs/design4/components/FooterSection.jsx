@@ -6,7 +6,7 @@ export default function FooterSection() {
     <footer
       id="d4-footer"
       style={{
-        padding: '100px 0 120px',
+        padding: '60px 0 80px',
         background: '#000000',
         color: '#ffffff',
         position: 'relative',
@@ -15,11 +15,11 @@ export default function FooterSection() {
     >
       <div className="des4-container">
         {/* Contact Heading */}
-        <div style={{ marginBottom: 60 }}>
+        <div style={{ marginBottom: 40 }}>
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(28px, 5.5vw, 72px)',
+              fontSize: 'clamp(24px, 5vw, 64px)',
               fontWeight: 800,
               letterSpacing: '-0.03em',
               lineHeight: 1.1,
@@ -49,9 +49,9 @@ export default function FooterSection() {
           <div
             style={{
               display: 'flex',
-              gap: 12,
+              gap: 10,
               flexWrap: 'wrap',
-              marginTop: 32,
+              marginTop: 24,
             }}
           >
             <a
@@ -61,7 +61,7 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '12px 20px',
+                padding: '10px 18px',
                 minHeight: 44,
                 borderRadius: 100,
                 background: '#ffffff',
@@ -94,7 +94,7 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '12px 20px',
+                padding: '10px 18px',
                 minHeight: 44,
                 borderRadius: 100,
                 background: '#222222',
@@ -128,7 +128,7 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '12px 20px',
+                padding: '10px 18px',
                 minHeight: 44,
                 borderRadius: 100,
                 background: '#222222',
@@ -165,13 +165,13 @@ export default function FooterSection() {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '20px 0 0 0',
+            padding: '10px 0 0 0',
           }}
         >
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(80px, 22vw, 320px)',
+              fontSize: 'clamp(64px, 18vw, 240px)',
               fontWeight: 900,
               lineHeight: 0.82,
               letterSpacing: '-0.05em',
@@ -187,7 +187,7 @@ export default function FooterSection() {
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(48px, 13vw, 180px)',
+              fontSize: 'clamp(40px, 11vw, 150px)',
               fontWeight: 900,
               lineHeight: 0.82,
               letterSpacing: '-0.05em',

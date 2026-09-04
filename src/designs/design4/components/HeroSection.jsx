@@ -38,12 +38,12 @@ export default function HeroSection() {
       ref={heroRef}
       style={{
         position: 'relative',
-        minHeight: '100vh',
+        minHeight: '85vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '80px 16px',
+        padding: '70px 16px 40px',
         background: '#ffffff',
         overflow: 'hidden',
         userSelect: 'none',
@@ -208,7 +208,7 @@ export default function HeroSection() {
           justifyContent: 'center',
           fontFamily: 'var(--font-outfit)',
           fontWeight: 900,
-          fontSize: 'clamp(32px, 8.5vw, 150px)',
+          fontSize: 'clamp(44px, 11.5vw, 150px)',
           lineHeight: 0.95,
           letterSpacing: '-0.04em',
           color: '#000000',
@@ -527,7 +527,7 @@ export default function HeroSection() {
       <div
         onClick={() => setIsPlaying(!isPlaying)}
         style={{
-          marginTop: 'clamp(24px, 5vw, 48px)',
+          marginTop: 'clamp(20px, 4vw, 36px)',
           zIndex: 15,
           display: 'inline-flex',
           alignItems: 'center',

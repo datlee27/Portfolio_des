@@ -8,24 +8,26 @@ export default function ShowreelSection() {
     <section
       id="d4-showreel"
       style={{
-        padding: '60px 40px 140px',
+        padding: '30px 0 50px',
         background: '#ffffff',
         display: 'flex',
         justifyContent: 'center',
       }}
     >
       <div
+        className="des4-container"
         style={{
           width: '100%',
           maxWidth: 1100,
           aspectRatio: '16/9',
-          borderRadius: 36,
+          borderRadius: 24,
           overflow: 'hidden',
           background: '#f2f2f2',
           position: 'relative',
           boxShadow: '0 24px 80px rgba(0,0,0,0.08)',
           border: '1px solid rgba(0,0,0,0.06)',
           display: 'flex',
+          padding: 0,
         }}
       >
         {!isPlaying ? (
@@ -49,7 +51,7 @@ export default function ShowreelSection() {
             <div
               style={{
                 background: '#ffe815',
-                borderRadius: 24,
+                borderRadius: 20,
                 overflow: 'hidden',
                 position: 'relative',
               }}
@@ -62,7 +64,7 @@ export default function ShowreelSection() {
                   right: 0,
                   height: 48,
                   background: 'repeating-linear-gradient(90deg, #ffd000 0px, #ffd000 20px, transparent 20px, transparent 40px)',
-                  borderRadius: '24px 24px 0 0',
+                  borderRadius: '20px 20px 0 0',
                 }}
               />
             </div>
@@ -73,14 +75,14 @@ export default function ShowreelSection() {
                 gridRow: '1 / 3',
                 gridColumn: '2',
                 background: '#fe3c01',
-                borderRadius: 24,
+                borderRadius: 20,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 color: '#ff75f6',
-                fontSize: 48,
-                padding: 24,
+                fontSize: 'clamp(24px, 4vw, 48px)',
+                padding: 16,
               }}
             >
               <span>✹</span>
@@ -93,7 +95,7 @@ export default function ShowreelSection() {
                 gridRow: '1 / 3',
                 gridColumn: '3',
                 background: '#c084fc',
-                borderRadius: 24,
+                borderRadius: 20,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -118,8 +120,8 @@ export default function ShowreelSection() {
                 gridRow: '2',
                 gridColumn: '1',
                 background: '#00d66c',
-                borderRadius: 24,
-                padding: 20,
+                borderRadius: 20,
+                padding: 16,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -127,13 +129,13 @@ export default function ShowreelSection() {
                 fontFamily: 'monospace',
               }}
             >
-              <div style={{ fontSize: 20, fontWeight: 700 }}>2 : 18 : 54</div>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', border: '3px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#000' }} />
+              <div style={{ fontSize: 'clamp(12px, 2vw, 20px)', fontWeight: 700 }}>2 : 18 : 54</div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2.5px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#000' }} />
                 </div>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', border: '3px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#000' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2.5px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#000' }} />
                 </div>
               </div>
             </div>
@@ -144,7 +146,7 @@ export default function ShowreelSection() {
                 gridRow: '1 / 3',
                 gridColumn: '4',
                 background: '#e5e7eb',
-                borderRadius: 16,
+                borderRadius: 14,
               }}
             />
 
@@ -156,7 +158,7 @@ export default function ShowreelSection() {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 zIndex: 10,
-                padding: '12px 36px',
+                padding: '10px 28px',
                 borderRadius: 100,
                 background: 'rgba(255, 255, 255, 0.95)',
                 border: '2px solid #00d66c',
@@ -165,7 +167,7 @@ export default function ShowreelSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontFamily: 'var(--font-outfit)',
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: 900,
                 color: '#00b894',
                 letterSpacing: '-0.02em',
@@ -191,8 +193,8 @@ export default function ShowreelSection() {
               onClick={() => setIsPlaying(false)}
               style={{
                 position: 'absolute',
-                top: 20,
-                right: 20,
+                top: 16,
+                right: 16,
                 zIndex: 20,
                 background: 'rgba(0,0,0,0.6)',
                 border: 'none',

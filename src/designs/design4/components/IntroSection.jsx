@@ -5,7 +5,7 @@ export default function IntroSection() {
     <section
       id="d4-intro"
       style={{
-        padding: '160px 40px 140px',
+        padding: '40px 0 60px',
         background: '#ffffff',
         position: 'relative',
         zIndex: 2,
@@ -21,7 +21,7 @@ export default function IntroSection() {
         <p
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(24px, 3.8vw, 44px)',
+            fontSize: 'clamp(20px, 3.8vw, 40px)',
             fontWeight: 600,
             lineHeight: 1.5,
             letterSpacing: '-0.02em',
@@ -30,7 +30,7 @@ export default function IntroSection() {
           }}
         >
           <span style={{ color: '#fe3c01', fontWeight: 900, marginRight: 8 }}>*</span>
-          Dat Le is a multidisciplinary designer{' '}
+          Dat Le is a multidisciplinary developer{' '}
           {/* Tomato Sticker */}
           <span
             style={{
@@ -42,7 +42,7 @@ export default function IntroSection() {
           >
             🍅
           </span>{' '}
-          and creative lead{' '}
+          and technical artisan{' '}
           {/* Glowing storefront sign sticker */}
           <span
             style={{
@@ -63,11 +63,11 @@ export default function IntroSection() {
               border: '1px solid #333',
             }}
           >
-            LA CARAVELLE
+            DAT LEE
           </span>{' '}
           who blends{' '}
           <span style={{ fontFamily: 'var(--font-garamond)', fontStyle: 'italic', fontWeight: 700 }}>
-            Art Direction, Brand Systems, Motion,
+            Fullstack Code, Clean Architecture, AI Logic,
           </span>{' '}
           and{' '}
           <span style={{ fontFamily: 'var(--font-garamond)', fontStyle: 'italic', fontWeight: 700 }}>
@@ -85,7 +85,7 @@ export default function IntroSection() {
           >
             🏮
           </span>{' '}
-          cohesive visual storytelling.{' '}
+          cohesive digital experiences.{' '}
           {/* Water ripple badge */}
           <span
             style={{
