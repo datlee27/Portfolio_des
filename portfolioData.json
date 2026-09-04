@@ -1,0 +1,181 @@
+{
+  "personal": {
+    "name": "Lê Văn Đạt",
+    "shortName": "DAT LEE",
+    "title": "Technical Artisan & Fullstack Developer",
+    "role": "Software Engineer",
+    "bio": "I build scalable digital products with clean code, thoughtful design, and real-world impact.",
+    "identityStatement": "I'M A PASSIONATE DEVELOPER DEDICATED TO CREATING BOLD, FUNCTIONAL, AND USER-CENTERED DIGITAL EXPERIENCES. I don't just code; I stamp brand identity into the web.",
+    "heroHeadline": {
+      "line1": "THINK",
+      "line2": "MAKE",
+      "line3": "IMPACT"
+    },
+    "heroSubtext": "Technical Rigor Meets Brutalist Aesthetics — Ensuring every project is a raw statement of intent.",
+    "status": "System Status: Operational",
+    "coordinates": "10.7626° N, 106.6602° E",
+    "avatarUrl": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg"
+  },
+  "projects": [
+    {
+      "id": "01",
+      "title": "Dev Roadmap Tracking System",
+      "description": "An advanced learning management platform designed for developers to track a 3-month personalized roadmap. Featuring a dynamic task manager across multiple phases and interactive progress tracking.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775903083/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.23.35_z4qpji.png",
+      "tags": ["React", "TypeScript", "Vite", "Tailwind CSS"],
+      "github": "https://github.com/datlee27/dev-roadmap",
+      "deploy": "https://dev-roadmap-brown.vercel.app/",
+      "status": "Latest"
+    },
+    {
+      "id": "02",
+      "title": "IELTS Writing Practice",
+      "description": "A specialized training tool designed to simulate the IELTS Computer-based Writing environment. Features a split-screen interface and real-time word counting.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775904892/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.52.52_cb9myu.png",
+      "tags": ["React", "TypeScript", "Tailwind CSS", "Educational"],
+      "github": "https://github.com/datlee27/Practice-ielts-writing-typing-react",
+      "status": "Latest"
+    },
+    {
+      "id": "03",
+      "title": "P2P Electric EV Rental",
+      "description": "Comprehensive P2P electric vehicle rental system with PayOS, OCR, and AI Assistant. A revolutionary approach to urban mobility and sustainable transport.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1764500651/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2025-11-30_lu%CC%81c_18.03.15_drt2kr.png",
+      "tags": ["Spring Boot", "MySQL", "AI", "FullStack"],
+      "github": "https://github.com/datlee27/ecodanav2",
+      "status": "2025"
+    },
+    {
+      "id": "04",
+      "title": "AI-Integrated LMS",
+      "description": "Full-stack Learning Management System built to modernize digital course management. Integrates advanced AI logic for personalized student recommendations.",
+      "image": "/assets/img/projectlearning.png",
+      "tags": ["Java", "MySQL", "AI", "FullStack"],
+      "github": "https://github.com/datlee27/LearningWebsite-1",
+      "status": "2025"
+    },
+    {
+      "id": "05",
+      "title": "Smart Recycle Bin",
+      "description": "IoT-enabled smart recycle bin using Arduino. Features hybrid sensor arrays and mechanical waste sorting for sustainable urban environments.",
+      "image": "/assets/img/projectpic.png",
+      "tags": ["Arduino", "IoT", "Sensors"],
+      "github": "https://github.com/datlee27/iot102-smart-recycle-bin",
+      "status": "2025"
+    },
+    {
+      "id": "06",
+      "title": "Fruit Shop Web App",
+      "description": "E-commerce platform for high-traffic fruit marketplaces. Features complex cart logic and session management built for speed and reliability.",
+      "image": "/assets/img/fruitshop.png",
+      "tags": ["Java Servlets", "JSP", "SQL"],
+      "github": "https://github.com/datlee27/FruitShopOnline",
+      "status": "2025"
+    }
+  ],
+  "skills": [
+    {
+      "category": "WEB DEV",
+      "items": ["JAVA", "JS", "HTML5", "CSS3", "SPRING", "TYPESCRIPT", "C#"]
+    },
+    {
+      "category": "DATA & API",
+      "items": ["SQL", "RESTFUL", "SWAGGER"]
+    },
+    {
+      "category": "AI & DESIGN",
+      "items": ["LM STUDIO", "FIGMA"]
+    },
+    {
+      "category": "HARDWARE (IOT)",
+      "items": ["ARDUINO", "SENSORS", "MOTORS"]
+    },
+    {
+      "category": "TOOLS",
+      "items": ["GIT", "BOOTSTRAP", "VITE"]
+    }
+  ],
+  experience": [
+    {
+      "title": "Software Engineer Student",
+      "company": "FPT University, Da Nang",
+      "period": "2022 – PRES",
+      "description": "Currently pursuing a degree in Software Engineering, focusing on modern software development practices and technologies."
+    },
+    {
+      "title": "High School Student",
+      "company": "Phan Chau Trinh High School, Da Nang",
+      "period": "2020 – 2022",
+      "description": "Completed high school education with a focus on natural sciences."
+    }
+  ],
+  "contact": {
+    "availableForWorkText": "AVAILABLE FOR INDEPENDENT CONTRACTS & BOLD COLLABORATIONS.",
+    "links": [
+      {
+        "name": "EMAIL",
+        "value": "LVD27012004@GMAIL.COM",
+        "href": "mailto:lvd27012004@gmail.com",
+        "type": "email"
+      },
+      {
+        "name": "GITHUB",
+        "value": "DATLEE27",
+        "href": "https://github.com/datlee27",
+        "type": "github"
+      },
+      {
+        "name": "FACEBOOK",
+        "value": "DAT LEE",
+        "href": "https://www.facebook.com/le.van.at.760768",
+        "type": "facebook"
+      }
+    ]
+  },
+  "blogPosts": [
+    {
+      "id": 1,
+      "post_id": "post-1",
+      "slug": "the-art-of-minimalist-web-design",
+      "title": "The Art of Minimalist Web Design",
+      "excerpt": "Exploring how less can be more in modern web development. Discover the principles that guide clean, effective design.",
+      "image": "https://images.unsplash.com/photo-1620483474144-23931ab57ecd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMHdoaXRlJTIwYXJjaGl0ZWN0dXJlfGVufDF8fHx8MTc2MTU5MDMxN3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      "date": "October 15, 2025",
+      "readTime": "5 min read",
+      "content": "<p>Minimalism in web design is more than just a trend—it's a philosophy that prioritizes clarity, functionality, and user experience above all else.</p><h3>The Core Principles</h3><p>At its heart, minimalist design is about removing the unnecessary. Every element should serve a purpose, contributing to the overall user experience without adding clutter or confusion.</p><p>White space, also known as negative space, is one of the most powerful tools in a minimalist designer's arsenal. It provides visual breathing room, helps guide the user's eye, and creates a sense of sophistication and elegance.</p><h3>Typography Matters</h3><p>In minimalist design, typography often becomes the hero. With fewer visual elements competing for attention, the choice of typeface, size, and spacing becomes crucial. A well-chosen font can convey personality and mood while maintaining readability.</p><h3>Color as an Accent</h3><p>Minimalist designs often employ monochromatic or limited color palettes. When color is used sparingly, it becomes more impactful, drawing attention to key elements and calls-to-action.</p><p>The challenge—and the beauty—of minimalist design lies in achieving maximum impact with minimum elements. It requires careful consideration of every design decision and a deep understanding of user needs.</p>"
+    },
+    {
+      "id": 2,
+      "post_id": "post-2",
+      "slug": "my-journey-into-web-development",
+      "title": "My Journey Into Web Development",
+      excerpt: "A personal reflection on the path that led me to become a developer and the lessons learned along the way.",
+      image: "https://images.unsplash.com/photo-1590212151175-e58edd96185b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaW5pbWFsJTIwZGVzayUyMHNldHVwfGVufDF8fHx8MTc2MTY2Mjk0M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      date: "September 28, 2025",
+      readTime: "7 min read",
+      content: "<p>Every developer has a unique story about how they got started. Mine began with curiosity and evolved into a passion that shapes my daily life.</p><h3>The Beginning</h3><p>I still remember the first website I built—a simple HTML page with a bright blue background and Comic Sans font. It was objectively terrible, but the thrill of creating something that appeared in a browser was indescribable.</p><p>From that moment, I was hooked. I spent countless hours learning CSS, making my pages less eye-searing and more functional. Each small victory, whether centering a div or creating my first responsive layout, felt like a major achievement.</p><h3>The Learning Curve</h3><p>Web development has a steep learning curve. There were moments of frustration, times when I questioned whether I was cut out for this. But with each challenge overcome, my confidence grew.</p><p>I learned that the key to growth is embracing discomfort. Every error message is a learning opportunity. Every bug is a chance to understand the system better. This mindset shift transformed my approach to development.</p><h3>Looking Forward</h3><p>Today, I'm grateful for the journey. The web development landscape continues to evolve, and that's what makes it exciting. There's always something new to learn, a better way to solve a problem, or an innovative approach to try.</p>"
+    },
+    {
+      "id": 3,
+      "post_id": "post-3",
+      "slug": "building-with-react-best-practices",
+      title: "Building with React: Best Practices",
+      excerpt: "A comprehensive guide to writing clean, maintainable React code that scales with your application.",
+      image: "https://images.unsplash.com/photo-1519217651866-847339e674d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHdvcmtzcGFjZXxlbnwxfHx8fDE3NjE1NzU0NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      date: "September 10, 2025",
+      readTime: "8 min read",
+      content: "<p>React has revolutionized how we build user interfaces, but with great power comes great responsibility. Here are the practices I've found most valuable in building scalable React applications.</p><h3>Component Organization</h3><p>Keep components small and focused. Each component should do one thing well. If a component is getting too large or handling too many responsibilities, it's time to break it down into smaller pieces.</p><h3>State Management</h3><p>Not all state needs to be in a global store. Keep state as local as possible, and only lift it up when multiple components need access to it. This makes your code easier to understand and maintain.</p><h3>Performance Optimization</h3><p>Avoid premature optimization, but be aware of common pitfalls. Use React DevTools to identify performance bottlenecks. Memoization with useMemo and useCallback can help, but only when necessary.</p><p>Remember: readable code is maintainable code. Clever solutions are impressive, but clear solutions are practical.</p>"
+    },
+    {
+      "id": 4,
+      "post_id": "post-4",
+      slug: "work-life-balance-as-a-developer",
+      title: "Work-Life Balance as a Developer",
+      excerpt: "Finding harmony between coding passion and personal well-being in a demanding industry.",
+      image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b3Jrc3BhY2V8ZW58MXx8fHwxNzYxNjMxODc4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      date: "August 22, 2025",
+      readTime: "6 min read",
+      content: "<p>The tech industry is notorious for long hours and burnout. Here's what I've learned about maintaining balance while pursuing excellence in development.</p><h3>Setting Boundaries</h3><p>It's easy to let work bleed into personal time, especially when you love what you do. But sustainable productivity requires rest. I've learned to set clear boundaries—no coding after 8 PM, and weekends are for recharging.</p><h3>The Power of Breaks</h3><p>Some of my best solutions have come to me while taking a walk, not while staring at a screen. Regular breaks aren't a luxury—they're essential for creative problem-solving.</p><h3>Continuous Learning</h3><p>Stay curious, but don't feel pressure to learn every new framework. Focus on fundamentals and choose learning opportunities that align with your goals and interests.</p><p>Remember: you're not just a developer. You're a person with interests, relationships, and needs outside of code. Honor that.</p>"
+    }
+  ]
+}

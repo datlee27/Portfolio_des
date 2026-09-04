@@ -46,13 +46,13 @@ export default function FeaturedProjectsSection() {
             fontSize: 14,
             fontWeight: 500,
             color: '#000000',
-            maxWidth: 480,
+            maxWidth: 540,
             marginBottom: 64,
-            lineHeight: 1.5,
+            lineHeight: 1.6,
           }}
         >
           <span style={{ color: '#fe3c01', fontWeight: 700 }}>* </span>
-          Ideas that survived the jump from the brain to the screen. Multi-disciplinary work carried from concept to completion.
+          Real-world products and open-source applications built with clean code, modern tech stacks, and user-centric experience.
         </p>
 
         {/* Project List */}
@@ -62,7 +62,7 @@ export default function FeaturedProjectsSection() {
               key={project.id}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1.2fr 0.8fr',
+                gridTemplateColumns: 'minmax(300px, 1.2fr) 1fr',
                 gap: 48,
                 padding: '48px 0',
                 borderTop: '1px solid #e0e0e0',
@@ -76,7 +76,7 @@ export default function FeaturedProjectsSection() {
                   overflow: 'hidden',
                   position: 'relative',
                   aspectRatio: '16/10',
-                  background: project.accentColor === '#fe3c01' ? '#a3e635' : '#f0f0f0',
+                  background: '#f4f4f5',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -84,47 +84,40 @@ export default function FeaturedProjectsSection() {
                   cursor: 'pointer',
                   transition: 'transform 0.3s ease',
                 }}
+                onClick={() => {
+                  const targetUrl = project.deploy || project.github;
+                  if (targetUrl) window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
-                {/* Case study badge if present */}
-                {project.hasCaseStudy && (
+                {/* Status Badge */}
+                {project.status && (
                   <div
                     style={{
                       position: 'absolute',
                       top: 20,
                       left: 20,
                       zIndex: 10,
-                      background: '#fe3c01',
+                      background: project.status === 'Latest' ? '#fe3c01' : '#000000',
                       color: '#ffffff',
                       fontFamily: 'var(--font-inter)',
                       fontSize: 12,
                       fontWeight: 700,
                       padding: '6px 14px',
                       borderRadius: 100,
+                      letterSpacing: '0.04em',
                     }}
                   >
-                    Case Study
+                    {project.status}
                   </div>
                 )}
 
-                {project.videoUrl ? (
-                  <video
-                    src={project.videoUrl}
-                    poster={project.poster}
-                    muted
-                    loop
-                    autoPlay
-                    playsInline
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                )}
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               </div>
 
               {/* Right Info */}
@@ -134,73 +127,136 @@ export default function FeaturedProjectsSection() {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   height: '100%',
-                  minHeight: 220,
+                  minHeight: 240,
                 }}
               >
                 <div>
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-outfit)',
-                      fontSize: 'clamp(24px, 2.5vw, 36px)',
-                      fontWeight: 700,
-                      letterSpacing: '-0.02em',
-                      color: '#000000',
-                      margin: '0 0 8px 0',
-                    }}
-                  >
-                    {project.title}
-                  </h3>
-                  <div
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: project.accentColor, fontFamily: 'var(--font-inter)' }}>
+                      {project.code}
+                    </span>
+                    <h3
+                      style={{
+                        fontFamily: 'var(--font-outfit)',
+                        fontSize: 'clamp(22px, 2.2vw, 32px)',
+                        fontWeight: 700,
+                        letterSpacing: '-0.02em',
+                        color: '#000000',
+                        margin: 0,
+                      }}
+                    >
+                      {project.title}
+                    </h3>
+                  </div>
+
+                  <p
                     style={{
                       fontFamily: 'var(--font-inter)',
                       fontSize: 14,
-                      color: '#666666',
+                      lineHeight: 1.6,
+                      color: '#444444',
+                      margin: '12px 0 20px 0',
+                    }}
+                  >
+                    {project.description}
+                  </p>
+                </div>
+
+                <div>
+                  {/* Tags Pill List */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 8,
                       marginBottom: 24,
                     }}
                   >
-                    {project.client}
+                    {project.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          fontFamily: 'var(--font-inter)',
+                          fontSize: 11,
+                          fontWeight: 600,
+                          padding: '4px 12px',
+                          borderRadius: 20,
+                          background: '#f4f4f5',
+                          color: '#333333',
+                          border: '1px solid #e4e4e7',
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  {/* Tags */}
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-inter)',
-                      fontSize: 12,
-                      lineHeight: 1.6,
-                      color: '#888888',
-                      maxWidth: 240,
-                    }}
-                  >
-                    {project.tags.join('\n')}
-                  </div>
+                  {/* Links Action Buttons */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {project.deploy && (
+                      <a
+                        href={project.deploy}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: '#000000',
+                          color: '#ffffff',
+                          fontFamily: 'var(--font-inter)',
+                          fontSize: 13,
+                          fontWeight: 600,
+                          padding: '10px 18px',
+                          borderRadius: 100,
+                          textDecoration: 'none',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#fe3c01';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#000000';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        Live Demo ↗
+                      </a>
+                    )}
 
-                  {/* Circle Arrow Button */}
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      background: '#000000',
-                      color: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 16,
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s ease, background 0.2s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.15)';
-                      e.currentTarget.style.background = '#fe3c01';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.background = '#000000';
-                    }}
-                  >
-                    ↗
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: '#ffffff',
+                          color: '#000000',
+                          border: '1.5px solid #000000',
+                          fontFamily: 'var(--font-inter)',
+                          fontSize: 13,
+                          fontWeight: 600,
+                          padding: '8px 16px',
+                          borderRadius: 100,
+                          textDecoration: 'none',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f4f4f5';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#ffffff';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        GitHub Code ↗
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
