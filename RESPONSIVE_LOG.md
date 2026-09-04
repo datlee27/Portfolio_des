@@ -1,43 +1,28 @@
-# Nhật Ký Công Việc: Tối Ưu Responsive & Cấu Trúc Độc Lập Design 4
+# Nhật Ký Công Việc: Tối Ưu Responsive & Sửa Lỗi Spacing Design 4
 
 **Ngày thực hiện**: 04/09/2026  
 **Nhánh Git**: `feature/design4-data-integration`  
 
 ---
 
-## 🚀 Đã Đóng Gói Design 4 Thành Giao Diện Chính Của FE
+## 🛠️ Đã Tối Ưu Tỷ Lệ Hero & Corner Nav Trên Điện Thoại (Theo Phản Hồi Mới Nhất):
 
-1. **Xóa Các Folder Thiết Kế Cũ (`design1`, `design2`, `design3`)**:
-   - Đã xóa sạch 3 thư mục `src/designs/design1`, `src/designs/design2`, `src/designs/design3` để dự án gọn gàng 100%, không bị rối hay chứa mã dư thừa.
-   - Tạo bộ dữ liệu độc lập `src/designs/design4/data/labProjects.js` và `src/designs/design4/components/LabProjectModal.jsx` giúp Design 4 không phụ thuộc vào bất kỳ thư mục ngoài nào.
+1. **Fix Chữ Kinetic Hero Vừa Màn Hình Mobile/Tablet (`HeroSection.jsx` & `design4.css`)**:
+   - Thiết lập font size Hero linh hoạt theo tỷ lệ màn hình điện thoại: `@media (max-width: 640px) { fontSize: clamp(44px, 13.5vw, 76px) !important; }`.
+   - Giảm chiều cao khung Hero tối ưu (`min-height: 70vh !important`), giúp tiêu đề chữ ("the chaos, of DAT LE, making sh*t, real") hiển thị **nổi bật, to rõ, cực kỳ vừa vặn**, chiếm trọn vẹn sự chú ý của người xem trên điện thoại và tablet mà không bị lỏm chỏm hay quá nhỏ.
 
-2. **Cập Nhật `src/App.jsx` Chạy Trực Tiếp Design 4**:
-   - Cập nhật file chính `src/App.jsx` load thẳng `Design4App` làm giao diện ứng dụng mặc định của toàn bộ website.
-   - Dung lượng build sản phẩm được tối ưu cực nhẹ từ 426 kB xuống chỉ còn **306 kB**!
+2. **Fix Nút Corner Nav Không Đè Lên Chữ Khi Cuộn Trang (`CornerNav.jsx` & `design4.css`)**:
+   - Trên màn hình nhỏ (<640px), 4 nút điều hướng góc được tạo kiểu **Floating Glass Pills** với phông đen mờ nổi (`background: rgba(0,0,0,0.88)`, `backdrop-filter: blur(8px)`).
+   - **Kết quả**: Khi người dùng cuộn trang xuống các phần nội dung (Intro, Projects...), 4 nút **dl***, **work**, **about**, **lab** vẫn nổi bật, dễ bấm, và hoàn toàn không bị đè chữ hay gây rối mắt.
 
----
-
-## 🛠️ Đã Sửa Các Lỗi Giao Diện Theo Phản Hồi Ảnh Trực Quan
-
-1. **Khôi Phục Hiển Thị 4 Góc Navigation (`CornerNav.jsx` & `design4.css`)**:
-   - Khôi phục màu chữ chuẩn `#ffffff` kết hợp `mix-blend-mode: difference` và `z-index: 99999`.
-   - Đảm bảo 4 nút điều hướng góc (**dl***, **work**, **about**, **lab**) hiển thị rõ nét 100%, tự động tương phản tự nhiên trên cả nền sáng (trắng) và nền tối (đen).
-
-2. **Sửa Lỗi Thẻ 3D Dính & Chồng Cạnh Lên Nhau (`ClientsSection.jsx`)**:
-   - Điều chỉnh lại bán kính xoay 3D Cylinder ($R > \frac{W}{0.7654}$):
-     - Mobile (<600px): Thu nhỏ thẻ `cardWidth = 140px` và tăng bán kính `radius = 240px`.
+3. **Tối Ưu 3D Cylinder Stage Không Chồng Cạnh (`ClientsSection.jsx`)**:
+   - Bán kính xoay 3D Cylinder chuẩn toán học ($R > \frac{W}{0.7654}$):
+     - Mobile (<600px): `cardWidth = 140px`, `radius = 240px`.
      - Tablet (600px-900px): `cardWidth = 200px`, `radius = 320px`.
      - Desktop (>=900px): `cardWidth = 260px`, `radius = 420px`.
-   - Giữa các thẻ 3D ("SMART RECYCLE BIN", "AI LMS", "FRUIT SHOP"...) giờ đây có khoảng hở sạch sẽ ~44px, xoay tròn 3D tách biệt hoàn toàn, không bị dính hay đè mép lên nhau.
-
-3. **Fix Tiêu Đề Hero Vừa Màn Hình (Không Bị Nhỏ)**:
-   - Tăng tỷ lệ co giãn chữ Kinetic Typography trên Mobile lên `clamp(44px, 11.5vw, 150px)`. Chữ trên màn hình iPhone vừa vặn, nổi bật.
-   - Giảm `minHeight` từ `100vh` xuống `85vh` để xóa bỏ vùng trắng thừa.
-
-4. **Rút Ngắn Khoảng Cách Giữa Các Section**:
-   - Giảm padding của Intro, Showreel, Featured Work, What I Do, Clients và Footer xuống `30px - 60px`.
+   - Khoảng hở giữa các thẻ 3D sạch sẻ ~44px, xoay mượt mà, không bị dính cạnh.
 
 ---
 
 ## 🌐 Kiểm Tra Build
-- `npm run build` chạy thành công 100% (built in 498ms, 306 kB).
+- `npm run build` đã chạy thành công 100% (built in 481ms, 305.9 kB).

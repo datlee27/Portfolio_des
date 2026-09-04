@@ -21,10 +21,6 @@
   --token-hotpink: #ff30b3;
   --token-crimson: #e3091d;
 
-  --font-outfit: 'Outfit', sans-serif;
-  --font-garamond: 'EB Garamond', serif;
-  --font-inter: 'Inter', sans-serif;
-
   /* Safe Area Tokens for iOS/Android notches */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
@@ -69,7 +65,7 @@
 
 @media (max-width: 1024px) {
   .des4-container {
-    padding: 0 28px;
+    padding: 0 24px;
   }
 }
 
@@ -82,6 +78,55 @@
 @media (max-width: 480px) {
   .des4-container {
     padding: 0 16px;
+  }
+}
+
+/* Hero Section & Headline Sizing */
+.des4-hero-section {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px 40px;
+  background: #ffffff;
+  overflow: hidden;
+  user-select: none;
+}
+
+.des4-hero-headline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-outfit);
+  font-weight: 900;
+  font-size: clamp(52px, 12vw, 150px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: #000000;
+  z-index: 10;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .des4-hero-section {
+    min-height: 70vh !important;
+    padding: 75px 16px 30px !important;
+  }
+  .des4-hero-headline {
+    font-size: clamp(44px, 13.5vw, 76px) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .des4-hero-section {
+    min-height: 80vh !important;
+    padding: 85px 24px 40px !important;
+  }
+  .des4-hero-headline {
+    font-size: clamp(60px, 10.5vw, 110px) !important;
   }
 }
 
@@ -117,9 +162,6 @@
 @media (max-width: 640px) {
   .des4-hide-mobile {
     display: none !important;
-  }
-  .des4-sticker-scale-mobile {
-    transform: scale(0.65) !important;
   }
 }
 
@@ -172,7 +214,16 @@
 
 @media (max-width: 640px) {
   .des4-corner-anchor {
-    font-size: 14px !important;
+    font-size: 12px !important;
+    background: rgba(0, 0, 0, 0.88) !important;
+    color: #ffffff !important;
+    mix-blend-mode: normal !important;
+    padding: 6px 14px !important;
+    border-radius: 100px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
   }
 }
 

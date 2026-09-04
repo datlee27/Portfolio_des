@@ -33,22 +33,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section
-      id="top"
-      ref={heroRef}
-      style={{
-        position: 'relative',
-        minHeight: '85vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '70px 16px 40px',
-        background: '#ffffff',
-        overflow: 'hidden',
-        userSelect: 'none',
-      }}
-    >
+    <section id="top" ref={heroRef} className="des4-hero-section">
       {/* Ambient background decorative grid/blobs */}
       <div
         className="des4-hide-mobile"
@@ -201,21 +186,10 @@ export default function HeroSection() {
 
       {/* Main Dynamic Kinetic Typography Collage */}
       <div
+        className="des4-hero-headline"
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-outfit)',
-          fontWeight: 900,
-          fontSize: 'clamp(44px, 11.5vw, 150px)',
-          lineHeight: 0.95,
-          letterSpacing: '-0.04em',
-          color: '#000000',
           transform: `perspective(1000px) rotateX(${mousePos.y * -5}deg) rotateY(${mousePos.x * 5}deg)`,
           transition: 'transform 0.15s ease-out',
-          zIndex: 10,
-          maxWidth: '100%',
         }}
       >
         {/* Line 1: "the chaos," */}
