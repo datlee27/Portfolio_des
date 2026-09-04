@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FiBox, FiFolder } from 'react-icons/fi';
-import d3Projects from '../../design3/data/d3Projects';
+import d3Projects from '../data/labProjects';
 import profile from '../../../data/profile';
-import ProjectModalD3 from '../../design3/components/ProjectModalD3';
+import ProjectModalD3 from './LabProjectModal';
 
 /* ─── Pointer Drag Hook for Free Canvas Movement ─── */
 function usePointerDrag() {
