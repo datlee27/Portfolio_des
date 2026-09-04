@@ -7,23 +7,24 @@
 
 ## 🛠️ Đã Sửa Theo Phản Hồi Hình Ảnh Ảnh Trực Quan Của User:
 
-1. **Tối Ưu Kích Thước Chữ Hero Trên Mobile (`HeroSection.jsx`)**:
-   - Tăng `fontSize` từ `clamp(32px, 8.5vw, 150px)` thành `clamp(44px, 11.5vw, 150px)`. Chữ Kinetic Typography ("the chaos, of DAT LE, making sh*t, real") trên màn hình iPhone (375px/390px) giờ đã to rõ, cân đối, chuẩn kích thước và vừa vặn màn hình mà không bị quá nhỏ.
-   - Giảm `minHeight` từ `100vh` xuống `85vh` và `padding: 70px 16px 40px` để loại bỏ khoảng trắng thừa khổng lồ ở đầu trang.
+1. **Khôi Phục Hiển Thị Corner Navigation (`CornerNav.jsx` & `design4.css`)**:
+   - Khôi phục màu chữ chuẩn `#ffffff` kết hợp `mix-blend-mode: difference` và `z-index: 99999`.
+   - Đảm bảo 4 nút điều hướng góc (**dl***, **work**, **about**, **lab**) hiển thị rõ nét 100%, sắc sảo, tự động đảo màu tương phản rõ ràng trên cả nền sáng (trắng) và nền tối (đen) mà không bao giờ bị chìm/mất.
 
-2. **Rút Ngắn Khoảng Cách Giữa Các Section (Spacing Fixes)**:
-   - **IntroSection**: Giảm padding từ `160px 40px 140px` xuống `40px 0 60px`.
-   - **ShowreelSection**: Giảm padding từ `60px 40px 140px` xuống `30px 0 50px`.
-   - **FeaturedProjectsSection**: Giảm padding từ `80px 0 120px` xuống `50px 0 60px`.
-   - **WhatIDoSection**: Giảm padding xuống `60px 0`.
-   - **ClientsSection**: Giảm padding xuống `60px 0`.
-   - **FooterSection**: Giảm padding xuống `60px 0 80px`.
-   - **Kết quả**: Cuộn trang liền mạch, không bị đứt đoạn hoặc tạo khoảng trống quá xa giữa các phần.
+2. **Sửa Lỗi Thẻ 3D Dính/Chồng Cạnh Nhau (`ClientsSection.jsx`)**:
+   - Tính toán lại bán kính xoay 3D Cylinder theo công thức hình học chuẩn (\(R > \frac{W}{0.7654}\)):
+     - On Mobile (<600px): `cardWidth = 140px`, `radius = 240px`.
+     - On Tablet (600px-900px): `cardWidth = 200px`, `radius = 320px`.
+     - On Desktop (>=900px): `cardWidth = 260px`, `radius = 420px`.
+   - **Kết quả**: Giữa các thẻ 3D ("SMART RECYCLE BIN", "AI LMS", "FRUIT SHOP"...) giờ đây có khoảng hở sạch sẽ ~44px, không bị dính sát hay chồng mép cạnh lên nhau.
+   - Thêm tự động xuống dòng và thu nhỏ font chữ tiêu đề thẻ (`fontSize: 12px` trên Mobile) giúp tên dự án dài luôn hiển thị đẹp mắt trong thẻ.
 
-3. **Sắp Xếp Footer Gọn Gàng & Hợp Lý (`FooterSection.jsx`)**:
-   - Căn chỉnh lại tiêu đề "got a project in mind? let's talk" với kích thước chữ hợp lý.
-   - Các nút bấm liên hệ (**EMAIL ME**, **GITHUB**, **FACEBOOK**) tự động xếp hàng ngăn nắp với `min-height: 44px` cho cảm ứng.
-   - Thu nhỏ kích thước Emblem `DL* /26` responsive (`clamp(64px, 18vw, 240px)`) giúp phần chân trang cực kỳ gọn gàng.
+3. **Tối Ưu Kích Thước Chữ Hero Trên Mobile (`HeroSection.jsx`)**:
+   - Tăng `fontSize` lên `clamp(44px, 11.5vw, 150px)`. Chữ Kinetic Typography trên màn hình iPhone (375px/390px) vừa vặn, nổi bật, không bị nhỏ.
+   - Giảm `minHeight` từ `100vh` xuống `85vh` để xóa bỏ vùng trắng thừa.
+
+4. **Rút Ngắn Khoảng Cách Giữa Các Section**:
+   - Giảm padding của Intro, Showreel, Featured Work, What I Do, Clients và Footer xuống `30px - 60px`.
 
 ---
 

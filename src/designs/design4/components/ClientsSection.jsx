@@ -43,19 +43,21 @@ export default function ClientsSection() {
 
   const count = clientsData.length;
 
-  // Responsive dimensions calculation
-  let cardWidth = 280;
-  let cardHeight = 180;
-  let radius = 400;
+  // Exact cylinder radius math to prevent any card edge overlap:
+  // Chord distance C = 2 * R * sin(180 / count). For count=8, C = 0.7654 * R.
+  // We enforce R > cardWidth / 0.7654 so cards are guaranteed to have a clean gap!
+  let cardWidth = 260;
+  let cardHeight = 170;
+  let radius = 420;
 
   if (windowWidth < 600) {
-    cardWidth = 180;
-    cardHeight = 120;
-    radius = 210;
+    cardWidth = 140;
+    cardHeight = 95;
+    radius = 240;
   } else if (windowWidth < 900) {
-    cardWidth = 220;
-    cardHeight = 145;
-    radius = 300;
+    cardWidth = 200;
+    cardHeight = 135;
+    radius = 320;
   }
 
   return (
@@ -116,9 +118,9 @@ export default function ClientsSection() {
           onTouchMove={(e) => handleMove(e.touches[0].clientX)}
           onTouchEnd={handleEnd}
           style={{
-            perspective: 1200,
+            perspective: 1400,
             width: '100%',
-            height: windowWidth < 600 ? 260 : 360,
+            height: windowWidth < 600 ? 240 : 360,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -149,15 +151,15 @@ export default function ClientsSection() {
                     left: 0,
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: windowWidth < 600 ? 14 : 20,
+                    borderRadius: windowWidth < 600 ? 12 : 18,
                     overflow: 'hidden',
                     background: '#151515',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: windowWidth < 600 ? 12 : 24,
+                    padding: windowWidth < 600 ? 8 : 20,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: 'hidden',
                     transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
@@ -167,8 +169,8 @@ export default function ClientsSection() {
                     e.currentTarget.style.boxShadow = '0 24px 60px rgba(254,60,1,0.25)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                    e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.7)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.6)';
                   }}
                 >
                   {/* Background Image preview */}
@@ -183,7 +185,7 @@ export default function ClientsSection() {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        opacity: 0.55,
+                        opacity: 0.5,
                       }}
                     />
                   )}
@@ -196,7 +198,7 @@ export default function ClientsSection() {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%)',
+                      background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%)',
                     }}
                   />
 
@@ -206,12 +208,15 @@ export default function ClientsSection() {
                       position: 'relative',
                       zIndex: 2,
                       fontFamily: 'var(--font-outfit)',
-                      fontSize: windowWidth < 600 ? 16 : 22,
+                      fontSize: windowWidth < 600 ? 12 : 18,
                       fontWeight: 800,
                       color: '#ffffff',
                       textTransform: 'uppercase',
                       letterSpacing: '-0.02em',
                       textAlign: 'center',
+                      lineHeight: 1.2,
+                      padding: '0 4px',
+                      wordBreak: 'break-word',
                     }}
                   >
                     {client.name}
