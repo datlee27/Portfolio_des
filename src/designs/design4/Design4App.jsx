@@ -7,6 +7,7 @@ import ShowreelSection from './components/ShowreelSection';
 import FeaturedProjectsSection from './components/FeaturedProjectsSection';
 import WhatIDoSection from './components/WhatIDoSection';
 import ClientsSection from './components/ClientsSection';
+import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
 
@@ -21,7 +22,7 @@ export default function Design4App() {
 
   return (
     <div className="des4-root">
-      {/* 4 Fixed Corner Anchors: dl*, work, about, lab */}
+      {/* Fixed Corner Anchors: dl*, work, blog, about, lab */}
       <CornerNav
         activeView={activeView}
         onOpenLab={() => {
@@ -35,7 +36,7 @@ export default function Design4App() {
       />
 
       {activeView === 'lab' ? (
-        /* Lab View (Exact Des3 macOS Sonoma Hero Experience with Popups) */
+        /* Lab View */
         <Des4LabView
           onBack={() => {
             setActiveView('main');
@@ -54,7 +55,7 @@ export default function Design4App() {
           {/* 3. Showreel: Colorful Bento Grid & Video Player */}
           <ShowreelSection />
 
-          {/* 4. Featured Work: Marquee + 4 Project Rows */}
+          {/* 4. Featured Work: Marquee + 6 Real Project Rows */}
           <FeaturedProjectsSection />
 
           {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
@@ -63,7 +64,10 @@ export default function Design4App() {
           {/* 6. Clients: Deep Black 3D Rotating Carousel */}
           <ClientsSection />
 
-          {/* 7. Footer: Let's talk & Giant DL* /26 Emblem */}
+          {/* 7. Articles & Journal / Blog Section */}
+          <BlogSection />
+
+          {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
           <FooterSection />
         </>
       )}

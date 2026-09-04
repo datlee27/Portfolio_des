@@ -43,27 +43,58 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
         dl<span style={{ color: '#fe3c01' }}>*</span>
       </a>
 
-      {/* Top Right: work */}
-      <button
-        className="des4-corner-anchor"
-        onClick={() => scrollTo('d4-work')}
+      {/* Top Right: work & blog */}
+      <div
         style={{
+          position: 'fixed',
           top: 'clamp(16px, 3.5vw, 32px)',
           right: 'clamp(16px, 4vw, 36px)',
-          fontFamily: 'var(--font-outfit)',
-          fontSize: 'clamp(14px, 3.5vw, 18px)',
-          fontWeight: 800,
-          letterSpacing: '-0.02em',
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          lineHeight: 1,
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
-        work
-      </button>
+        <button
+          className="des4-corner-anchor"
+          onClick={() => scrollTo('d4-work')}
+          style={{
+            position: 'relative',
+            fontFamily: 'var(--font-outfit)',
+            fontSize: 'clamp(14px, 3.5vw, 18px)',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            lineHeight: 1,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          work
+        </button>
+
+        <button
+          className="des4-corner-anchor"
+          onClick={() => scrollTo('d4-blog')}
+          style={{
+            position: 'relative',
+            fontFamily: 'var(--font-outfit)',
+            fontSize: 'clamp(14px, 3.5vw, 18px)',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            lineHeight: 1,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          blog
+        </button>
+      </div>
 
       {/* Bottom Left: about */}
       <button
