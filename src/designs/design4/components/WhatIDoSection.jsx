@@ -1,11 +1,12 @@
 import React from 'react';
+import { whatIDoData } from '../data/homeData';
 
 export default function WhatIDoSection() {
   return (
     <section
       id="d4-whatido"
       style={{
-        padding: '140px 40px 180px',
+        padding: '100px 0 140px',
         background: '#ff5500',
         color: '#000000',
         position: 'relative',
@@ -17,7 +18,7 @@ export default function WhatIDoSection() {
         <h2
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(54px, 10vw, 150px)',
+            fontSize: 'clamp(44px, 9vw, 140px)',
             fontWeight: 900,
             lineHeight: 0.9,
             letterSpacing: '-0.04em',
@@ -35,24 +36,17 @@ export default function WhatIDoSection() {
             fontSize: 14,
             fontWeight: 500,
             color: '#000000',
-            maxWidth: 480,
-            marginBottom: 80,
-            lineHeight: 1.5,
+            maxWidth: 540,
+            marginBottom: 64,
+            lineHeight: 1.6,
           }}
         >
           <span style={{ color: '#0b1dff', fontWeight: 700 }}>* </span>
-          I approach design through brand strategy and experience storytelling, using visuals, motion, and interaction to create work that is not only visually strong but also purposeful and narrative-driven.
+          {whatIDoData.subheading}
         </p>
 
-        {/* Grid Layout: Left 3D Tomato Render + Right 3 Capability Blocks */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1.4fr',
-            gap: 64,
-            alignItems: 'start',
-          }}
-        >
+        {/* Grid Layout: Left 3D Image + Right Capability Columns */}
+        <div className="des4-project-row" style={{ borderTop: 'none', padding: 0 }}>
           {/* Left: 3D Workspace Screen */}
           <div
             style={{
@@ -61,8 +55,7 @@ export default function WhatIDoSection() {
               boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
               border: '1px solid rgba(0,0,0,0.15)',
               background: '#1e1e1e',
-              position: 'sticky',
-              top: 100,
+              width: '100%',
             }}
           >
             <img
@@ -73,169 +66,71 @@ export default function WhatIDoSection() {
           </div>
 
           {/* Right: 3 Interactive Capability Blocks */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 64 }}>
-            {/* Block 1 */}
-            <div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-outfit)',
-                  fontSize: 'clamp(28px, 4vw, 56px)',
-                  fontWeight: 800,
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: '#000000',
-                  margin: '0 0 16px 0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  flexWrap: 'wrap',
-                }}
-              >
-                <span>digital (</span>
-                <span
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+            {whatIDoData.columns.map((col, idx) => (
+              <div key={idx}>
+                <h3
                   style={{
-                    display: 'inline-flex',
-                    width: 38,
-                    height: 38,
-                    borderRadius: '50%',
-                    background: '#0b1dff',
+                    fontFamily: 'var(--font-outfit)',
+                    fontSize: 'clamp(24px, 3.5vw, 48px)',
+                    fontWeight: 800,
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.03em',
+                    color: '#000000',
+                    margin: '0 0 14px 0',
+                    display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontSize: 18,
+                    gap: 8,
+                    flexWrap: 'wrap',
                   }}
                 >
-                  💿
-                </span>
-                <span>)</span>
-                <span>experiences</span>
-              </h3>
+                  <span>{col.title}</span>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: col.color || '#0b1dff',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: 14,
+                    }}
+                  >
+                    ✦
+                  </span>
+                  <span>{col.subtitle}</span>
+                </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 12, marginBottom: 16 }}>
-                <span style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700, color: '#0b1dff' }}>(01)</span>
-                <p style={{ fontFamily: 'var(--font-inter)', fontSize: 14, fontWeight: 500, color: '#000000', margin: 0 }}>
-                  Design and build interactive systems that work. I bridge the gap between high-level strategy and technical reality.
-                </p>
-              </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 10, marginBottom: 14 }}>
+                  <span style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700, color: '#000' }}>
+                    {col.num}
+                  </span>
+                  <p style={{ fontFamily: 'var(--font-inter)', fontSize: 14, fontWeight: 500, color: '#000000', margin: 0 }}>
+                    {col.description}
+                  </p>
+                </div>
 
-              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, color: '#222222', lineHeight: 1.8 }}>
-                <div>(01.01) Brand Identity</div>
-                <div>(01.02) Experiential Design</div>
-                <div>(01.03) 2D & 3D Animation</div>
-                <div>(01.04) Environments & Spatial Design</div>
-                <div>(01.05) Interactive Installations</div>
-                <div>(01.06) Touchscreen & Website</div>
-              </div>
-            </div>
-
-            {/* Block 2 */}
-            <div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-outfit)',
-                  fontSize: 'clamp(28px, 4vw, 56px)',
-                  fontWeight: 800,
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: '#000000',
-                  margin: '0 0 16px 0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  flexWrap: 'wrap',
-                }}
-              >
-                <span>(</span>
-                <span
+                <div
                   style={{
-                    display: 'inline-flex',
-                    width: 38,
-                    height: 38,
-                    borderRadius: 8,
-                    background: '#0b1dff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontSize: 18,
+                    fontFamily: 'var(--font-inter)',
+                    fontSize: 13,
+                    color: '#111111',
+                    lineHeight: 1.8,
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                    gap: 6,
                   }}
                 >
-                  🪑
-                </span>
-                <span>) creative</span>
-                <span>execution</span>
-              </h3>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 12, marginBottom: 16 }}>
-                <span style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700, color: '#0b1dff' }}>(02)</span>
-                <p style={{ fontFamily: 'var(--font-inter)', fontSize: 14, fontWeight: 500, color: '#000000', margin: 0 }}>
-                  Turning complex concepts into executable realities through a deep mastery of motion, 3D, and interactive pipelines.
-                </p>
+                  {col.items.map((item, itemIdx) => (
+                    <div key={itemIdx} style={{ fontWeight: 600 }}>
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, color: '#222222', lineHeight: 1.8 }}>
-                <div>(02.01) Art Direction</div>
-                <div>(02.02) Concept Development</div>
-                <div>(02.03) Brand Systems</div>
-                <div>(02.04) Motion Graphics</div>
-                <div>(02.05) Interactive UI/UX</div>
-                <div>(02.06) Post-Production</div>
-                <div>(02.07) 3D Pipelines</div>
-              </div>
-            </div>
-
-            {/* Block 3 */}
-            <div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-outfit)',
-                  fontSize: 'clamp(28px, 4vw, 56px)',
-                  fontWeight: 800,
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: '#000000',
-                  margin: '0 0 16px 0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  flexWrap: 'wrap',
-                }}
-              >
-                <span>lead (</span>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    width: 38,
-                    height: 38,
-                    borderRadius: '50%',
-                    background: '#0b1dff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontSize: 18,
-                  }}
-                >
-                  🎯
-                </span>
-                <span>)</span>
-                <span>strategy</span>
-              </h3>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 12, marginBottom: 16 }}>
-                <span style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700, color: '#0b1dff' }}>(03)</span>
-                <p style={{ fontFamily: 'var(--font-inter)', fontSize: 14, fontWeight: 500, color: '#000000', margin: 0 }}>
-                  Aligning technical teams with creative vision. I lead designers and developers to ensure the narrative scales.
-                </p>
-              </div>
-
-              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, color: '#222222', lineHeight: 1.8 }}>
-                <div>(03.01) Project Pitching & Vision</div>
-                <div>(03.02) Storytelling & Narrative</div>
-                <div>(03.03) End-to-end Delivery</div>
-                <div>(03.04) Team Leadership</div>
-                <div>(03.05) Technical Feasibility & Strategy</div>
-                <div>(03.06) Developer Collaboration</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

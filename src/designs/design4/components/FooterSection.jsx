@@ -6,7 +6,7 @@ export default function FooterSection() {
     <footer
       id="d4-footer"
       style={{
-        padding: '140px 40px 180px',
+        padding: '100px 0 120px',
         background: '#000000',
         color: '#ffffff',
         position: 'relative',
@@ -15,11 +15,11 @@ export default function FooterSection() {
     >
       <div className="des4-container">
         {/* Contact Heading */}
-        <div style={{ marginBottom: 80 }}>
+        <div style={{ marginBottom: 60 }}>
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(32px, 5.5vw, 72px)',
+              fontSize: 'clamp(28px, 5.5vw, 72px)',
               fontWeight: 800,
               letterSpacing: '-0.03em',
               lineHeight: 1.1,
@@ -49,9 +49,9 @@ export default function FooterSection() {
           <div
             style={{
               display: 'flex',
-              gap: 16,
+              gap: 12,
               flexWrap: 'wrap',
-              marginTop: 40,
+              marginTop: 32,
             }}
           >
             <a
@@ -59,16 +59,19 @@ export default function FooterSection() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 8,
-                padding: '12px 24px',
+                padding: '12px 20px',
+                minHeight: 44,
                 borderRadius: 100,
                 background: '#ffffff',
                 color: '#000000',
                 fontFamily: 'var(--font-inter)',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
                 transition: 'all 0.2s ease',
+                touchAction: 'manipulation',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#fe3c01';
@@ -89,17 +92,20 @@ export default function FooterSection() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 8,
-                padding: '12px 24px',
+                padding: '12px 20px',
+                minHeight: 44,
                 borderRadius: 100,
                 background: '#222222',
                 color: '#ffffff',
                 border: '1px solid #444444',
                 fontFamily: 'var(--font-inter)',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
                 transition: 'all 0.2s ease',
+                touchAction: 'manipulation',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = '#ffffff';
@@ -120,17 +126,20 @@ export default function FooterSection() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 8,
-                padding: '12px 24px',
+                padding: '12px 20px',
+                minHeight: 44,
                 borderRadius: 100,
                 background: '#222222',
                 color: '#ffffff',
                 border: '1px solid #444444',
                 fontFamily: 'var(--font-inter)',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
                 transition: 'all 0.2s ease',
+                touchAction: 'manipulation',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = '#0b1dff';
@@ -156,13 +165,13 @@ export default function FooterSection() {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '40px 0 0 0',
+            padding: '20px 0 0 0',
           }}
         >
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(100px, 24vw, 320px)',
+              fontSize: 'clamp(80px, 22vw, 320px)',
               fontWeight: 900,
               lineHeight: 0.82,
               letterSpacing: '-0.05em',
@@ -178,7 +187,7 @@ export default function FooterSection() {
           <div
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(60px, 14vw, 180px)',
+              fontSize: 'clamp(48px, 13vw, 180px)',
               fontWeight: 900,
               lineHeight: 0.82,
               letterSpacing: '-0.05em',

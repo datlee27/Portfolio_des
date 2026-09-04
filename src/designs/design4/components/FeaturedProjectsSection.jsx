@@ -7,7 +7,7 @@ export default function FeaturedProjectsSection() {
     <section
       id="d4-work"
       style={{
-        padding: '100px 0 160px',
+        padding: '80px 0 120px',
         background: '#ffffff',
         overflow: 'hidden',
       }}
@@ -17,7 +17,7 @@ export default function FeaturedProjectsSection() {
         style={{
           width: '100%',
           overflow: 'hidden',
-          marginBottom: 40,
+          marginBottom: 32,
         }}
       >
         <ScrollBaseAnimation
@@ -26,7 +26,7 @@ export default function FeaturedProjectsSection() {
           clasname="font-bold tracking-[-0.04em] leading-none"
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(54px, 10vw, 140px)',
+            fontSize: 'clamp(44px, 10vw, 140px)',
             fontWeight: 800,
             lineHeight: 1,
             letterSpacing: '-0.04em',
@@ -47,7 +47,7 @@ export default function FeaturedProjectsSection() {
             fontWeight: 500,
             color: '#000000',
             maxWidth: 540,
-            marginBottom: 64,
+            marginBottom: 48,
             lineHeight: 1.6,
           }}
         >
@@ -58,21 +58,11 @@ export default function FeaturedProjectsSection() {
         {/* Project List */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {featuredProjects.map((project) => (
-            <div
-              key={project.id}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(300px, 1.2fr) 1fr',
-                gap: 48,
-                padding: '48px 0',
-                borderTop: '1px solid #e0e0e0',
-                alignItems: 'center',
-              }}
-            >
+            <div key={project.id} className="des4-project-row">
               {/* Left Media Card */}
               <div
                 style={{
-                  borderRadius: 24,
+                  borderRadius: 20,
                   overflow: 'hidden',
                   position: 'relative',
                   aspectRatio: '16/10',
@@ -83,6 +73,7 @@ export default function FeaturedProjectsSection() {
                   boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
                   cursor: 'pointer',
                   transition: 'transform 0.3s ease',
+                  width: '100%',
                 }}
                 onClick={() => {
                   const targetUrl = project.deploy || project.github;
@@ -96,15 +87,15 @@ export default function FeaturedProjectsSection() {
                   <div
                     style={{
                       position: 'absolute',
-                      top: 20,
-                      left: 20,
+                      top: 16,
+                      left: 16,
                       zIndex: 10,
                       background: project.status === 'Latest' ? '#fe3c01' : '#000000',
                       color: '#ffffff',
                       fontFamily: 'var(--font-inter)',
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 700,
-                      padding: '6px 14px',
+                      padding: '4px 12px',
                       borderRadius: 100,
                       letterSpacing: '0.04em',
                     }}
@@ -127,18 +118,17 @@ export default function FeaturedProjectsSection() {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   height: '100%',
-                  minHeight: 240,
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 13, fontWeight: 700, color: project.accentColor, fontFamily: 'var(--font-inter)' }}>
                       {project.code}
                     </span>
                     <h3
                       style={{
                         fontFamily: 'var(--font-outfit)',
-                        fontSize: 'clamp(22px, 2.2vw, 32px)',
+                        fontSize: 'clamp(20px, 2.2vw, 32px)',
                         fontWeight: 700,
                         letterSpacing: '-0.02em',
                         color: '#000000',
@@ -155,7 +145,7 @@ export default function FeaturedProjectsSection() {
                       fontSize: 14,
                       lineHeight: 1.6,
                       color: '#444444',
-                      margin: '12px 0 20px 0',
+                      margin: '8px 0 16px 0',
                     }}
                   >
                     {project.description}
@@ -168,8 +158,8 @@ export default function FeaturedProjectsSection() {
                     style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: 8,
-                      marginBottom: 24,
+                      gap: 6,
+                      marginBottom: 20,
                     }}
                   >
                     {project.tags.map((tag, idx) => (
@@ -179,7 +169,7 @@ export default function FeaturedProjectsSection() {
                           fontFamily: 'var(--font-inter)',
                           fontSize: 11,
                           fontWeight: 600,
-                          padding: '4px 12px',
+                          padding: '4px 10px',
                           borderRadius: 20,
                           background: '#f4f4f5',
                           color: '#333333',
@@ -192,7 +182,7 @@ export default function FeaturedProjectsSection() {
                   </div>
 
                   {/* Links Action Buttons */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {project.deploy && (
                       <a
                         href={project.deploy}
@@ -201,16 +191,19 @@ export default function FeaturedProjectsSection() {
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
+                          justifyContent: 'center',
                           gap: 6,
                           background: '#000000',
                           color: '#ffffff',
                           fontFamily: 'var(--font-inter)',
                           fontSize: 13,
                           fontWeight: 600,
-                          padding: '10px 18px',
+                          minHeight: 44,
+                          padding: '10px 20px',
                           borderRadius: 100,
                           textDecoration: 'none',
                           transition: 'all 0.2s ease',
+                          touchAction: 'manipulation',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = '#fe3c01';
@@ -233,6 +226,7 @@ export default function FeaturedProjectsSection() {
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
+                          justifyContent: 'center',
                           gap: 6,
                           background: '#ffffff',
                           color: '#000000',
@@ -240,10 +234,12 @@ export default function FeaturedProjectsSection() {
                           fontFamily: 'var(--font-inter)',
                           fontSize: 13,
                           fontWeight: 600,
-                          padding: '8px 16px',
+                          minHeight: 44,
+                          padding: '8px 18px',
                           borderRadius: 100,
                           textDecoration: 'none',
                           transition: 'all 0.2s ease',
+                          touchAction: 'manipulation',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = '#f4f4f5';

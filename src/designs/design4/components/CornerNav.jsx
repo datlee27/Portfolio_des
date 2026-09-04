@@ -15,7 +15,6 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
   };
 
   if (activeView === 'lab') {
-    // In Lab View, Des4LabView has its own top header with back button and ProfileCard
     return null;
   }
 
@@ -24,26 +23,19 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
       {/* Top Left: dl* */}
       <a
         href="#top"
+        className="des4-corner-anchor"
         onClick={(e) => {
           e.preventDefault();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         style={{
-          position: 'fixed',
-          top: 32,
-          left: 36,
-          zIndex: 9999,
-          mixBlendMode: 'difference',
-          color: '#ffffff',
+          top: 'clamp(16px, 3vw, 32px)',
+          left: 'clamp(16px, 3.5vw, 36px)',
           fontFamily: 'var(--font-outfit)',
-          fontSize: 24,
+          fontSize: 'clamp(18px, 4vw, 24px)',
           fontWeight: 900,
           letterSpacing: '-0.03em',
-          textDecoration: 'none',
-          cursor: 'pointer',
-          userSelect: 'none',
           lineHeight: 1,
-          transition: 'transform 0.2s ease',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -53,25 +45,19 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
 
       {/* Top Right: work */}
       <button
+        className="des4-corner-anchor"
         onClick={() => scrollTo('d4-work')}
         style={{
-          position: 'fixed',
-          top: 32,
-          right: 36,
-          zIndex: 9999,
-          mixBlendMode: 'difference',
-          color: '#ffffff',
+          top: 'clamp(16px, 3vw, 32px)',
+          right: 'clamp(16px, 3.5vw, 36px)',
           fontFamily: 'var(--font-outfit)',
-          fontSize: 18,
+          fontSize: 'clamp(13px, 3.5vw, 18px)',
           fontWeight: 800,
           letterSpacing: '-0.02em',
           background: 'none',
           border: 'none',
-          cursor: 'pointer',
           padding: 0,
-          userSelect: 'none',
           lineHeight: 1,
-          transition: 'transform 0.2s ease',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -81,25 +67,19 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
 
       {/* Bottom Left: about */}
       <button
+        className="des4-corner-anchor"
         onClick={() => scrollTo('d4-intro')}
         style={{
-          position: 'fixed',
-          bottom: 32,
-          left: 36,
-          zIndex: 9999,
-          mixBlendMode: 'difference',
-          color: '#ffffff',
+          bottom: 'clamp(16px, 3vw, 32px)',
+          left: 'clamp(16px, 3.5vw, 36px)',
           fontFamily: 'var(--font-outfit)',
-          fontSize: 18,
+          fontSize: 'clamp(13px, 3.5vw, 18px)',
           fontWeight: 800,
           letterSpacing: '-0.02em',
           background: 'none',
           border: 'none',
-          cursor: 'pointer',
           padding: 0,
-          userSelect: 'none',
           lineHeight: 1,
-          transition: 'transform 0.2s ease',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -109,27 +89,21 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
 
       {/* Bottom Right: lab */}
       <button
+        className="des4-corner-anchor"
         onClick={() => {
           if (onOpenLab) onOpenLab();
         }}
         style={{
-          position: 'fixed',
-          bottom: 32,
-          right: 36,
-          zIndex: 9999,
-          mixBlendMode: 'difference',
-          color: '#ffffff',
+          bottom: 'clamp(16px, 3vw, 32px)',
+          right: 'clamp(16px, 3.5vw, 36px)',
           fontFamily: 'var(--font-outfit)',
-          fontSize: 18,
+          fontSize: 'clamp(13px, 3.5vw, 18px)',
           fontWeight: 800,
           letterSpacing: '-0.02em',
           background: 'none',
           border: 'none',
-          cursor: 'pointer',
           padding: 0,
-          userSelect: 'none',
           lineHeight: 1,
-          transition: 'transform 0.2s ease',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}

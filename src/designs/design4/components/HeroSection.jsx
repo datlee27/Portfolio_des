@@ -43,7 +43,7 @@ export default function HeroSection() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '100px 20px',
+        padding: '80px 16px',
         background: '#ffffff',
         overflow: 'hidden',
         userSelect: 'none',
@@ -51,6 +51,7 @@ export default function HeroSection() {
     >
       {/* Ambient background decorative grid/blobs */}
       <div
+        className="des4-hide-mobile"
         style={{
           position: 'absolute',
           top: '20%',
@@ -66,6 +67,7 @@ export default function HeroSection() {
         }}
       />
       <div
+        className="des4-hide-mobile"
         style={{
           position: 'absolute',
           bottom: '15%',
@@ -85,10 +87,11 @@ export default function HeroSection() {
 
       {/* 1. Tomato Sticker (Top Left) */}
       <div
+        className="des4-hide-mobile"
         style={{
           position: 'absolute',
           top: '18%',
-          left: '12%',
+          left: '8%',
           zIndex: 5,
           cursor: 'grab',
           transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px)`,
@@ -97,7 +100,7 @@ export default function HeroSection() {
       >
         <div
           style={{
-            fontSize: 'clamp(36px, 5vw, 64px)',
+            fontSize: 'clamp(32px, 4.5vw, 64px)',
             filter: 'drop-shadow(0 12px 20px rgba(254,60,1,0.25))',
             animation: 'floatGentle 4s ease-in-out infinite',
             transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
@@ -111,10 +114,11 @@ export default function HeroSection() {
 
       {/* 2. Interactive Eye Sticker (Top Right) */}
       <div
+        className="des4-hide-mobile"
         style={{
           position: 'absolute',
           top: '22%',
-          right: '14%',
+          right: '8%',
           zIndex: 5,
           transform: `translate(${mousePos.x * -25}px, ${mousePos.y * -25}px)`,
           transition: 'transform 0.15s ease-out',
@@ -122,8 +126,8 @@ export default function HeroSection() {
       >
         <div
           style={{
-            width: 54,
-            height: 54,
+            width: 48,
+            height: 48,
             borderRadius: '50%',
             background: '#ffffff',
             border: '3px solid #000000',
@@ -140,62 +144,31 @@ export default function HeroSection() {
           {/* Pupil following mouse */}
           <div
             style={{
-              width: 22,
-              height: 22,
+              width: 18,
+              height: 18,
               borderRadius: '50%',
-              background: '#0b1dff',
+              background: '#fe3c01',
               transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px)`,
-              transition: 'transform 0.05s linear',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              transition: 'transform 0.1s ease-out',
             }}
-          >
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ffffff', marginLeft: -4, marginTop: -4 }} />
-          </div>
+          />
         </div>
       </div>
 
-      {/* 3. Orange Mushroom Lamp (Bottom Left) */}
+      {/* 3. Glowing Badge Pill */}
       <div
+        className="des4-hide-mobile"
         style={{
           position: 'absolute',
           bottom: '22%',
-          left: '14%',
+          left: '10%',
           zIndex: 5,
-          cursor: 'grab',
           transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)`,
-          transition: 'transform 0.15s ease-out',
         }}
       >
         <div
           style={{
-            fontSize: 'clamp(32px, 4.5vw, 54px)',
-            filter: 'drop-shadow(0 10px 18px rgba(255,98,0,0.3))',
-            animation: 'floatInverse 5s ease-in-out infinite',
-            transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(-15deg)')}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
-        >
-          🏮
-        </div>
-      </div>
-
-      {/* 4. Cute Sparkle Badge (Bottom Right) */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '24%',
-          right: '16%',
-          zIndex: 5,
-          transform: `translate(${mousePos.x * -35}px, ${mousePos.y * -35}px)`,
-          transition: 'transform 0.15s ease-out',
-        }}
-      >
-        <div
-          style={{
-            background: '#111',
+            background: '#111111',
             color: '#ffe815',
             padding: '8px 16px',
             borderRadius: 100,
@@ -235,13 +208,14 @@ export default function HeroSection() {
           justifyContent: 'center',
           fontFamily: 'var(--font-outfit)',
           fontWeight: 900,
-          fontSize: 'clamp(64px, 11.5vw, 150px)',
-          lineHeight: 0.92,
+          fontSize: 'clamp(32px, 8.5vw, 150px)',
+          lineHeight: 0.95,
           letterSpacing: '-0.04em',
           color: '#000000',
           transform: `perspective(1000px) rotateX(${mousePos.y * -5}deg) rotateY(${mousePos.x * 5}deg)`,
           transition: 'transform 0.15s ease-out',
           zIndex: 10,
+          maxWidth: '100%',
         }}
       >
         {/* Line 1: "the chaos," */}
@@ -287,7 +261,7 @@ export default function HeroSection() {
             ch
           </span>
 
-          {/* 3D Camera Lenses Cluster with reflection animation */}
+          {/* 3D Camera Lenses Cluster */}
           <div
             style={{
               width: '0.65em',
@@ -506,7 +480,7 @@ export default function HeroSection() {
             r
           </span>
 
-          {/* 3D Glossy Inflatable Balloon 'e' with Elastic Hover */}
+          {/* 3D Glossy Inflatable Balloon 'e' */}
           <span
             style={{
               color: '#6e1d3b',
@@ -553,14 +527,14 @@ export default function HeroSection() {
       <div
         onClick={() => setIsPlaying(!isPlaying)}
         style={{
-          marginTop: 48,
+          marginTop: 'clamp(24px, 5vw, 48px)',
           zIndex: 15,
           display: 'inline-flex',
           alignItems: 'center',
           gap: 10,
           background: '#000000',
           color: '#ffffff',
-          padding: '12px 28px',
+          padding: '12px 24px',
           borderRadius: 100,
           cursor: 'pointer',
           fontFamily: 'var(--font-inter)',

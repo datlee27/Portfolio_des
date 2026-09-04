@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { clientsData } from '../data/homeData';
 
 export default function ClientsSection() {
@@ -7,7 +7,13 @@ export default function ClientsSection() {
   const [startX, setStartX] = useState(0);
   const [startRotation, setStartRotation] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const autoRotateRef = useRef(null);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Auto rotation when not dragging or hovering
   useEffect(() => {
@@ -18,37 +24,45 @@ export default function ClientsSection() {
     return () => clearInterval(interval);
   }, [isDragging, isHovered]);
 
-  // Drag handlers
-  const handleMouseDown = (e) => {
+  // Drag / Touch handlers
+  const handleStart = (clientX) => {
     setIsDragging(true);
-    setStartX(e.clientX);
+    setStartX(clientX);
     setStartRotation(rotation);
   };
 
-  const handleMouseMove = (e) => {
+  const handleMove = (clientX) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - startX;
-    setRotation(startRotation + deltaX * 0.35);
+    const deltaX = clientX - startX;
+    setRotation(startRotation + deltaX * 0.45);
   };
 
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     setIsDragging(false);
   };
 
   const count = clientsData.length;
-  // Card dimensions and exact cylinder radius calculation:
-  // For 8 cards to sit flush without intersecting, R must be > (cardWidth / 2) / tan(22.5deg)
-  // cardWidth = 300px => minimum R = 150 / 0.4142 = 362.1px.
-  // We use cardWidth = 290px and radius = 420px for a clean, non-overlapping gap!
-  const cardWidth = 290;
-  const cardHeight = 190;
-  const radius = 420;
+
+  // Responsive dimensions calculation
+  let cardWidth = 280;
+  let cardHeight = 180;
+  let radius = 400;
+
+  if (windowWidth < 600) {
+    cardWidth = 180;
+    cardHeight = 120;
+    radius = 210;
+  } else if (windowWidth < 900) {
+    cardWidth = 220;
+    cardHeight = 145;
+    radius = 300;
+  }
 
   return (
     <section
       id="d4-clients"
       style={{
-        padding: '160px 40px 180px',
+        padding: '100px 0 140px',
         background: '#000000',
         color: '#ffffff',
         overflow: 'hidden',
@@ -61,12 +75,12 @@ export default function ClientsSection() {
         <h2
           style={{
             fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(54px, 10vw, 150px)',
+            fontSize: 'clamp(44px, 9vw, 150px)',
             fontWeight: 900,
             lineHeight: 0.9,
             letterSpacing: '-0.04em',
             color: '#ffffff',
-            margin: '0 0 24px 0',
+            margin: '0 0 20px 0',
           }}
         >
           clients<span style={{ color: '#fe3c01' }}>*</span>
@@ -80,33 +94,37 @@ export default function ClientsSection() {
             fontWeight: 500,
             color: '#888888',
             maxWidth: 480,
-            marginBottom: 90,
+            marginBottom: 60,
             lineHeight: 1.5,
           }}
         >
           <span style={{ color: '#fe3c01', fontWeight: 700 }}>* </span>
-          Teams, brands and people who trusted the process.
+          Teams, brands and projects built with high precision.
         </p>
 
         {/* 3D Cylinder Rotating Stage */}
         <div
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onMouseDown={(e) => handleStart(e.clientX)}
+          onMouseMove={(e) => handleMove(e.clientX)}
+          onMouseUp={handleEnd}
           onMouseLeave={() => {
-            handleMouseUp();
+            handleEnd();
             setIsHovered(false);
           }}
           onMouseEnter={() => setIsHovered(true)}
+          onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+          onTouchMove={(e) => handleMove(e.touches[0].clientX)}
+          onTouchEnd={handleEnd}
           style={{
-            perspective: 1600,
+            perspective: 1200,
             width: '100%',
-            height: 440,
+            height: windowWidth < 600 ? 280 : 380,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
             cursor: isDragging ? 'grabbing' : 'grab',
+            touchAction: 'none',
           }}
         >
           <div
@@ -131,7 +149,7 @@ export default function ClientsSection() {
                     left: 0,
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: 22,
+                    borderRadius: windowWidth < 600 ? 14 : 20,
                     overflow: 'hidden',
                     background: '#151515',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -139,9 +157,9 @@ export default function ClientsSection() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: 24,
+                    padding: windowWidth < 600 ? 12 : 24,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    backfaceVisibility: 'hidden', // Hides the back side of cylinder to avoid overlap!
+                    backfaceVisibility: 'hidden',
                     transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
                   }}
                   onMouseEnter={(e) => {
@@ -153,25 +171,8 @@ export default function ClientsSection() {
                     e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.7)';
                   }}
                 >
-                  {/* Background Video / Image preview */}
-                  {client.previewVideo ? (
-                    <video
-                      src={client.previewVideo}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        opacity: 0.6,
-                      }}
-                    />
-                  ) : client.previewImg ? (
+                  {/* Background Image preview */}
+                  {client.previewImg && (
                     <img
                       src={client.previewImg}
                       alt={client.name}
@@ -182,12 +183,12 @@ export default function ClientsSection() {
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        opacity: 0.6,
+                        opacity: 0.55,
                       }}
                     />
-                  ) : null}
+                  )}
 
-                  {/* Dark gradient overlay for clear logo contrast */}
+                  {/* Dark gradient overlay */}
                   <div
                     style={{
                       position: 'absolute',
@@ -195,43 +196,46 @@ export default function ClientsSection() {
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
+                      background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%)',
                     }}
                   />
 
-                  {/* Client Logo */}
-                  <img
-                    src={client.logo}
-                    alt={client.name}
+                  {/* Name Tag */}
+                  <div
                     style={{
-                      maxWidth: '82%',
-                      maxHeight: '60%',
-                      objectFit: 'contain',
                       position: 'relative',
                       zIndex: 2,
-                      filter: 'brightness(0) invert(1)',
+                      fontFamily: 'var(--font-outfit)',
+                      fontSize: windowWidth < 600 ? 16 : 22,
+                      fontWeight: 800,
+                      color: '#ffffff',
+                      textTransform: 'uppercase',
+                      letterSpacing: '-0.02em',
+                      textAlign: 'center',
                     }}
-                  />
+                  >
+                    {client.name}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Drag Hint
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
+        {/* Drag / Swipe Hint */}
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
           <span
             style={{
               fontFamily: 'var(--font-inter)',
               fontSize: 12,
-              color: '#666666',
+              color: '#888888',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
             }}
           >
-            ← Drag to rotate cylinder →
+            ← Swipe / Drag to rotate →
           </span>
-        </div> */}
+        </div>
       </div>
     </section>
   );

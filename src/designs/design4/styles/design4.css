@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   Design 4 — 100% Faithful Recreation of YanXin Zhang (yanxinzhang.com)
+   Design 4 — 100% Responsive & Faithful Recreation of YanXin Zhang (yanxinzhang.com)
    ═══════════════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@1,600;1,700&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap');
@@ -24,6 +24,12 @@
   --font-outfit: 'Outfit', sans-serif;
   --font-garamond: 'EB Garamond', serif;
   --font-inter: 'Inter', sans-serif;
+
+  /* Safe Area Tokens for iOS/Android notches */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 .des4-root {
@@ -38,6 +44,7 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
 }
 
 .des4-root *,
@@ -60,9 +67,21 @@
   position: relative;
 }
 
-@media (max-width: 809.98px) {
+@media (max-width: 1024px) {
+  .des4-container {
+    padding: 0 28px;
+  }
+}
+
+@media (max-width: 768px) {
   .des4-container {
     padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .des4-container {
+    padding: 0 16px;
   }
 }
 
@@ -70,8 +89,8 @@
 .des4-title-giant {
   font-family: var(--font-outfit);
   font-weight: 900;
-  font-size: clamp(64px, 14vw, 200px);
-  line-height: 0.9;
+  font-size: clamp(38px, 12vw, 200px);
+  line-height: 0.92;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   color: var(--token-black);
@@ -80,8 +99,8 @@
 
 .des4-section-heading {
   font-family: var(--font-outfit);
-  font-weight: 600;
-  font-size: clamp(48px, 9vw, 120px);
+  font-weight: 700;
+  font-size: clamp(36px, 8vw, 120px);
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--token-black);
@@ -94,94 +113,66 @@
   font-weight: 900;
 }
 
-/* Fixed Header Nav */
-.des4-nav-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  z-index: 999;
-  mix-blend-mode: difference;
-  display: flex;
+/* Responsive Sticker Hide on Mobile */
+@media (max-width: 640px) {
+  .des4-hide-mobile {
+    display: none !important;
+  }
+  .des4-sticker-scale-mobile {
+    transform: scale(0.65) !important;
+  }
+}
+
+/* Project Row Responsive Grid */
+.des4-project-row {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.2fr) 1fr;
+  gap: 48px;
+  padding: 48px 0;
+  border-top: 1px solid #e0e0e0;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  pointer-events: auto;
 }
 
-.des4-nav-logo {
-  font-family: var(--font-outfit);
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+@media (max-width: 810px) {
+  .des4-project-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 0;
+  }
 }
 
-.des4-nav-logo:hover {
-  transform: scale(1.05);
-}
-
-.des4-nav-menu {
-  display: flex;
-  align-items: center;
+/* Skills 3 Column Responsive Grid */
+.des4-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 32px;
 }
 
-.des4-nav-link {
+@media (max-width: 810px) {
+  .des4-skills-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* 4 Corner Navigation Fixed Anchors */
+.des4-corner-anchor {
+  position: fixed;
+  z-index: 999;
   font-family: var(--font-inter);
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
+  font-weight: 700;
+  color: #000000;
+  mix-blend-mode: difference;
   text-decoration: none;
   cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  letter-spacing: -0.01em;
-  transition: opacity 0.2s ease;
+  user-select: none;
+  transition: transform 0.2s ease;
 }
 
-.des4-nav-link:hover {
-  opacity: 0.7;
-}
-
-/* Fixed Bottom Dock */
-.des4-dock-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  z-index: 999;
-  mix-blend-mode: difference;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  pointer-events: none;
-}
-
-.des4-dock-bottom > * {
-  pointer-events: auto;
-}
-
-.des4-dock-item {
-  font-family: var(--font-inter);
-  font-size: 13px;
-  font-weight: 500;
-  color: #fff;
-  letter-spacing: -0.01em;
-}
-
-.des4-dock-badge {
-  font-family: var(--font-outfit);
-  font-weight: 800;
-  font-size: 14px;
-  color: #fff;
+@media (max-width: 640px) {
+  .des4-corner-anchor {
+    font-size: 13px !important;
+  }
 }
 
 /* Animations */
