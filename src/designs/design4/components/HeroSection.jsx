@@ -136,35 +136,7 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Creative Mode Interactive Status Banner */}
-      {isCreativeMode && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 30,
-            background: 'rgba(254, 60, 1, 0.92)',
-            color: '#ffffff',
-            padding: '6px 18px',
-            borderRadius: 100,
-            fontSize: 12,
-            fontWeight: 800,
-            fontFamily: 'var(--font-inter)',
-            boxShadow: '0 8px 24px rgba(254,60,1,0.4)',
-            backdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            animation: 'pulseGlow 2s infinite',
-            pointerEvents: 'none',
-          }}
-        >
-          <span>⚡ CREATIVE PLAYGROUND ACTIVE</span>
-          <span style={{ opacity: 0.8, fontWeight: 500 }}>|  Kéo thả các phần tử &amp; Neko Cat theo chuột!</span>
-        </div>
-      )}
+
 
       {/* Floating Interactive Stickers with Parallax & Drag */}
 
