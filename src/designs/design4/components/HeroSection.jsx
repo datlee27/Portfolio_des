@@ -130,7 +130,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* 2. Interactive Color Palette Glass Lens (Top Right) */}
+      {/* 2. Interactive Custom SVG Sticker & Color Palette (Top Right) */}
       <div
         className="des4-hide-mobile"
         style={{
@@ -138,10 +138,31 @@ export default function HeroSection() {
           top: '22%',
           right: '8%',
           zIndex: 5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
           transform: `translate(${mousePos.x * -25}px, ${mousePos.y * -25}px)`,
           transition: 'transform 0.15s ease-out',
         }}
       >
+        {/* User Custom SVG Sticker */}
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.18))',
+            animation: 'floatGentle 4.2s ease-in-out infinite',
+            cursor: 'pointer',
+            transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(12deg)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
+          title="Custom Character Sticker"
+        >
+          <img src="/assets/custom-sticker.svg" alt="Custom Sticker" style={{ width: '100%', height: '100%', display: 'block' }} />
+        </div>
+
+        {/* Color Palette Glass Lens */}
         <div
           style={{
             width: 52,
