@@ -82,7 +82,7 @@ export default function HeroSection() {
 
       {/* Floating Interactive Stickers with Parallax */}
 
-      {/* 1. Tomato Sticker (Top Left) */}
+      {/* 1. Cyber Terminal Sticker (Top Left) */}
       <div
         className="des4-hide-mobile"
         style={{
@@ -90,26 +90,38 @@ export default function HeroSection() {
           top: '18%',
           left: '8%',
           zIndex: 5,
-          cursor: 'grab',
+          cursor: 'pointer',
           transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px)`,
           transition: 'transform 0.15s ease-out',
         }}
       >
         <div
           style={{
-            fontSize: 'clamp(32px, 4.5vw, 64px)',
-            filter: 'drop-shadow(0 12px 20px rgba(254,60,1,0.25))',
+            background: '#0d1117',
+            color: '#25ff8d',
+            border: '2px solid #30363d',
+            borderRadius: 12,
+            padding: '8px 14px',
+            fontFamily: 'monospace',
+            fontSize: 'clamp(12px, 1.5vw, 16px)',
+            fontWeight: 800,
+            boxShadow: '0 12px 28px rgba(37,255,141,0.2), 0 4px 12px rgba(0,0,0,0.4)',
             animation: 'floatGentle 4s ease-in-out infinite',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
             transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3) rotate(15deg)')}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(-6deg)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
         >
-          🍅
+          <span style={{ color: '#fe3c01', fontWeight: 900 }}>&gt;_</span>
+          <span>dev.mode</span>
+          <span style={{ width: 8, height: 14, background: '#25ff8d', display: 'inline-block', animation: 'pulseGlow 1s infinite' }} />
         </div>
       </div>
 
-      {/* 2. Interactive Eye Sticker (Top Right) */}
+      {/* 2. Interactive Color Palette Glass Lens (Top Right) */}
       <div
         className="des4-hide-mobile"
         style={{
@@ -123,12 +135,13 @@ export default function HeroSection() {
       >
         <div
           style={{
-            width: 48,
-            height: 48,
+            width: 52,
+            height: 52,
             borderRadius: '50%',
-            background: '#ffffff',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(10px)',
             border: '3px solid #000000',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.12)',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -137,22 +150,24 @@ export default function HeroSection() {
             cursor: 'pointer',
           }}
           onClick={cycleSmiley}
+          title="Designer Color Lens"
         >
-          {/* Pupil following mouse */}
+          {/* Tri-color palette pupil */}
           <div
             style={{
-              width: 18,
-              height: 18,
+              width: 22,
+              height: 22,
               borderRadius: '50%',
-              background: '#fe3c01',
-              transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px)`,
+              background: 'conic-gradient(#fe3c01 0deg 120deg, #0b1dff 120deg 240deg, #ffe815 240deg 360deg)',
+              transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px) rotate(${mousePos.x * 45}deg)`,
               transition: 'transform 0.1s ease-out',
+              boxShadow: 'inset 0 0 4px rgba(0,0,0,0.3)',
             }}
           />
         </div>
       </div>
 
-      {/* 3. Glowing Badge Pill */}
+      {/* 3. Glowing Dev & Design Badge Pill */}
       <div
         className="des4-hide-mobile"
         style={{
@@ -165,34 +180,35 @@ export default function HeroSection() {
       >
         <div
           style={{
-            background: '#111111',
-            color: '#ffe815',
-            padding: '8px 16px',
+            background: '#090a0f',
+            color: '#ffffff',
+            border: '1px solid rgba(255,255,255,0.15)',
+            padding: '8px 18px',
             borderRadius: 100,
             fontSize: 12,
             fontWeight: 800,
             fontFamily: 'var(--font-inter)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
             animation: 'floatGentle 5.5s ease-in-out infinite',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
-            transition: 'transform 0.3s ease, background 0.3s ease',
+            gap: 8,
+            transition: 'transform 0.3s ease, background 0.3s ease, border-color 0.3s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.15) rotate(4deg)';
+            e.currentTarget.style.transform = 'scale(1.15) rotate(3deg)';
             e.currentTarget.style.background = '#fe3c01';
-            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#fe3c01';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-            e.currentTarget.style.background = '#111';
-            e.currentTarget.style.color = '#ffe815';
+            e.currentTarget.style.background = '#090a0f';
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
           }}
         >
-          <span>✨</span>
-          <span>DATLE.DESIGN</span>
+          <span style={{ color: '#25ff8d' }}>⚡</span>
+          <span style={{ letterSpacing: '0.05em' }}>FULLSTACK DEV &amp; UI ARTISAN</span>
         </div>
       </div>
 
@@ -247,30 +263,39 @@ export default function HeroSection() {
             ch
           </span>
 
-          {/* 3D Camera Lenses Cluster */}
+          {/* 3D React/TS Tech Chip Badge (<tsx/>) */}
           <div
             style={{
-              width: '0.65em',
+              width: '0.7em',
               height: '0.65em',
-              background: '#e0e0e0',
-              borderRadius: '0.18em',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              padding: '0.08em',
-              gap: '0.06em',
-              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.08)',
+              background: '#090d16',
+              borderRadius: '0.14em',
+              border: '2px solid #0b1dff',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              color: '#61dafb',
+              fontSize: '0.28em',
+              fontWeight: 900,
+              fontFamily: 'monospace',
+              boxShadow: '0 4px 16px rgba(11,29,255,0.4)',
               cursor: 'pointer',
-              transition: 'transform 0.3s ease',
+              transition: 'transform 0.3s ease, border-color 0.3s ease',
+              lineHeight: 1,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15) rotate(-8deg)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.25) rotate(-10deg)';
+              e.currentTarget.style.borderColor = '#fe3c01';
+              e.currentTarget.style.color = '#fe3c01';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+              e.currentTarget.style.borderColor = '#0b1dff';
+              e.currentTarget.style.color = '#61dafb';
+            }}
+            title="React & TS Code Stack"
           >
-            <div style={{ width: '0.18em', height: '0.18em', borderRadius: '50%', background: '#111', border: '1px solid #777' }} />
-            <div style={{ width: '0.18em', height: '0.18em', borderRadius: '50%', background: '#111', border: '1px solid #777' }} />
-            <div style={{ width: '0.18em', height: '0.18em', borderRadius: '50%', background: '#111', border: '1px solid #777' }} />
-            <div style={{ width: '0.08em', height: '0.08em', borderRadius: '50%', background: '#ffaa00', alignSelf: 'center', justifySelf: 'center' }} />
+            &lt;tsx/&gt;
           </div>
 
           <span
@@ -283,7 +308,7 @@ export default function HeroSection() {
           <span style={{ color: '#25ff8d' }}>,</span>
         </div>
 
-        {/* Line 2: "of" with rotated DAT LE & pencil */}
+        {/* Line 2: "of" with rotated DAT LE & Designer Pen Tool */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.1em', marginTop: '-0.05em' }}>
           <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
@@ -319,30 +344,41 @@ export default function HeroSection() {
             DAT LE
           </div>
 
-          {/* Red Tilted Pencil */}
+          {/* Designer Vector Pen Tool Node */}
           <div
             style={{
-              width: '0.08em',
-              height: '0.9em',
-              background: '#e3091d',
-              borderRadius: '0.04em 0.04em 0.08em 0.08em',
-              transform: `rotate(${mousePos.x * 20 - 12}deg)`,
-              boxShadow: '2px 4px 10px rgba(0,0,0,0.15)',
+              width: '0.45em',
+              height: '0.85em',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transform: `rotate(${mousePos.x * 24 - 10}deg)`,
               position: 'relative',
-              transition: 'transform 0.1s ease-out',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease-out',
             }}
+            title="UI Vector Pen Tool"
           >
+            {/* Pen Tool Nib */}
             <div
               style={{
-                position: 'absolute',
-                top: -6,
-                left: '50%',
-                transform: 'translateX(-50%)',
                 width: 0,
                 height: 0,
-                borderLeft: '4px solid transparent',
-                borderRight: '4px solid transparent',
-                borderBottom: '6px solid #ffccaa',
+                borderLeft: '0.18em solid transparent',
+                borderRight: '0.18em solid transparent',
+                borderBottom: '0.42em solid #fe3c01',
+                filter: 'drop-shadow(0 4px 8px rgba(254,60,1,0.35))',
+              }}
+            />
+            {/* Handle / Node Point */}
+            <div
+              style={{
+                width: '0.14em',
+                height: '0.3em',
+                background: '#111111',
+                borderRadius: '0.04em',
+                marginTop: '-0.04em',
               }}
             />
           </div>
@@ -400,31 +436,40 @@ export default function HeroSection() {
           <span>g</span>
           <span>s</span>
 
-          {/* Dieter Rams Orange Book */}
+          {/* Cyber "VIBE CODE" Cassette Badge */}
           <div
             style={{
-              width: '0.5em',
+              width: '0.55em',
               height: '0.75em',
-              background: '#ff5500',
-              borderRadius: '0.04em',
+              background: 'linear-gradient(135deg, #161b22, #0d1117)',
+              border: '1.5px solid #30363d',
+              borderRadius: '0.08em',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ffffff',
-              fontSize: '0.12em',
-              fontWeight: 800,
+              color: '#25ff8d',
+              fontSize: '0.11em',
+              fontWeight: 900,
               writingMode: 'vertical-rl',
               transform: 'rotate(180deg)',
-              letterSpacing: '0.08em',
-              boxShadow: '3px 6px 16px rgba(0,0,0,0.22)',
+              letterSpacing: '0.12em',
+              boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
               marginLeft: '0.04em',
               cursor: 'pointer',
-              transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'rotate(180deg) scale(1.25) translateY(-8px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'rotate(180deg) scale(1) translateY(0)')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'rotate(180deg) scale(1.25) translateY(-8px)';
+              e.currentTarget.style.borderColor = '#25ff8d';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'rotate(180deg) scale(1) translateY(0)';
+              e.currentTarget.style.borderColor = '#30363d';
+            }}
+            title="Vibe Code Architecture"
           >
-            dieter rams
+            vibe code
           </div>
 
           {/* Blue Wave */}
