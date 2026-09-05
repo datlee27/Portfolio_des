@@ -50,13 +50,14 @@
    - Khi cuộn xuống các section nền tối (đen/nền ảnh), chữ tự động đảo ngược thành **màu trắng**.
    - Khi lướt qua các mảng màu nổi (cam/xanh/hồng), chữ đảo ngược thành các dải màu tương phản cực nét chuẩn Brutalist.
 
-5. **Tích Hợp Component NekoCat Interactive Vào Phần Hero (`HeroSection.jsx` & `NekoCat.jsx`)**:
-   - Tích hợp chú mèo Neko pixel tương tác với chuyển động chuột và trạng thái nghỉ ngủ/liếm lông/chạy trốn/nằm ngủ trên tiêu đề Hero.
-   - Thêm nút Toggle Pill `"You like cats?"` ở góc màn hình cho phép bật/tắt chế độ mèo đuổi theo con trỏ chuột (`followCursor`), tự động lưu lựa chọn vào `localStorage`.
+5. **Tích Hợp Component NekoCat Socks Skin (webneko.net/?socks) Vào Phần Hero (`HeroSection.jsx` & `NekoCat.jsx`)**:
+   - Sử dụng chính xác skin **Socks (`cat="Socks"`)** từ [webneko.net/?socks](https://webneko.net/?socks) chú mèo đi tất dễ thương tương tác với chuyển động chuột và trạng thái nghỉ ngủ/liếm lông/chạy trốn/nằm ngủ trên tiêu đề Hero.
+   - Nút Toggle Pill hiển thị `"You like cats? 🧦🐱"` ở góc màn hình cho phép bật/tắt chế độ mèo đuổi theo con trỏ chuột (`followCursor`), tự động lưu lựa chọn vào `localStorage`.
 
 ---
 
 ## 🌐 Kiểm Tra Build
-- `npm run build` đã chạy thành công 100% (built in 561ms, 321.39 kB).
+- `npm run build` đã chạy thành công 100% (built in 757ms, 321.43 kB).
+
 
 

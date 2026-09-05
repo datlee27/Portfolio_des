@@ -35,13 +35,14 @@ export default function HeroSection() {
 
   return (
     <section id="top" ref={heroRef} className="des4-hero-section">
-      {/* Interactive Neko Cat Component */}
+      {/* Interactive Neko Cat (Socks Skin from webneko.net) */}
       <NekoCat
         followCursor={false}
         showToggle={true}
         showLabel={true}
-        cat="Classic"
+        cat="Socks"
         size="1.25x"
+        labelText="You like cats? 🧦🐱"
         toggleCorner="bottom-right"
       />
 

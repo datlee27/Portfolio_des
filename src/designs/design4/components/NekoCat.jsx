@@ -125,14 +125,14 @@ export default function NekoCat(props) {
         fleeSpeedMultiplier = 1.35,
         size = "1.25x",
         zIndex = 9999,
-        cat = "Classic",
+        cat = "Socks",
         customSprite = {
             src: "",
-            alt: "Custom oneko sprite sheet",
+            alt: "Custom webneko sprite sheet",
         },
         idleBehavior = "sleep",
         catClickable = true,
-        labelText = "You like cats?",
+        labelText = "You like cats? 🧦🐱",
         labelColor = "#000000",
         labelFont = {
             fontSize: "14px",
