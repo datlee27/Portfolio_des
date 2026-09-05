@@ -6,6 +6,7 @@ import IntroSection from './components/IntroSection';
 import ShowreelSection from './components/ShowreelSection';
 import FeaturedProjectsSection from './components/FeaturedProjectsSection';
 import WhatIDoSection from './components/WhatIDoSection';
+import SkillsSection from './components/SkillsSection';
 import ClientsSection from './components/ClientsSection';
 import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
@@ -61,6 +62,9 @@ export default function Design4App() {
           {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
           <WhatIDoSection />
 
+          {/* 5.5 Technical Capabilities & Skills Logo Loop + Trail Effect */}
+          <SkillsSection />
+
           {/* 6. Clients: Deep Black 3D Rotating Carousel */}
           <ClientsSection />
 
@@ -74,3 +78,4 @@ export default function Design4App() {
     </div>
   );
 }
+

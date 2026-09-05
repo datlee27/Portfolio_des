@@ -23,7 +23,7 @@ export default function HeroSection() {
     if (!isCreativeMode) return;
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
-    } catch (err) {}
+    } catch (err) { }
     dragTargetRef.current = {
       key,
       startX: e.clientX,
@@ -50,7 +50,7 @@ export default function HeroSection() {
         if (e.currentTarget.hasPointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
           e.currentTarget.releasePointerCapture(e.pointerId);
         }
-      } catch (err) {}
+      } catch (err) { }
       dragTargetRef.current = null;
     }
   };
@@ -696,12 +696,12 @@ export default function HeroSection() {
               animation: isCreativeMode ? 'pulseGlow 1s ease-in-out infinite' : 'none',
             }}
           >
-            {isCreativeMode ? '⚡' : '▶'}
+            {isCreativeMode ? '▶' : '▶'}
           </span>
           <span>
             {isCreativeMode
               ? 'play reel: CREATIVE MODE ON'
-              : 'play reel (Creative Playground & Cat)'}
+              : 'play reel'}
           </span>
         </div>
 
@@ -732,7 +732,7 @@ export default function HeroSection() {
             }}
             title="Reset element positions"
           >
-            <span>🔄</span> Reset vị trí
+            <span></span> Reset
           </button>
         )}
       </div>
