@@ -5,17 +5,66 @@ export default function HeroSection() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isVinylFast, setIsVinylFast] = useState(false);
   const [smileyEmoji, setSmileyEmoji] = useState('👾');
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isCreativeMode, setIsCreativeMode] = useState(false);
   const [showReelModal, setShowReelModal] = useState(false);
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
 
-  const handlePlayReel = () => {
-    setShowReelModal(true);
-    const el = document.getElementById('d4-showreel');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  // Drag positions for Hero elements in Creative Mode
+  const [dragPositions, setDragPositions] = useState({
+    devMode: { x: 0, y: 0 },
+    customSticker: { x: 0, y: 0 },
+    colorPalette: { x: 0, y: 0 },
+    badge: { x: 0, y: 0 },
+    headline: { x: 0, y: 0 },
+  });
+  const dragTargetRef = useRef(null);
+
+  const handlePointerDown = (key, e) => {
+    if (!isCreativeMode) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
+    dragTargetRef.current = {
+      key,
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: dragPositions[key]?.x || 0,
+      origY: dragPositions[key]?.y || 0,
+    };
+  };
+
+  const handlePointerMove = (key, e) => {
+    if (!dragTargetRef.current || dragTargetRef.current.key !== key) return;
+    const { startX, startY, origX, origY } = dragTargetRef.current;
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+    setDragPositions((prev) => ({
+      ...prev,
+      [key]: { x: origX + deltaX, y: origY + deltaY },
+    }));
+  };
+
+  const handlePointerUp = (e) => {
+    if (dragTargetRef.current) {
+      try {
+        if (e.currentTarget.hasPointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      } catch (err) {}
+      dragTargetRef.current = null;
     }
+  };
+
+  const resetPositions = (e) => {
+    e.stopPropagation();
+    setDragPositions({
+      devMode: { x: 0, y: 0 },
+      customSticker: { x: 0, y: 0 },
+      colorPalette: { x: 0, y: 0 },
+      badge: { x: 0, y: 0 },
+      headline: { x: 0, y: 0 },
+    });
   };
 
   useEffect(() => {
@@ -44,15 +93,14 @@ export default function HeroSection() {
 
   return (
     <section id="top" ref={heroRef} className="des4-hero-section">
-      {/* Interactive Neko Cat (Socks Skin from webneko.net) */}
+      {/* Interactive Neko Cat - Controlled directly by Creative Mode (No standalone bottom-right pill) */}
       <NekoCat
-        followCursor={false}
-        showToggle={true}
-        showLabel={true}
+        followCursor={isCreativeMode}
+        showToggle={false}
+        rememberChoice={false}
+        showLabel={false}
         cat="Socks"
         size="1.25x"
-        labelText="You like cats? 🧦🐱"
-        toggleCorner="bottom-right"
       />
 
       {/* Ambient background decorative grid/blobs */}
@@ -89,44 +137,80 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Floating Interactive Stickers with Parallax */}
+      {/* Creative Mode Interactive Status Banner */}
+      {isCreativeMode && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 30,
+            background: 'rgba(254, 60, 1, 0.92)',
+            color: '#ffffff',
+            padding: '6px 18px',
+            borderRadius: 100,
+            fontSize: 12,
+            fontWeight: 800,
+            fontFamily: 'var(--font-inter)',
+            boxShadow: '0 8px 24px rgba(254,60,1,0.4)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            animation: 'pulseGlow 2s infinite',
+            pointerEvents: 'none',
+          }}
+        >
+          <span>⚡ CREATIVE PLAYGROUND ACTIVE</span>
+          <span style={{ opacity: 0.8, fontWeight: 500 }}>|  Kéo thả các phần tử &amp; Neko Cat theo chuột!</span>
+        </div>
+      )}
+
+      {/* Floating Interactive Stickers with Parallax & Drag */}
 
       {/* 1. Cyber Terminal Sticker (Top Left) */}
       <div
         className="des4-hide-mobile"
+        onPointerDown={(e) => handlePointerDown('devMode', e)}
+        onPointerMove={(e) => handlePointerMove('devMode', e)}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
           position: 'absolute',
           top: '18%',
           left: '8%',
           zIndex: 5,
-          cursor: 'pointer',
-          transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px)`,
-          transition: 'transform 0.15s ease-out',
+          cursor: isCreativeMode ? 'grab' : 'pointer',
+          touchAction: 'none',
+          transform: `translate(${mousePos.x * 30 + dragPositions.devMode.x}px, ${mousePos.y * 30 + dragPositions.devMode.y}px)`,
+          transition: dragTargetRef.current?.key === 'devMode' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
         <div
           style={{
             background: '#0d1117',
             color: '#25ff8d',
-            border: '2px solid #30363d',
+            border: isCreativeMode ? '2px dashed #fe3c01' : '2px solid #30363d',
             borderRadius: 12,
             padding: '8px 14px',
             fontFamily: 'monospace',
             fontSize: 'clamp(12px, 1.5vw, 16px)',
             fontWeight: 800,
-            boxShadow: '0 12px 28px rgba(37,255,141,0.2), 0 4px 12px rgba(0,0,0,0.4)',
-            animation: 'floatGentle 4s ease-in-out infinite',
+            boxShadow: isCreativeMode
+              ? '0 12px 30px rgba(254,60,1,0.4)'
+              : '0 12px 28px rgba(37,255,141,0.2), 0 4px 12px rgba(0,0,0,0.4)',
+            animation: isCreativeMode ? 'none' : 'floatGentle 4s ease-in-out infinite',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            userSelect: 'none',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(-6deg)')}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
         >
           <span style={{ color: '#fe3c01', fontWeight: 900 }}>&gt;_</span>
           <span>dev.mode</span>
           <span style={{ width: 8, height: 14, background: '#25ff8d', display: 'inline-block', animation: 'pulseGlow 1s infinite' }} />
+          {isCreativeMode && <span style={{ fontSize: 10, color: '#fe3c01', marginLeft: 4 }}>🖐 drag</span>}
         </div>
       </div>
 
@@ -141,46 +225,62 @@ export default function HeroSection() {
           display: 'flex',
           alignItems: 'center',
           gap: 16,
-          transform: `translate(${mousePos.x * -25}px, ${mousePos.y * -25}px)`,
-          transition: 'transform 0.15s ease-out',
         }}
       >
         {/* User Custom SVG Sticker */}
         <div
+          onPointerDown={(e) => handlePointerDown('customSticker', e)}
+          onPointerMove={(e) => handlePointerMove('customSticker', e)}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{
             width: 64,
             height: 64,
             filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.18))',
-            animation: 'floatGentle 4.2s ease-in-out infinite',
-            cursor: 'pointer',
-            transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            animation: isCreativeMode ? 'none' : 'floatGentle 4.2s ease-in-out infinite',
+            cursor: isCreativeMode ? 'grab' : 'pointer',
+            touchAction: 'none',
+            userSelect: 'none',
+            transform: `translate(${mousePos.x * -25 + dragPositions.customSticker.x}px, ${mousePos.y * -25 + dragPositions.customSticker.y}px)`,
+            transition: dragTargetRef.current?.key === 'customSticker' ? 'none' : 'transform 0.15s ease-out',
+            outline: isCreativeMode ? '2px dashed #fe3c01' : 'none',
+            outlineOffset: 4,
+            borderRadius: 12,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(12deg)')}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
-          title="Custom Character Sticker"
+          title={isCreativeMode ? 'Kéo thả phần tử!' : 'Custom Character Sticker'}
         >
-          <img src="/assets/custom-sticker.svg" alt="Custom Sticker" style={{ width: '100%', height: '100%', display: 'block' }} />
+          <img src="/assets/custom-sticker.svg" alt="Custom Sticker" style={{ width: '100%', height: '100%', display: 'block', pointerEvents: 'none' }} />
         </div>
 
         {/* Color Palette Glass Lens */}
         <div
+          onPointerDown={(e) => handlePointerDown('colorPalette', e)}
+          onPointerMove={(e) => handlePointerMove('colorPalette', e)}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{
             width: 52,
             height: 52,
             borderRadius: '50%',
             background: 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'blur(10px)',
-            border: '3px solid #000000',
+            border: isCreativeMode ? '3px dashed #fe3c01' : '3px solid #000000',
             boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            animation: 'floatInverse 4.5s ease-in-out infinite',
-            cursor: 'pointer',
+            animation: isCreativeMode ? 'none' : 'floatInverse 4.5s ease-in-out infinite',
+            cursor: isCreativeMode ? 'grab' : 'pointer',
+            touchAction: 'none',
+            userSelect: 'none',
+            transform: `translate(${mousePos.x * -20 + dragPositions.colorPalette.x}px, ${mousePos.y * -20 + dragPositions.colorPalette.y}px)`,
+            transition: dragTargetRef.current?.key === 'colorPalette' ? 'none' : 'transform 0.15s ease-out',
           }}
-          onClick={cycleSmiley}
-          title="Designer Color Lens"
+          onClick={(e) => {
+            if (!isCreativeMode) cycleSmiley();
+          }}
+          title={isCreativeMode ? 'Kéo thả Color Lens!' : 'Designer Color Lens (Click to change emoji)'}
         >
           {/* Tri-color palette pupil */}
           <div
@@ -192,6 +292,7 @@ export default function HeroSection() {
               transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px) rotate(${mousePos.x * 45}deg)`,
               transition: 'transform 0.1s ease-out',
               boxShadow: 'inset 0 0 4px rgba(0,0,0,0.3)',
+              pointerEvents: 'none',
             }}
           />
         </div>
@@ -200,54 +301,61 @@ export default function HeroSection() {
       {/* 3. Glowing Dev & Design Badge Pill */}
       <div
         className="des4-hide-mobile"
+        onPointerDown={(e) => handlePointerDown('badge', e)}
+        onPointerMove={(e) => handlePointerMove('badge', e)}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
           position: 'absolute',
           bottom: '22%',
           left: '10%',
           zIndex: 5,
-          transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)`,
+          cursor: isCreativeMode ? 'grab' : 'pointer',
+          touchAction: 'none',
+          transform: `translate(${mousePos.x * 20 + dragPositions.badge.x}px, ${mousePos.y * 20 + dragPositions.badge.y}px)`,
+          transition: dragTargetRef.current?.key === 'badge' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
         <div
           style={{
-            background: '#090a0f',
+            background: isCreativeMode ? '#fe3c01' : '#090a0f',
             color: '#ffffff',
-            border: '1px solid rgba(255,255,255,0.15)',
+            border: isCreativeMode ? '2px dashed #ffffff' : '1px solid rgba(255,255,255,0.15)',
             padding: '8px 18px',
             borderRadius: 100,
             fontSize: 12,
             fontWeight: 800,
             fontFamily: 'var(--font-inter)',
             boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-            animation: 'floatGentle 5.5s ease-in-out infinite',
-            cursor: 'pointer',
+            animation: isCreativeMode ? 'none' : 'floatGentle 5.5s ease-in-out infinite',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            transition: 'transform 0.3s ease, background 0.3s ease, border-color 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.15) rotate(3deg)';
-            e.currentTarget.style.background = '#fe3c01';
-            e.currentTarget.style.borderColor = '#fe3c01';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-            e.currentTarget.style.background = '#090a0f';
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+            userSelect: 'none',
           }}
         >
-          <span style={{ color: '#25ff8d' }}>⚡</span>
+          <span style={{ color: isCreativeMode ? '#ffffff' : '#25ff8d' }}>⚡</span>
           <span style={{ letterSpacing: '0.05em' }}>FULLSTACK DEV &amp; UI ARTISAN</span>
+          {isCreativeMode && <span style={{ fontSize: 10, opacity: 0.8 }}>🖐 drag</span>}
         </div>
       </div>
 
       {/* Main Dynamic Kinetic Typography Collage */}
       <div
         className="des4-hero-headline"
+        onPointerDown={(e) => handlePointerDown('headline', e)}
+        onPointerMove={(e) => handlePointerMove('headline', e)}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
-          transform: `perspective(1000px) rotateX(${mousePos.y * -5}deg) rotateY(${mousePos.x * 5}deg)`,
-          transition: 'transform 0.15s ease-out',
+          cursor: isCreativeMode ? 'grab' : 'default',
+          touchAction: isCreativeMode ? 'none' : 'auto',
+          userSelect: isCreativeMode ? 'none' : 'auto',
+          outline: isCreativeMode ? '2px dashed rgba(254, 60, 1, 0.6)' : 'none',
+          outlineOffset: 12,
+          borderRadius: 24,
+          transform: `perspective(1000px) rotateX(${mousePos.y * -5}deg) rotateY(${mousePos.x * 5}deg) translate(${dragPositions.headline.x}px, ${dragPositions.headline.y}px)`,
+          transition: dragTargetRef.current?.key === 'headline' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
         {/* Line 1: "TURNING," */}
@@ -572,46 +680,107 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Floating Sound / Pulse Play Button */}
+      {/* Floating Consolidated Play Reel / Creative Playground Button */}
       <div
-        onClick={handlePlayReel}
         style={{
           marginTop: 'clamp(20px, 4vw, 36px)',
           zIndex: 15,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 10,
-          background: '#000000',
-          color: '#ffffff',
-          padding: '12px 24px',
-          borderRadius: 100,
-          cursor: 'pointer',
-          fontFamily: 'var(--font-inter)',
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: '0.02em',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-          transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.08)';
-          e.currentTarget.style.boxShadow = '0 14px 40px rgba(254,60,1,0.35)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+          gap: 12,
         }}
       >
-        <span
+        <div
+          onClick={() => setIsCreativeMode(!isCreativeMode)}
           style={{
-            color: '#fe3c01',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            background: isCreativeMode ? '#fe3c01' : '#000000',
+            color: '#ffffff',
+            padding: '12px 26px',
+            borderRadius: 100,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-inter)',
             fontSize: 14,
-            animation: showReelModal ? 'pulseGlow 1s ease-in-out infinite' : 'none',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            boxShadow: isCreativeMode
+              ? '0 12px 35px rgba(254,60,1,0.5)'
+              : '0 10px 30px rgba(0,0,0,0.2)',
+            transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+            userSelect: 'none',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.08)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          ▶
-        </span>
-        <span>play reel</span>
+          <span
+            style={{
+              color: isCreativeMode ? '#ffffff' : '#fe3c01',
+              fontSize: 14,
+              animation: isCreativeMode ? 'pulseGlow 1s ease-in-out infinite' : 'none',
+            }}
+          >
+            {isCreativeMode ? '⚡' : '▶'}
+          </span>
+          <span>
+            {isCreativeMode
+              ? 'play reel: CREATIVE MODE ON'
+              : 'play reel (Creative Playground & Cat)'}
+          </span>
+        </div>
+
+        {isCreativeMode && (
+          <button
+            onClick={resetPositions}
+            style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              color: '#25ff8d',
+              border: '1px solid rgba(37, 255, 141, 0.4)',
+              padding: '10px 16px',
+              borderRadius: 100,
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#000000';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+            title="Reset element positions"
+          >
+            <span>🔄</span> Reset vị trí
+          </button>
+        )}
+
+        <button
+          onClick={() => setShowReelModal(true)}
+          style={{
+            background: 'transparent',
+            color: '#888888',
+            border: 'none',
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            marginLeft: 4,
+          }}
+          title="Xem video reel đầy đủ"
+        >
+          (xem video)
+        </button>
       </div>
 
       {/* Interactive Showreel Video Modal */}
@@ -725,3 +894,4 @@ export default function HeroSection() {
     </section>
   );
 }
+
