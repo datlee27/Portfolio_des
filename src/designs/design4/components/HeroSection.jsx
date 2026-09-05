@@ -220,14 +220,14 @@ export default function HeroSection() {
           transition: 'transform 0.15s ease-out',
         }}
       >
-        {/* Line 1: "the chaos," */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.04em' }}>
+        {/* Line 1: "TURNING," */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.03em' }}>
           <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-4deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            th
+            tu
           </span>
 
           {/* Interactive Wobbly Emoji Cube */}
@@ -256,66 +256,31 @@ export default function HeroSection() {
           </div>
 
           <span
-            style={{ color: '#a3821a', marginLeft: '0.04em', display: 'inline-block', transition: 'transform 0.25s ease' }}
+            style={{ color: '#a3821a', marginLeft: '0.02em', display: 'inline-block', transition: 'transform 0.25s ease' }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            ch
+            rn
           </span>
-
-          {/* 3D React/TS Tech Chip Badge (<tsx/>) */}
-          <div
-            style={{
-              width: '0.7em',
-              height: '0.65em',
-              background: '#090d16',
-              borderRadius: '0.14em',
-              border: '2px solid #0b1dff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#61dafb',
-              fontSize: '0.28em',
-              fontWeight: 900,
-              fontFamily: 'monospace',
-              boxShadow: '0 4px 16px rgba(11,29,255,0.4)',
-              cursor: 'pointer',
-              transition: 'transform 0.3s ease, border-color 0.3s ease',
-              lineHeight: 1,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.25) rotate(-10deg)';
-              e.currentTarget.style.borderColor = '#fe3c01';
-              e.currentTarget.style.color = '#fe3c01';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-              e.currentTarget.style.borderColor = '#0b1dff';
-              e.currentTarget.style.color = '#61dafb';
-            }}
-            title="React & TS Code Stack"
-          >
-            &lt;tsx/&gt;
-          </div>
 
           <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(4deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            os
+            ing
           </span>
-          <span style={{ color: '#25ff8d' }}>,</span>
+          <span style={{ color: '#fe3c01' }}>,</span>
         </div>
 
-        {/* Line 2: "of" with rotated DAT LE & Designer Pen Tool */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.1em', marginTop: '-0.05em' }}>
+        {/* Line 2: "CREATIVE CHAOS" with rotated DAT LE & Pen Tool */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.06em', marginTop: '-0.05em' }}>
           <span
-            style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
+            style={{ color: '#0b1dff', display: 'inline-block', transition: 'transform 0.25s ease' }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            o
+            creative
           </span>
 
           {/* Vertical DAT LE kinetic badge */}
@@ -343,6 +308,14 @@ export default function HeroSection() {
           >
             DAT LE
           </div>
+
+          <span
+            style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-4deg)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
+          >
+            chaos
+          </span>
 
           {/* Designer Vector Pen Tool Node */}
           <div
@@ -384,14 +357,14 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Line 3: "making sh*t" / "mak/gs |" */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.02em', marginTop: '-0.05em' }}>
+        {/* Line 3: "INTO DIGITAL" with Vinyl, Tech Chip & Vibe Code */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.03em', marginTop: '-0.05em' }}>
           <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            m
+            into
           </span>
 
           {/* Green Vinyl Record (Interactive Spinning) */}
@@ -432,9 +405,44 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <span style={{ color: '#8bc200', transform: 'rotate(10deg)', display: 'inline-block' }}>&lt;</span>
-          <span>g</span>
-          <span>s</span>
+          <span style={{ color: '#8bc200', display: 'inline-block' }}>digi</span>
+
+          {/* 3D React/TS Tech Chip Badge (<tsx/>) */}
+          <div
+            style={{
+              width: '0.7em',
+              height: '0.65em',
+              background: '#090d16',
+              borderRadius: '0.14em',
+              border: '2px solid #0b1dff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#61dafb',
+              fontSize: '0.28em',
+              fontWeight: 900,
+              fontFamily: 'monospace',
+              boxShadow: '0 4px 16px rgba(11,29,255,0.4)',
+              cursor: 'pointer',
+              transition: 'transform 0.3s ease, border-color 0.3s ease',
+              lineHeight: 1,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.25) rotate(-10deg)';
+              e.currentTarget.style.borderColor = '#fe3c01';
+              e.currentTarget.style.color = '#fe3c01';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+              e.currentTarget.style.borderColor = '#0b1dff';
+              e.currentTarget.style.color = '#61dafb';
+            }}
+            title="React & TS Code Stack"
+          >
+            &lt;tsx/&gt;
+          </div>
+
+          <span>tal</span>
 
           {/* Cyber "VIBE CODE" Cassette Badge */}
           <div
@@ -484,20 +492,9 @@ export default function HeroSection() {
           >
             ~
           </div>
-
-          {/* Red vertical bar */}
-          <div
-            style={{
-              width: '0.12em',
-              height: '0.65em',
-              background: '#fe3c01',
-              borderRadius: '0.04em',
-              animation: 'pulseGlow 2s ease-in-out infinite',
-            }}
-          />
         </div>
 
-        {/* Line 4: "real" */}
+        {/* Line 4: "REALITY" */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.02em', marginTop: '-0.05em' }}>
           <span
             style={{
@@ -508,7 +505,7 @@ export default function HeroSection() {
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-6deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            r
+            real
           </span>
 
           {/* 3D Glossy Inflatable Balloon 'e' */}
@@ -539,18 +536,9 @@ export default function HeroSection() {
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            a
+            ity
           </span>
-          <span
-            style={{
-              display: 'inline-block',
-              transition: 'transform 0.25s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(6deg)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
-          >
-            l
-          </span>
+          <span style={{ color: '#fe3c01', fontWeight: 900 }}>.</span>
         </div>
       </div>
 
