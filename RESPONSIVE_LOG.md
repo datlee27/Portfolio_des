@@ -44,16 +44,14 @@
    - Font size Hero linh hoạt dành riêng cho màn hình nhỏ: `@media (max-width: 640px) { fontSize: clamp(44px, 13.5vw, 76px) !important; }`.
    - Tiêu đề chữ kinetic ("the chaos, of DAT LE, making sh*t, real") hiển thị **to rõ, đậm nét, vừa vặn và nổi bật ngay chính giữa màn hình điện thoại**.
 
-2. **Fix Nút Corner Nav Không Đè Lên Chữ Khi Cuộn Trang (`CornerNav.jsx` & `design4.css`)**:
-   - 4 nút điều hướng góc (**dl***, **work**, **blog**, **about**, **lab**) được thiết kế thành **Floating Glass Pills** với nền mờ sắc nét (`background: rgba(0,0,0,0.88)`, `backdrop-filter: blur(8px)`).
-
-3. **Sửa Lỗi Thẻ 3D Dính & Chồng Cạnh Lên Nhau (`ClientsSection.jsx`)**:
-   - Bán kính xoay 3D Cylinder chuẩn toán học ($R > \frac{W}{0.7654}$):
-     - Mobile (<600px): `cardWidth = 140px`, `radius = 240px`.
-     - Tablet (600px-900px): `cardWidth = 200px`, `radius = 320px`.
-     - Desktop (>=900px): `cardWidth = 260px`, `radius = 420px`.
+4. **Khôi Phục Hiệu Ứng Tự Động Đổi Màu Động Của Nút Điều Hướng Góc (`CornerNav.jsx` & `design4.css`)**:
+   - Khôi phục cơ chế **`mix-blend-mode: difference`** với màu chữ mặc định `#ffffff` cho 4 nút điều hướng góc (**dl***, **work**, **blog**, **about**, **lab**).
+   - Khi ở nền sáng (trắng), chữ tự động đảo ngược thành **màu đen**.
+   - Khi cuộn xuống các section nền tối (đen/nền ảnh), chữ tự động đảo ngược thành **màu trắng**.
+   - Khi lướt qua các mảng màu nổi (cam/xanh/hồng), chữ đảo ngược thành các dải màu tương phản cực nét chuẩn Brutalist.
 
 ---
 
 ## 🌐 Kiểm Tra Build
-- `npm run build` đã chạy thành công 100% (built in 580ms, 311.1 kB).
+- `npm run build` đã chạy thành công 100% (built in 539ms, 311.54 kB).
+

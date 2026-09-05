@@ -65,7 +65,7 @@
 
 @media (max-width: 1024px) {
   .des4-container {
-    padding: 0 24px;
+    padding: 0 28px;
   }
 }
 
@@ -197,33 +197,40 @@
   }
 }
 
-/* 4 Corner Navigation Fixed Anchors */
+/* 4 Corner Navigation Fixed Anchors (Color Inverting via mix-blend-mode: difference) */
 .des4-corner-anchor {
   position: fixed;
   z-index: 99999;
   font-family: var(--font-outfit);
   font-weight: 900;
-  color: #ffffff;
-  mix-blend-mode: difference;
+  color: #ffffff !important;
+  mix-blend-mode: difference !important;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
   pointer-events: auto;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
   transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.des4-corner-group {
+  position: fixed;
+  z-index: 99999;
+  mix-blend-mode: difference !important;
+  color: #ffffff !important;
+  pointer-events: auto;
+}
+
+.des4-corner-group .des4-corner-anchor {
+  position: relative !important;
 }
 
 @media (max-width: 640px) {
   .des4-corner-anchor {
-    font-size: 12px !important;
-    background: rgba(0, 0, 0, 0.88) !important;
-    color: #ffffff !important;
-    mix-blend-mode: normal !important;
-    padding: 6px 14px !important;
-    border-radius: 100px !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+    font-size: 14px !important;
   }
 }
 

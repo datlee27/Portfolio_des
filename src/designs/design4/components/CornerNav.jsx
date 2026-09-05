@@ -29,13 +29,17 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         style={{
+          position: 'fixed',
           top: 'clamp(16px, 3.5vw, 32px)',
           left: 'clamp(16px, 4vw, 36px)',
+          zIndex: 99999,
           fontFamily: 'var(--font-outfit)',
           fontSize: 'clamp(18px, 4vw, 24px)',
           fontWeight: 900,
           letterSpacing: '-0.03em',
           lineHeight: 1,
+          color: '#ffffff',
+          mixBlendMode: 'difference',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -45,6 +49,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
 
       {/* Top Right: work & blog */}
       <div
+        className="des4-corner-group"
         style={{
           position: 'fixed',
           top: 'clamp(16px, 3.5vw, 32px)',
@@ -53,6 +58,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           display: 'flex',
           alignItems: 'center',
           gap: 16,
+          mixBlendMode: 'difference',
+          color: '#ffffff',
         }}
       >
         <button
@@ -68,6 +75,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
             border: 'none',
             padding: 0,
             lineHeight: 1,
+            color: '#ffffff',
+            mixBlendMode: 'difference',
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -88,6 +97,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
             border: 'none',
             padding: 0,
             lineHeight: 1,
+            color: '#ffffff',
+            mixBlendMode: 'difference',
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -101,8 +112,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
         className="des4-corner-anchor"
         onClick={() => scrollTo('d4-intro')}
         style={{
+          position: 'fixed',
           bottom: 'clamp(16px, 3.5vw, 32px)',
           left: 'clamp(16px, 4vw, 36px)',
+          zIndex: 99999,
           fontFamily: 'var(--font-outfit)',
           fontSize: 'clamp(14px, 3.5vw, 18px)',
           fontWeight: 800,
@@ -111,6 +124,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           border: 'none',
           padding: 0,
           lineHeight: 1,
+          color: '#ffffff',
+          mixBlendMode: 'difference',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -125,8 +140,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           if (onOpenLab) onOpenLab();
         }}
         style={{
+          position: 'fixed',
           bottom: 'clamp(16px, 3.5vw, 32px)',
           right: 'clamp(16px, 4vw, 36px)',
+          zIndex: 99999,
           fontFamily: 'var(--font-outfit)',
           fontSize: 'clamp(14px, 3.5vw, 18px)',
           fontWeight: 800,
@@ -135,6 +152,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           border: 'none',
           padding: 0,
           lineHeight: 1,
+          color: '#ffffff',
+          mixBlendMode: 'difference',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -144,3 +163,4 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
     </>
   );
 }
+
