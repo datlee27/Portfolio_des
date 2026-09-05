@@ -35,13 +35,14 @@ export default function HeroSection() {
 
   return (
     <section id="top" ref={heroRef} className="des4-hero-section">
-      {/* Interactive Neko Cat Component */}
+      {/* Interactive Tiny Black Poodle Pet Component */}
       <NekoCat
         followCursor={false}
         showToggle={true}
         showLabel={true}
-        cat="Classic"
-        size="1.25x"
+        cat="Black"
+        size="1x"
+        labelText="You like poodles? 🐩"
         toggleCorner="bottom-right"
       />
 
