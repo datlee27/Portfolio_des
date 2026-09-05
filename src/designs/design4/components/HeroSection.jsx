@@ -6,8 +6,17 @@ export default function HeroSection() {
   const [isVinylFast, setIsVinylFast] = useState(false);
   const [smileyEmoji, setSmileyEmoji] = useState('👾');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showReelModal, setShowReelModal] = useState(false);
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
+
+  const handlePlayReel = () => {
+    setShowReelModal(true);
+    const el = document.getElementById('d4-showreel');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -544,7 +553,7 @@ export default function HeroSection() {
 
       {/* Floating Sound / Pulse Play Button */}
       <div
-        onClick={() => setIsPlaying(!isPlaying)}
+        onClick={handlePlayReel}
         style={{
           marginTop: 'clamp(20px, 4vw, 36px)',
           zIndex: 15,
@@ -576,13 +585,122 @@ export default function HeroSection() {
           style={{
             color: '#fe3c01',
             fontSize: 14,
-            animation: isPlaying ? 'pulseGlow 1s ease-in-out infinite' : 'none',
+            animation: showReelModal ? 'pulseGlow 1s ease-in-out infinite' : 'none',
           }}
         >
-          {isPlaying ? '⏸' : '▶'}
+          ▶
         </span>
-        <span>{isPlaying ? 'creative mode: on' : 'play reel'}</span>
+        <span>play reel</span>
       </div>
+
+      {/* Interactive Showreel Video Modal */}
+      {showReelModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999999,
+            background: 'rgba(0, 0, 0, 0.88)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+            animation: 'fadeIn 0.3s ease',
+          }}
+          onClick={() => setShowReelModal(false)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 900,
+              background: '#111115',
+              borderRadius: 24,
+              overflow: 'hidden',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 32px 80px rgba(0, 0, 0, 0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: '20px 24px',
+                background: '#18181f',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ color: '#fe3c01', fontSize: 18 }}>🎬</span>
+                <span
+                  style={{
+                    color: '#ffffff',
+                    fontFamily: 'var(--font-outfit)',
+                    fontWeight: 800,
+                    fontSize: 18,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  DAT LE — CREATIVE SHOWREEL 2026
+                </span>
+              </div>
+              <button
+                onClick={() => setShowReelModal(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  color: '#ffffff',
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  fontSize: 18,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background 0.2s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#fe3c01')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Video Container */}
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000000' }}>
+              <iframe
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0"
+                title="Dat Le Creative Showreel"
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            {/* Footer Description */}
+            <div
+              style={{
+                padding: '16px 24px',
+                background: '#18181f',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: 13,
+                color: '#ababab',
+              }}
+            >
+              <span>Fullstack Engineering • Responsive Brutalist UI/UX • AI Logic</span>
+              <span style={{ color: '#25ff8d', fontWeight: 700 }}>● LIVE SHOWCASE</span>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
