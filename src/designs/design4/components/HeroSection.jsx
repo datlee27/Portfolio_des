@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import NekoCat from './NekoCat';
 
 export default function HeroSection() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -34,6 +35,16 @@ export default function HeroSection() {
 
   return (
     <section id="top" ref={heroRef} className="des4-hero-section">
+      {/* Interactive Neko Cat Component */}
+      <NekoCat
+        followCursor={false}
+        showToggle={true}
+        showLabel={true}
+        cat="Classic"
+        size="1.25x"
+        toggleCorner="bottom-right"
+      />
+
       {/* Ambient background decorative grid/blobs */}
       <div
         className="des4-hide-mobile"
