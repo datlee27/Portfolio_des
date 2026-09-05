@@ -123,16 +123,16 @@ export default function NekoCat(props) {
         speed = 10,
         fleeDistance = 120,
         fleeSpeedMultiplier = 1.35,
-        size = "1x",
+        size = "1.25x",
         zIndex = 9999,
-        cat = "Black",
+        cat = "Classic",
         customSprite = {
             src: "",
-            alt: "Custom poodle sprite sheet",
+            alt: "Custom oneko sprite sheet",
         },
         idleBehavior = "sleep",
         catClickable = true,
-        labelText = "You like poodles? 🐩",
+        labelText = "You like cats?",
         labelColor = "#000000",
         labelFont = {
             fontSize: "14px",
@@ -298,9 +298,9 @@ export default function NekoCat(props) {
             tickRef.current += 1;
             let target = isFollowing
                 ? {
-                      x: mouseRef.current.x - catPixelSize / 2,
-                      y: mouseRef.current.y - catPixelSize / 2,
-                  }
+                    x: mouseRef.current.x - catPixelSize / 2,
+                    y: mouseRef.current.y - catPixelSize / 2,
+                }
                 : homeRef.current;
 
             const toMouseX =

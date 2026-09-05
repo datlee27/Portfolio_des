@@ -50,11 +50,13 @@
    - Khi cuộn xuống các section nền tối (đen/nền ảnh), chữ tự động đảo ngược thành **màu trắng**.
    - Khi lướt qua các mảng màu nổi (cam/xanh/hồng), chữ đảo ngược thành các dải màu tương phản cực nét chuẩn Brutalist.
 
-5. **Tích Hợp Component Pet Interactive Chó Poodle Tiny Màu Đen Vào Phần Hero (`HeroSection.jsx` & `NekoCat.jsx`)**:
-   - Chuyển đổi thành chú chó **Poodle Tiny màu đen** (`cat="Black"`, `size="1x"`) tương tác với chuyển động chuột và trạng thái nghỉ ngủ/chạy trốn/vẫy đuôi mượt mà trên tiêu đề Hero.
-   - Cập nhật nút Toggle Pill thành `"You like poodles? 🐩"` ở góc màn hình cho phép bật/tắt chế độ cún đuổi theo con trỏ chuột (`followCursor`), tự động lưu lựa chọn vào `localStorage`.
+5. **Tích Hợp Component NekoCat Interactive Vào Phần Hero (`HeroSection.jsx` & `NekoCat.jsx`)**:
+   - Tích hợp chú mèo Neko pixel tương tác với chuyển động chuột và trạng thái nghỉ ngủ/liếm lông/chạy trốn/nằm ngủ trên tiêu đề Hero.
+   - Thêm nút Toggle Pill `"You like cats?"` ở góc màn hình cho phép bật/tắt chế độ mèo đuổi theo con trỏ chuột (`followCursor`), tự động lưu lựa chọn vào `localStorage`.
 
 ---
 
 ## 🌐 Kiểm Tra Build
-- `npm run build` đã chạy thành công 100% (built in 663ms, 321.42 kB).
+- `npm run build` đã chạy thành công 100% (built in 561ms, 321.39 kB).
+
+
