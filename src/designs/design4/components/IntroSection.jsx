@@ -62,10 +62,10 @@ export default function IntroSection() {
             </div>
           </div>
         </div>
-
-        {/* ─── CLOTHESLINE GALLERY (Hanging Polaroids on Curved Wire) ─── */}
-        <ClotheslineGallery />
       </div>
+
+      {/* ─── CLOTHESLINE GALLERY (Full Width Screen Wire & Draggable) ─── */}
+      <ClotheslineGallery />
     </section>
   );
 }

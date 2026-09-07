@@ -1,200 +1,287 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { IoCloseOutline } from 'react-icons/io5';
 
-// Default sample images matching the Framer Clothesline Gallery link provided by user
-const DEFAULT_CLOTHESLINE_PHOTOS = [
+// Default sample photos stored locally with fallback to Framer CDN
+const DEFAULT_PHOTOS = [
   {
     id: 1,
     title: 'Post-it Brainstorm',
     subtitle: 'Iterative prototypes & messy ideation',
-    src: 'https://framerusercontent.com/images/C6p09vLh49q0WPgOef4V7TUBgEg.png?width=1200&height=600',
-    aspectRatio: '1200 / 600',
-    baseRotate: 22,
-    hoverRotate: 34,
-    hoverY: 12,
-    hoverScale: 1.2,
-    position: {
-      left: '12%',
-      top: '80px',
-    },
-    clipOffset: {
-      top: '-18px',
-      left: '50%',
-    },
+    src: '/images/clothesline/photo1.png',
+    fallbackSrc: 'https://framerusercontent.com/images/C6p09vLh49q0WPgOef4V7TUBgEg.png?width=1200&height=600',
+    t: 0.12, // 12% along the wire
   },
   {
     id: 2,
     title: 'In The Elements',
     subtitle: 'Observation, texture, and field research',
-    src: 'https://framerusercontent.com/images/AqWlfbJga6pA8kddv07uVzPsqdE.png?width=900&height=1200',
-    aspectRatio: '900 / 1200',
-    baseRotate: 10,
-    hoverRotate: -4,
-    hoverY: 12,
-    hoverScale: 1.2,
-    position: {
-      left: '31%',
-      top: '185px',
-    },
-    clipOffset: {
-      top: '-18px',
-      left: '50%',
-    },
+    src: '/images/clothesline/photo2.png',
+    fallbackSrc: 'https://framerusercontent.com/images/AqWlfbJga6pA8kddv07uVzPsqdE.png?width=900&height=1200',
+    t: 0.31, // 31% along the wire
   },
   {
     id: 3,
     title: 'Artisan Workshop',
     subtitle: 'Where digital engineering meets tactile craft',
-    src: 'https://framerusercontent.com/images/8ntZg49nxKYsJnGQ66vctVPaPo.png?width=1200&height=1200',
-    aspectRatio: '1200 / 1200',
-    baseRotate: -1,
-    hoverRotate: 12,
-    hoverY: 12,
-    hoverScale: 1.2,
-    position: {
-      left: '50%',
-      top: '240px',
-    },
-    clipOffset: {
-      top: '-18px',
-      left: '50%',
-    },
+    src: '/images/clothesline/photo3.png',
+    fallbackSrc: 'https://framerusercontent.com/images/8ntZg49nxKYsJnGQ66vctVPaPo.png?width=1200&height=1200',
+    t: 0.50, // 50% dead center
   },
   {
     id: 4,
     title: 'Denim & Architecture',
     subtitle: 'Raw materiality and spatial proportion',
-    src: 'https://framerusercontent.com/images/SdEmNHumLS0EHWsG6x8g0CWHxKw.png?width=899&height=1199',
-    aspectRatio: '899 / 1199',
-    baseRotate: -11,
-    hoverRotate: -22,
-    hoverY: 12,
-    hoverScale: 1.2,
-    position: {
-      left: '69%',
-      top: '185px',
-    },
-    clipOffset: {
-      top: '-18px',
-      left: '50%',
-    },
+    src: '/images/clothesline/photo4.png',
+    fallbackSrc: 'https://framerusercontent.com/images/SdEmNHumLS0EHWsG6x8g0CWHxKw.png?width=899&height=1199',
+    t: 0.69, // 69% along the wire
   },
   {
     id: 5,
     title: 'Light & Shadows',
     subtitle: 'Quiet contrasts and atmospheric stillness',
-    src: 'https://framerusercontent.com/images/tiketPH2eVOgFb1uzQG4NawdMGo.jpg?width=906&height=1200',
-    aspectRatio: '906 / 1200',
-    baseRotate: -22,
-    hoverRotate: -34,
-    hoverY: 12,
-    hoverScale: 1.2,
-    position: {
-      left: '88%',
-      top: '80px',
-    },
-    clipOffset: {
-      top: '-18px',
-      left: '50%',
-    },
+    src: '/images/clothesline/photo5.jpg',
+    fallbackSrc: 'https://framerusercontent.com/images/tiketPH2eVOgFb1uzQG4NawdMGo.jpg?width=906&height=1200',
+    t: 0.88, // 88% along the wire
   },
 ];
 
-const BINDER_CLIP_URL = 'https://framerusercontent.com/images/U9eXOl3LNm2e6HGQ8jzhLdIn8BM.png?width=736&height=736';
+const BINDER_CLIP_LOCAL = '/images/clothesline/clip.png';
+const BINDER_CLIP_FALLBACK = 'https://framerusercontent.com/images/U9eXOl3LNm2e6HGQ8jzhLdIn8BM.png?width=736&height=736';
 
 export default function ClotheslineGallery({
-  photos = DEFAULT_CLOTHESLINE_PHOTOS,
+  photos = DEFAULT_PHOTOS,
   className = '',
   style = {},
 }) {
+  const containerRef = useRef(null);
+  const viewportRef = useRef(null);
+
+  const [containerWidth, setContainerWidth] = useState(1440);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeModalPhoto, setActiveModalPhoto] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Close lightbox on Escape key
+  // Drag physics tracking
+  const dragRef = useRef({
+    isDown: false,
+    startX: 0,
+    scrollLeft: 0,
+    hasMoved: false,
+  });
+
+  // Measure container width and adjust to window/container size
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth || window.innerWidth;
+        setContainerWidth(w);
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Keyboard escape for modal
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setActiveModalPhoto(null);
-      }
+      if (e.key === 'Escape') setActiveModalPhoto(null);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Stage dimensions based on screen width
+  const stageWidth = useMemo(() => {
+    // Allows full screen stretch on desktop, with minimum width for smooth dragging on smaller screens
+    return Math.max(containerWidth, 1280);
+  }, [containerWidth]);
+
+  const isMobile = containerWidth < 768;
+  const stageHeight = isMobile ? 420 : 480;
+  const yStart = isMobile ? 25 : 35;
+  const yMid = isMobile ? 210 : 250;
+
+  // Exact Bernstein Bezier formula for quadratic curve:
+  // Control point is chosen so the vertex hits yMid at t = 0.5:
+  // y(t) = yStart + 4 * t * (1 - t) * (yMid - yStart)
+  const wireCurveData = useMemo(() => {
+    const controlY = 2 * yMid - yStart;
+    const pathD = `M -30 ${yStart} Q ${stageWidth / 2} ${controlY} ${stageWidth + 30} ${yStart}`;
+
+    const deltaY = yMid - yStart;
+
+    // Calculate exact (x, y) and tangent angle for each photo
+    const calculatedPhotos = photos.map((item) => {
+      const t = item.t;
+      const x = stageWidth * t;
+      // Exact y on the Bezier curve
+      const y = yStart + 4 * t * (1 - t) * deltaY;
+
+      // Tangent slope dy/dx = (4 * (1 - 2*t) * deltaY) / stageWidth
+      const slope = (4 * (1 - 2 * t) * deltaY) / stageWidth;
+      const naturalAngle = (Math.atan(slope) * 180) / Math.PI;
+
+      return {
+        ...item,
+        x,
+        y,
+        naturalAngle,
+        hoverAngle: naturalAngle > 0 ? naturalAngle + 12 : naturalAngle - 12,
+      };
+    });
+
+    return { pathD, calculatedPhotos };
+  }, [stageWidth, yStart, yMid, photos]);
+
+  // Mouse / Touch Drag Handlers for horizontal pan on desktop & mobile
+  const handlePointerDown = (e) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    dragRef.current = {
+      isDown: true,
+      startX: e.clientX,
+      scrollLeft: viewportRef.current ? viewportRef.current.scrollLeft : 0,
+      hasMoved: false,
+    };
+    setIsDragging(true);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch { }
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragRef.current.isDown || !viewportRef.current) return;
+    const deltaX = e.clientX - dragRef.current.startX;
+    if (Math.abs(deltaX) > 5) {
+      dragRef.current.hasMoved = true;
+    }
+    viewportRef.current.scrollLeft = dragRef.current.scrollLeft - deltaX;
+  };
+
+  const handlePointerUp = (e) => {
+    dragRef.current.isDown = false;
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch { }
+  };
+
+  const handleCardClick = useCallback((item) => {
+    if (!dragRef.current.hasMoved) {
+      setActiveModalPhoto(item);
+    }
+  }, []);
+
   return (
-    <div className={`des4-clothesline-wrapper ${className}`} style={style}>
-      {/* Scrollable Viewport for Mobile / Centered for Desktop */}
-      <div className="des4-clothesline-viewport">
-        <div className="des4-clothesline-stage">
-          {/* Hanging Clothesline Curved Wire (SVG) */}
+    <div
+      ref={containerRef}
+      className={`des4-clothesline-fullwidth-wrapper ${className}`}
+      style={style}
+    >
+      {/* Draggable & Scrollable Viewport */}
+      <div
+        ref={viewportRef}
+        className={`des4-clothesline-pan-viewport ${isDragging ? 'is-dragging' : ''}`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        <div
+          className="des4-clothesline-pan-stage"
+          style={{
+            width: stageWidth,
+            height: stageHeight,
+          }}
+        >
+          {/* Mathematically Exact SVG Hanging Wire */}
           <svg
-            className="des4-clothesline-wire-svg"
-            viewBox="0 0 1326 303.5"
+            className="des4-clothesline-pan-svg"
+            style={{ width: stageWidth, height: stageHeight }}
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
           >
-            {/* Subtle soft shadow of the wire */}
+            {/* Ambient wire drop shadow */}
             <path
-              d="M 1326 2 C 1326 169.618 1029.165 305.5 663 305.5 C 296.835 305.5 0 169.618 0 2"
-              stroke="rgba(0, 0, 0, 0.08)"
-              strokeWidth="2.5"
-              fill="transparent"
+              d={wireCurveData.pathD}
+              stroke="rgba(0, 0, 0, 0.12)"
+              strokeWidth="4"
+              transform="translate(0, 3)"
             />
-            {/* Main metallic wire */}
+            {/* Realistic metallic steel wire */}
             <path
-              d="M 1326 0 C 1326 167.618 1029.165 303.5 663 303.5 C 296.835 303.5 0 167.618 0 0"
-              stroke="#94a3b8"
-              strokeWidth="2"
-              fill="transparent"
+              d={wireCurveData.pathD}
+              stroke="#64748b"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            {/* Top highlight beam */}
+            <path
+              d={wireCurveData.pathD}
+              stroke="rgba(255, 255, 255, 0.4)"
+              strokeWidth="1"
+              strokeLinecap="round"
             />
           </svg>
 
-          {/* 5 Hanging Polaroid Cards with Binder Clips */}
-          {photos.map((item, index) => {
+          {/* 5 Polaroid Cards Hanging from the Wire */}
+          {wireCurveData.calculatedPhotos.map((item, index) => {
             const isHovered = hoveredIndex === index;
-            const currentRotate = isHovered ? item.hoverRotate : item.baseRotate;
-            const currentScale = isHovered ? item.hoverScale : 1;
-            const currentY = isHovered ? item.hoverY : 0;
+            const currentAngle = isHovered ? item.hoverAngle : item.naturalAngle;
+            const scale = isHovered ? 1.18 : 1;
 
             return (
               <div
                 key={item.id || index}
-                className="des4-clothesline-pin-group"
+                className="des4-clothesline-pin-anchor"
                 style={{
-                  left: item.position.left,
-                  top: item.position.top,
-                  zIndex: isHovered ? 40 : 10 + index,
+                  left: item.x,
+                  top: item.y,
+                  zIndex: isHovered ? 50 : 10 + index,
                 }}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => setActiveModalPhoto(item)}
-                title="Click to preview photo"
+                onClick={() => handleCardClick(item)}
+                title="Click to zoom preview"
               >
-                {/* Physical Card Container with Spring Transitions */}
+                {/* 
+                  The entire card + clip rotates around (0, 0)
+                  which is the EXACT POINT where the wire touches the clip loop!
+                */}
                 <div
-                  className="des4-clothesline-card-pivot"
+                  className="des4-clothesline-swing-group"
                   style={{
-                    transform: `translate(-50%, 0) rotate(${currentRotate}deg) translateY(${currentY}px) scale(${currentScale})`,
+                    transform: `rotate(${currentAngle}deg) scale(${scale})`,
+                    transformOrigin: '0 0',
+                    transition: isDragging
+                      ? 'none'
+                      : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                   }}
                 >
-                  {/* Golden Metallic Binder Clip clamping onto the top of the photo */}
-                  <img
-                    src={BINDER_CLIP_URL}
-                    alt="binder clip"
-                    className="des4-clothesline-clip-img"
-                    style={{
-                      top: item.clipOffset.top,
-                      left: item.clipOffset.left,
-                    }}
-                    draggable={false}
-                  />
+                  {/* Golden Binder Clip (Centering the top loop directly on y=0) */}
+                  <div className="des4-clothesline-clip-holder">
+                    <img
+                      src={BINDER_CLIP_LOCAL}
+                      onError={(e) => {
+                        e.currentTarget.src = BINDER_CLIP_FALLBACK;
+                      }}
+                      alt="Binder Clip"
+                      className="des4-clothesline-clip-img"
+                      draggable={false}
+                    />
+                  </div>
 
-                  {/* Classic White Polaroid Frame */}
-                  <div className={`des4-clothesline-polaroid ${isHovered ? 'is-hovered' : ''}`}>
-                    <div className="des4-clothesline-photo-container">
+                  {/* Classic Polaroid Card Clamped by the Clip */}
+                  <div
+                    className={`des4-clothesline-polaroid-frame ${isHovered ? 'is-hovered' : ''}`}
+                  >
+                    <div className="des4-clothesline-polaroid-inner">
                       <img
                         src={item.src}
+                        onError={(e) => {
+                          if (item.fallbackSrc) e.currentTarget.src = item.fallbackSrc;
+                        }}
                         alt={item.title}
                         className="des4-clothesline-photo-img"
                         loading="lazy"
@@ -209,12 +296,14 @@ export default function ClotheslineGallery({
         </div>
       </div>
 
-      {/* Swipe cue on mobile screens */}
-      <div className="des4-clothesline-mobile-cue">
-        <span>↔ Swipe to explore hanging gallery</span>
+      {/* Swipe / Drag interactive hint */}
+      <div className="des4-clothesline-drag-indicator">
+        <span className="des4-clothesline-drag-pill">
+          ↔ Kéo ngang hoặc vuốt để xem toàn bộ dây ảnh
+        </span>
       </div>
 
-      {/* Interactive Lightbox Modal when clicking a photo */}
+      {/* Interactive Lightbox Modal */}
       {activeModalPhoto && (
         <div
           className="des4-clothesline-modal-backdrop"
@@ -227,7 +316,7 @@ export default function ClotheslineGallery({
             <button
               className="des4-clothesline-modal-close"
               onClick={() => setActiveModalPhoto(null)}
-              aria-label="Close photo preview"
+              aria-label="Close"
             >
               <IoCloseOutline size={26} />
             </button>
@@ -235,6 +324,11 @@ export default function ClotheslineGallery({
             <div className="des4-clothesline-modal-card">
               <img
                 src={activeModalPhoto.src}
+                onError={(e) => {
+                  if (activeModalPhoto.fallbackSrc) {
+                    e.currentTarget.src = activeModalPhoto.fallbackSrc;
+                  }
+                }}
                 alt={activeModalPhoto.title}
                 className="des4-clothesline-modal-img"
               />

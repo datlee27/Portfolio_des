@@ -607,91 +607,101 @@
 }
 
 /* ==========================================================================
-   Clothesline Gallery (Hanging Polaroids on Curved Wire)
+   Clothesline Gallery (Full-Width Screen Wire with Exact Math & Pan Drag)
    ========================================================================== */
-.des4-clothesline-wrapper {
+.des4-clothesline-fullwidth-wrapper {
   width: 100%;
+  overflow: hidden;
   position: relative;
-  margin-top: 24px;
-  margin-bottom: 20px;
+  margin: 30px 0 10px;
   user-select: none;
 }
 
-.des4-clothesline-viewport {
+.des4-clothesline-pan-viewport {
   width: 100%;
   overflow-x: auto;
-  overflow-y: visible;
-  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  cursor: grab;
+  user-select: none;
   scrollbar-width: none;
   display: flex;
   justify-content: center;
-  padding: 20px 0 30px;
+  padding: 10px 0 20px;
 }
 
-.des4-clothesline-viewport::-webkit-scrollbar {
+.des4-clothesline-pan-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.des4-clothesline-pan-viewport::-webkit-scrollbar {
   display: none;
 }
 
-.des4-clothesline-stage {
+.des4-clothesline-pan-stage {
   position: relative;
-  width: 100%;
-  max-width: 1240px;
-  height: 480px;
   flex-shrink: 0;
 }
 
-.des4-clothesline-wire-svg {
+.des4-clothesline-pan-svg {
   position: absolute;
-  top: 15px;
+  top: 0;
   left: 0;
-  width: 100%;
-  height: 270px;
   pointer-events: none;
   overflow: visible;
 }
 
-.des4-clothesline-pin-group {
+.des4-clothesline-pin-anchor {
   position: absolute;
   cursor: pointer;
-  transform: translate(-50%, 0);
-  transition: z-index 0.2s;
+  user-select: none;
 }
 
-.des4-clothesline-card-pivot {
+.des4-clothesline-swing-group {
   position: relative;
-  transform-origin: top center;
-  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   will-change: transform;
 }
 
-.des4-clothesline-clip-img {
+.des4-clothesline-clip-holder {
   position: absolute;
-  width: 62px;
-  height: 62px;
-  transform: translate(-50%, -12px);
+  top: -14px;
+  left: 0;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 58px;
   z-index: 10;
   pointer-events: none;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
 }
 
-.des4-clothesline-polaroid {
+.des4-clothesline-clip-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.22));
+}
+
+.des4-clothesline-polaroid-frame {
+  margin-top: 16px;
+  transform: translateX(-50%);
   background: #ffffff;
   padding: 10px 10px 24px 10px;
   border-radius: 4px;
-  box-shadow: 0 12px 26px -6px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.08);
-  width: 180px;
-  height: 190px;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 175px;
+  height: 185px;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.35s ease, border-color 0.35s ease;
   border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
-.des4-clothesline-polaroid.is-hovered {
+.des4-clothesline-polaroid-frame.is-hovered {
   box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.35), 0 0 0 2px #fe3c01, 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.des4-clothesline-photo-container {
+.des4-clothesline-polaroid-inner {
   width: 100%;
   flex: 1;
   overflow: hidden;
@@ -707,38 +717,36 @@
   transition: transform 0.4s ease;
 }
 
-.des4-clothesline-polaroid.is-hovered .des4-clothesline-photo-img {
+.des4-clothesline-polaroid-frame.is-hovered .des4-clothesline-photo-img {
   transform: scale(1.05);
 }
 
-.des4-clothesline-mobile-cue {
-  display: none;
+.des4-clothesline-drag-indicator {
+  display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: -10px;
-  margin-bottom: 10px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.des4-clothesline-drag-pill {
   font-family: monospace;
   font-size: 11px;
   font-weight: 700;
   color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 @media (max-width: 1150px) {
-  .des4-clothesline-viewport {
+  .des4-clothesline-pan-viewport {
     justify-content: flex-start;
     padding-left: 20px;
     padding-right: 20px;
-  }
-
-  .des4-clothesline-stage {
-    width: 960px;
-    min-width: 960px;
-  }
-
-  .des4-clothesline-mobile-cue {
-    display: flex;
   }
 }
 
