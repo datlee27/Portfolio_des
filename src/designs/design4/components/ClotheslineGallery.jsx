@@ -205,42 +205,42 @@ export default function ClotheslineGallery({
             {/* Ambient wire drop shadow */}
             <path
               d={wireCurveData.pathD}
-              stroke="rgba(0, 0, 0, 0.12)"
-              strokeWidth="4"
-              transform="translate(0, 3)"
+              stroke="rgba(0, 0, 0, 0.08)"
+              strokeWidth="3.5"
+              transform="translate(0, 2.5)"
             />
-            {/* Realistic metallic steel wire */}
+            {/* Light pale yellow/golden string */}
             <path
               d={wireCurveData.pathD}
-              stroke="#64748b"
+              stroke="#e8cb7a"
               strokeWidth="2.5"
               strokeLinecap="round"
             />
-            {/* Top highlight beam */}
+            {/* Soft highlight thread */}
             <path
               d={wireCurveData.pathD}
-              stroke="rgba(255, 255, 255, 0.4)"
+              stroke="rgba(255, 250, 230, 0.65)"
               strokeWidth="1"
               strokeLinecap="round"
             />
           </svg>
 
           {/* 5 Polaroid Cards Hanging from the Wire */}
-          {wireCurveData.calculatedPhotos.map((item, index) => {
-            const isHovered = hoveredIndex === index;
+          {wireCurveData.calculatedPhotos.map((item) => {
+            const isHovered = hoveredIndex === item.id;
             const currentAngle = isHovered ? item.hoverAngle : item.naturalAngle;
             const scale = isHovered ? 1.18 : 1;
 
             return (
               <div
-                key={item.id || index}
+                key={item.id}
                 className="des4-clothesline-pin-anchor"
                 style={{
                   left: item.x,
                   top: item.y,
-                  zIndex: isHovered ? 50 : 10 + index,
+                  zIndex: isHovered ? 50 : 10 + item.id,
                 }}
-                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseEnter={() => setHoveredIndex(item.id)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => handleCardClick(item)}
                 title="Click to zoom preview"
@@ -294,13 +294,6 @@ export default function ClotheslineGallery({
             );
           })}
         </div>
-      </div>
-
-      {/* Swipe / Drag interactive hint */}
-      <div className="des4-clothesline-drag-indicator">
-        <span className="des4-clothesline-drag-pill">
-          ↔ Kéo ngang hoặc vuốt để xem toàn bộ dây ảnh
-        </span>
       </div>
 
       {/* Interactive Lightbox Modal */}
