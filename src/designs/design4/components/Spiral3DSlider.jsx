@@ -120,7 +120,7 @@ function SpiralScene({
   smoothing,
   blurStrength,
   bend,
-  reducedMotion,
+  _reducedMotion,
   lastInteraction,
 }) {
   // Replicate 6 items to create continuous spiral depth
@@ -166,25 +166,31 @@ function SpiralScene({
   }, [gl, textures]);
 
   useFrame((_state, delta) => {
-    if (
-      autoRotate &&
-      !reducedMotion.current &&
-      performance.now() - lastInteraction.current > 450
-    ) {
+    // Continuous smooth auto-rotation
+    const timeSinceInteraction = performance.now() - lastInteraction.current;
+    if (autoRotate && timeSinceInteraction > 250) {
       targetProgress.current += autoSpeed * Math.min(delta, 0.05);
     }
 
     const frameScale = Math.min(delta * 60, 3);
-    const ease = reducedMotion.current
-      ? 1
-      : 1 - Math.pow(1 - smoothing, frameScale);
+    const ease = 1 - Math.pow(1 - smoothing, frameScale);
     progress.current += (targetProgress.current - progress.current) * ease;
 
     const factor = Math.max(viewport.factor || 1, 1);
-    const planeWidth = Math.min(cardWidth / factor, viewport.width * 0.225);
+    const isMobile = viewport.width < 7.5;
+
+    // Responsive plane width & spiral radius for Mobile vs Desktop
+    const planeWidth = isMobile
+      ? viewport.width * 0.55
+      : Math.min(cardWidth / factor, viewport.width * 0.25);
     const planeHeight = planeWidth / cardAspectRatio;
-    const spiralRadius = Math.min(radius / factor, viewport.width * 0.245);
-    const gap = Math.min(verticalGap / factor, viewport.height * 0.082);
+    const spiralRadius = isMobile
+      ? viewport.width * 0.38
+      : Math.min(radius / factor, viewport.width * 0.245);
+    const gap = isMobile
+      ? viewport.height * 0.092
+      : Math.min(verticalGap / factor, viewport.height * 0.082);
+    const activeBend = isMobile ? 0.12 : bend;
     const count = sceneItems.length;
 
     meshes.current.forEach((mesh, index) => {
@@ -195,7 +201,7 @@ function SpiralScene({
       const angle = position * 0.78;
       const depth = (Math.cos(angle) + 1) / 2;
       const distance = Math.min(Math.abs(position) / (count * 0.43), 1);
-      const scale = 0.74 + depth * 0.26;
+      const scale = isMobile ? 0.78 + depth * 0.22 : 0.74 + depth * 0.26;
 
       mesh.position.set(
         Math.sin(angle) * spiralRadius,
@@ -209,7 +215,7 @@ function SpiralScene({
         material.uniforms.uBlur.value = Math.pow(distance, 1.28) * blurStrength;
       }
       if (material.uniforms?.uBend) {
-        material.uniforms.uBend.value = planeWidth * bend;
+        material.uniforms.uBend.value = planeWidth * activeBend;
       }
       if (material.uniforms?.uPlaneAspect) {
         material.uniforms.uPlaneAspect.value = cardAspectRatio;
@@ -253,7 +259,7 @@ export default function Spiral3DSlider({
   cardWidth = 255,
   cardAspectRatio = 3 / 2,
   autoRotate = true,
-  autoSpeed = 0.13,
+  autoSpeed = 0.48,
   scrollSensitivity = 0.0024,
   smoothing = 0.065,
   blurStrength = 1.65,
@@ -267,25 +273,28 @@ export default function Spiral3DSlider({
   const lastWheelTime = useRef(0);
   const lastInteraction = useRef(0);
   const visible = useRef(false);
-  const reducedMotion = useRef(false);
+
+  const [isMobileScreen, setIsMobileScreen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobileScreen(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   // Pointer Drag State for manual swipe on Desktop & Mobile
   const [isPointerDragging, setIsPointerDragging] = useState(false);
-  const dragStartX = useRef(0);
-  const dragStartY = useRef(0);
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const isHorizontalSwipeRef = useRef(false);
 
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
 
     previousScroll.current = window.scrollY;
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const syncMotionPreference = () => {
-      reducedMotion.current = motionQuery.matches;
-    };
-    syncMotionPreference();
-    motionQuery.addEventListener('change', syncMotionPreference);
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible.current = Boolean(entry?.isIntersecting);
@@ -308,7 +317,6 @@ export default function Spiral3DSlider({
 
     return () => {
       observer.disconnect();
-      motionQuery.removeEventListener('change', syncMotionPreference);
       window.removeEventListener('scroll', handlePageScroll);
     };
   }, [scrollSensitivity]);
@@ -320,28 +328,48 @@ export default function Spiral3DSlider({
     targetProgress.current += delta * scrollSensitivity;
   };
 
-  // Drag handlers
+  // Drag handlers with smart gesture detection (allows vertical scroll on mobile)
   const handlePointerDown = (e) => {
-    setIsPointerDragging(true);
-    dragStartX.current = e.clientX;
-    dragStartY.current = e.clientY;
+    isDraggingRef.current = true;
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    isHorizontalSwipeRef.current = false;
     lastInteraction.current = performance.now();
   };
 
   const handlePointerMove = (e) => {
-    if (!isPointerDragging) return;
-    const deltaX = e.clientX - dragStartX.current;
-    const deltaY = e.clientY - dragStartY.current;
-    dragStartX.current = e.clientX;
-    dragStartY.current = e.clientY;
+    if (!isDraggingRef.current) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
 
-    const delta = -deltaX * 0.004 + deltaY * 0.003;
-    targetProgress.current += delta;
-    lastInteraction.current = performance.now();
+    if (!isHorizontalSwipeRef.current) {
+      if (Math.abs(dx) > 5 && Math.abs(dx) > Math.abs(dy)) {
+        isHorizontalSwipeRef.current = true;
+        setIsPointerDragging(true);
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch { }
+      }
+    }
+
+    if (isHorizontalSwipeRef.current) {
+      const delta = -dx * 0.0055;
+      targetProgress.current += delta;
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+      lastInteraction.current = performance.now();
+    }
   };
 
-  const handlePointerUp = () => {
-    setIsPointerDragging(false);
+  const handlePointerUp = (e) => {
+    if (isDraggingRef.current) {
+      try {
+        if (e.currentTarget.hasPointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      } catch { }
+      isDraggingRef.current = false;
+      setIsPointerDragging(false);
+      isHorizontalSwipeRef.current = false;
+    }
   };
 
   if (!items || !items.length) return null;
@@ -354,7 +382,7 @@ export default function Spiral3DSlider({
         position: 'relative',
         background: '#000000',
         color: '#ffffff',
-        padding: '80px 0 60px',
+        padding: isMobileScreen ? '50px 0 40px' : '80px 0 60px',
         overflow: 'hidden',
         userSelect: 'none',
       }}
@@ -365,12 +393,12 @@ export default function Spiral3DSlider({
           <h2
             style={{
               fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(38px, 8.5vw, 120px)',
+              fontSize: 'clamp(34px, 8vw, 120px)',
               fontWeight: 900,
               lineHeight: 0.92,
               letterSpacing: '-0.04em',
               color: '#ffffff',
-              margin: '0 0 16px 0',
+              margin: '0 0 14px 0',
               textTransform: 'lowercase',
             }}
           >
@@ -379,7 +407,7 @@ export default function Spiral3DSlider({
           <p
             style={{
               fontFamily: 'var(--font-inter)',
-              fontSize: 14.5,
+              fontSize: isMobileScreen ? 13.5 : 14.5,
               fontWeight: 500,
               color: '#94a3b8',
               maxWidth: 520,
@@ -406,17 +434,22 @@ export default function Spiral3DSlider({
         style={{
           position: 'relative',
           width: '100%',
-          height: '620px',
-          minHeight: '38rem',
+          height: isMobileScreen ? '480px' : '620px',
+          minHeight: isMobileScreen ? '28rem' : '38rem',
           cursor: isPointerDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
+          touchAction: 'pan-y',
         }}
       >
         <WebGLErrorBoundary fallback={<WebGLFallback className="des4-webgl-fallback" />}>
           <div style={{ position: 'absolute', inset: 0 }}>
             <Canvas
               dpr={[1, 1.75]}
-              camera={{ position: [0, 0, 10], fov, near: 0.1, far: 100 }}
+              camera={{
+                position: [0, 0, isMobileScreen ? 11 : 10],
+                fov: isMobileScreen ? 48 : fov,
+                near: 0.1,
+                far: 100,
+              }}
               gl={{
                 alpha: true,
                 antialias: true,
@@ -430,13 +463,13 @@ export default function Spiral3DSlider({
                   radius={radius}
                   verticalGap={verticalGap}
                   cardWidth={cardWidth}
-                  cardAspectRatio={cardAspectRatio}
+                  cardAspectRatio={isMobileScreen ? 1.4 : cardAspectRatio}
                   autoRotate={autoRotate}
                   autoSpeed={autoSpeed}
                   smoothing={smoothing}
                   blurStrength={blurStrength}
                   bend={bend}
-                  reducedMotion={reducedMotion}
+                  reducedMotion={{ current: false }}
                   lastInteraction={lastInteraction}
                 />
               </Suspense>
@@ -444,34 +477,7 @@ export default function Spiral3DSlider({
           </div>
         </WebGLErrorBoundary>
 
-        {/* Micro Hint */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 24,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 20,
-            pointerEvents: 'none',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'monospace',
-              fontSize: 11,
-              fontWeight: 700,
-              color: '#64748b',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              padding: '6px 14px',
-              borderRadius: 100,
-              letterSpacing: '0.04em',
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            ← Scroll or Drag to rotate 3D spiral →
-          </span>
-        </div>
+        {/* Canvas stage */}
       </div>
     </section>
   );
