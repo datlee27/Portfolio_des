@@ -99,9 +99,9 @@ export default function ClotheslineGallery({
   }, [containerWidth]);
 
   const isMobile = containerWidth < 768;
-  const stageHeight = isMobile ? 420 : 480;
-  const yStart = isMobile ? 25 : 35;
-  const yMid = isMobile ? 210 : 250;
+  const stageHeight = isMobile ? 450 : 540;
+  const yStart = isMobile ? 45 : 70;
+  const yMid = isMobile ? 225 : 275;
 
   // Exact Bernstein Bezier formula for quadratic curve:
   // Control point is chosen so the vertex hits yMid at t = 0.5:
@@ -230,15 +230,16 @@ export default function ClotheslineGallery({
             const isHovered = hoveredIndex === item.id;
             const currentAngle = isHovered ? item.hoverAngle : item.naturalAngle;
             const scale = isHovered ? 1.18 : 1;
+            const translateY = isHovered ? 8 : 0;
 
             return (
               <div
                 key={item.id}
-                className="des4-clothesline-pin-anchor"
+                className={`des4-clothesline-pin-anchor ${isHovered ? 'is-hovered' : ''}`}
                 style={{
                   left: item.x,
                   top: item.y,
-                  zIndex: isHovered ? 50 : 10 + item.id,
+                  zIndex: isHovered ? 9999 : 10 + item.id,
                 }}
                 onMouseEnter={() => setHoveredIndex(item.id)}
                 onMouseLeave={() => setHoveredIndex(null)}
@@ -252,7 +253,7 @@ export default function ClotheslineGallery({
                 <div
                   className="des4-clothesline-swing-group"
                   style={{
-                    transform: `rotate(${currentAngle}deg) scale(${scale})`,
+                    transform: `rotate(${currentAngle}deg) translateY(${translateY}px) scale(${scale})`,
                     transformOrigin: '0 0',
                     transition: isDragging
                       ? 'none'

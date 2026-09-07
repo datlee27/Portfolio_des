@@ -611,22 +611,22 @@
    ========================================================================== */
 .des4-clothesline-fullwidth-wrapper {
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
-  margin: 30px 0 10px;
+  margin: 20px 0 10px;
   user-select: none;
 }
 
 .des4-clothesline-pan-viewport {
   width: 100%;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   cursor: grab;
   user-select: none;
   scrollbar-width: none;
   display: flex;
   justify-content: center;
-  padding: 10px 0 20px;
+  padding: 40px 0 50px;
 }
 
 .des4-clothesline-pan-viewport.is-dragging {
@@ -654,6 +654,10 @@
   position: absolute;
   cursor: pointer;
   user-select: none;
+}
+
+.des4-clothesline-pin-anchor.is-hovered {
+  z-index: 9999 !important;
 }
 
 .des4-clothesline-swing-group {
