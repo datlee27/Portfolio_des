@@ -14,31 +14,35 @@ import {
 } from 'three';
 import { WebGLErrorBoundary, WebGLFallback } from './webgl-error-boundary';
 
-// 6 Default Curated Artisan & Engineering Slides
+// 7 Curated User Pinterest Slides
 const DEFAULT_SPIRAL_SLIDES = [
   {
-    src: '/images/clothesline/photo3.png',
-    alt: 'Artisan Workshop • Physical Craft Meets Code',
+    src: '/assets/gallery/pin-3.jpg',
+    alt: 'Fluid Motion • Illuminated Pages in Flow',
   },
   {
-    src: '/images/clothesline/photo1.png',
-    alt: 'Post-it Brainstorm • Messy Prototype Ideation',
+    src: '/assets/gallery/pin-4.jpg',
+    alt: 'Digital in Nature • Screen on Wildflower Hill',
   },
   {
-    src: '/images/clothesline/photo4.png',
-    alt: 'Denim & Materiality • Spatial Tactile Proportions',
+    src: '/assets/gallery/pin-5.jpg',
+    alt: 'Cosmic Halo • Person in Flower Meadow under Vortex',
   },
   {
-    src: '/images/clothesline/photo2.png',
-    alt: 'In The Elements • Observation & Field Research',
+    src: '/assets/gallery/pin-11.jpg',
+    alt: 'Ethereal Botanicals • Glowing Sunlit Daisies',
   },
   {
-    src: '/images/clothesline/photo5.jpg',
-    alt: 'Light & Shadows • Quiet Contrast & Stillness',
+    src: '/assets/gallery/pin-12.jpg',
+    alt: 'Surrealist Monolith • Mirror Portal in Green Hills',
   },
   {
-    src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
-    alt: 'Cybernetic Hardware • Circuits, Logic & Sensors',
+    src: '/assets/gallery/pin-13.jpg',
+    alt: 'Kinetic Vista • Speeding Train Window & Clouds',
+  },
+  {
+    src: '/assets/gallery/pin-2.jpg',
+    alt: 'Surrealist Path • Paintbrush Painting Ahead',
   },
 ];
 
