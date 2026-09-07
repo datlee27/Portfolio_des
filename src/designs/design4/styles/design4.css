@@ -832,3 +832,237 @@
     transform: scale(1);
   }
 }
+
+/* ==========================================================================
+   Interactive 3D Book Component
+   ========================================================================== */
+.des4-interactive-book-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.des4-interactive-book-wrapper:hover {
+  transform: translateY(-3px);
+}
+
+.des4-interactive-book-stage {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.des4-book-page-content {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Cover layout */
+.des4-book-cover-layout,
+.des4-book-back-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 20px;
+  background: #090d16;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.des4-book-cover-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: monospace;
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.des4-book-cover-star {
+  color: #fe3c01;
+  font-size: 14px;
+}
+
+.des4-book-cover-title {
+  font-family: var(--font-inter);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.des4-book-cover-rule {
+  width: 36px;
+  height: 2.5px;
+  background: #fe3c01;
+  margin: 10px 0;
+  border-radius: 2px;
+}
+
+.des4-book-cover-sub {
+  font-family: monospace;
+  font-size: 11px;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.des4-book-cover-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.des4-book-cover-badge {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(254, 60, 1, 0.18);
+  color: #ff6b3d;
+  border: 1px solid rgba(254, 60, 1, 0.35);
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.06em;
+}
+
+/* Inner pages layout */
+.des4-book-inner-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 18px;
+  font-family: var(--font-inter);
+  border: 1px solid #e2e8f0;
+}
+
+.des4-book-inner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.des4-book-inner-stamp {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #0f172a;
+}
+
+.des4-book-inner-heading {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.des4-book-inner-text {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #475569;
+  margin: 0;
+}
+
+.des4-book-inner-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+  font-size: 10px;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+}
+
+.des4-book-spine-crease-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.16), transparent);
+  pointer-events: none;
+}
+
+.des4-book-spine-crease-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.16), transparent);
+  pointer-events: none;
+}
+
+.des4-book-back-center {
+  text-align: center;
+}
+
+.des4-book-back-barcode {
+  font-family: monospace;
+  letter-spacing: 0.15em;
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.des4-book-back-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.des4-book-back-tag {
+  font-family: monospace;
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.des4-book-turn-hint {
+  margin-top: 14px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+}
+
+.des4-interactive-book-wrapper:hover .des4-book-turn-hint {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 640px) {
+  .des4-interactive-book-wrapper {
+    transform: scale(0.74);
+    transform-origin: center center;
+    margin: -15px auto;
+  }
+
+  .des4-interactive-book-wrapper:hover {
+    transform: scale(0.74) translateY(-2px);
+  }
+}
+

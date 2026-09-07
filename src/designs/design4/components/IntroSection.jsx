@@ -1,5 +1,6 @@
 import React from 'react';
 import ClotheslineGallery from './ClotheslineGallery';
+import InteractiveBook from './InteractiveBook';
 
 export default function IntroSection() {
   return (
@@ -7,10 +8,10 @@ export default function IntroSection() {
       <div className="des4-container" style={{ maxWidth: 1240, margin: '0 auto' }}>
         {/* Editorial Narrative & Header */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="des4-intro-header-tag">
+          {/* <div className="des4-intro-header-tag">
             <span style={{ color: '#fe3c01', fontSize: 16, fontWeight: 900 }}>*</span>
             <span>Craft &amp; Architecture • Lê Văn Đạt</span>
-          </div>
+          </div> */}
 
           <div
             style={{
@@ -45,20 +46,17 @@ export default function IntroSection() {
               into cohesive, production-ready digital products.
             </p>
 
-            {/* Thoughtful Prototype Quote matching user reference */}
+            {/* Interactive 3D Journal / Book (Framer Component) */}
             <div
               style={{
-                fontFamily: 'var(--font-inter)',
-                fontSize: 14,
-                lineHeight: 1.7,
-                color: '#64748b',
-                maxWidth: 440,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 justifySelf: 'end',
-                borderLeft: '2px solid #e2e8f0',
-                paddingLeft: 18,
+                padding: '10px 0',
               }}
             >
-              “it's a messy prototype nobody's seen yet. This back-and-forth between imagining and building is where the real work happens — and it's what keeps things interesting.”
+              <InteractiveBook width={220} height={300} />
             </div>
           </div>
         </div>
