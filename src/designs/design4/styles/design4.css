@@ -1065,4 +1065,327 @@
     transform: scale(0.74) translateY(-2px);
   }
 }
+
+/* ==========================================================================
+   Work Page (/work) Showcase Styles
+   ========================================================================== */
+.des4-work-page-wrapper {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+  padding-top: 40px;
+}
+
+.des4-work-header-section {
+  padding: 40px 0 36px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.des4-work-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 18px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.des4-work-back-btn:hover {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  transform: translateX(-3px);
+}
+
+.des4-work-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.des4-work-main-title {
+  font-family: var(--font-outfit);
+  font-size: clamp(38px, 7vw, 92px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin: 0;
+  line-height: 1;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.des4-work-count-badge {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fe3c01;
+  letter-spacing: 0.06em;
+}
+
+.des4-work-sub-description {
+  font-family: var(--font-inter);
+  font-size: 15.5px;
+  color: #64748b;
+  max-width: 680px;
+  line-height: 1.65;
+  margin: 0 0 32px 0;
+}
+
+.des4-work-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.des4-work-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.des4-work-filter-pill:hover {
+  border-color: #000000;
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+.des4-work-filter-pill.is-active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.des4-work-filter-count {
+  font-family: monospace;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.des4-work-grid-section {
+  padding: 60px 0 100px;
+  background: #fafafa;
+}
+
+.des4-work-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+}
+
+@media (max-width: 900px) {
+  .des4-work-projects-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+.des4-work-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.des4-work-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -10px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e1;
+}
+
+.des4-work-card-media {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.des4-work-card-status {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  color: #ffffff;
+  font-family: var(--font-inter);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.des4-work-card-index {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+}
+
+.des4-work-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.des4-work-card:hover .des4-work-card-img {
+  transform: scale(1.05);
+}
+
+.des4-work-card-body {
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.des4-work-card-top-info {
+  margin-bottom: 24px;
+}
+
+.des4-work-card-accent-code {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.des4-work-card-title {
+  font-family: var(--font-outfit);
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+.des4-work-card-desc {
+  font-family: var(--font-inter);
+  font-size: 14px;
+  line-height: 1.65;
+  color: #475569;
+  margin: 0;
+}
+
+.des4-work-card-bottom-info {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
+}
+
+.des4-work-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.des4-work-tag-pill {
+  font-family: var(--font-inter);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.des4-work-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.des4-work-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 8px 20px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.des4-work-btn-primary:hover {
+  background: #fe3c01;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(254, 60, 1, 0.35);
+}
+
+.des4-work-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid #0f172a;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 8px 20px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.des4-work-btn-secondary:hover {
+  background: #f8fafc;
+  color: #000000;
+  border-color: #000000;
+  transform: translateY(-2px);
+}
+
 

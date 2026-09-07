@@ -10,14 +10,54 @@ import ClientsSection from './components/ClientsSection';
 import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
+import Des4WorkPage from './components/Des4WorkPage';
 
 export default function Design4App() {
-  const [activeView, setActiveView] = useState('main'); // 'main' | 'lab'
+  // Determine initial view from URL path
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/work' || path.startsWith('/work/')) return 'work';
+      if (path === '/lab' || path.startsWith('/lab/')) return 'lab';
+    }
+    return 'main';
+  });
 
+  // Client-side router navigation helper
+  const navigateTo = (view, path) => {
+    setActiveView(view);
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ view }, '', path);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Listen to browser Back/Forward (popstate)
   useEffect(() => {
-    document.title = activeView === 'lab'
-      ? 'Lab – Dat Le Design Experiments'
-      : 'Dat Le – Engineering Logic, Crafting Digital Experiences';
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/work' || path.startsWith('/work/')) {
+        setActiveView('work');
+      } else if (path === '/lab' || path.startsWith('/lab/')) {
+        setActiveView('lab');
+      } else {
+        setActiveView('main');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Update document title based on current view
+  useEffect(() => {
+    if (activeView === 'work') {
+      document.title = 'Work – Dat Le Selected Projects';
+    } else if (activeView === 'lab') {
+      document.title = 'Lab – Dat Le Design Experiments';
+    } else {
+      document.title = 'Dat Le – Engineering Logic, Crafting Digital Experiences';
+    }
   }, [activeView]);
 
   return (
@@ -25,26 +65,19 @@ export default function Design4App() {
       {/* Fixed Corner Anchors: dl*, work, blog, about, lab */}
       <CornerNav
         activeView={activeView}
-        onOpenLab={() => {
-          setActiveView('lab');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onGoHome={() => {
-          setActiveView('main');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onOpenWork={() => navigateTo('work', '/work')}
+        onOpenLab={() => navigateTo('lab', '/lab')}
+        onGoHome={() => navigateTo('main', '/')}
       />
 
-      {activeView === 'lab' ? (
-        /* Lab View */
-        <Des4LabView
-          onBack={() => {
-            setActiveView('main');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-        />
+      {activeView === 'work' ? (
+        /* Dedicated Work Page (/work) with 6 Projects & Footer */
+        <Des4WorkPage onGoHome={() => navigateTo('main', '/')} />
+      ) : activeView === 'lab' ? (
+        /* Lab View (/lab) */
+        <Des4LabView onBack={() => navigateTo('main', '/')} />
       ) : (
-        /* Main Des4 Flow */
+        /* Main Des4 Flow (/) */
         <>
           {/* 1. Hero: the chaos of making sh*t real */}
           <HeroSection />
@@ -74,4 +107,5 @@ export default function Design4App() {
     </div>
   );
 }
+
 

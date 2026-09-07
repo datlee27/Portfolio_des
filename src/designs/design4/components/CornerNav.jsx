@@ -1,13 +1,13 @@
 import React from 'react';
 
-export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
+export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork }) {
   const scrollTo = (id) => {
-    if (activeView === 'lab') {
+    if (activeView === 'lab' || activeView === 'work') {
       if (onGoHome) onGoHome();
       setTimeout(() => {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
+      }, 80);
     } else {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -22,11 +22,15 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
     <>
       {/* Top Left: dl* */}
       <a
-        href="#top"
+        href="/"
         className="des4-corner-anchor"
         onClick={(e) => {
           e.preventDefault();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (activeView === 'work') {
+            if (onGoHome) onGoHome();
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }}
         style={{
           position: 'fixed',
@@ -43,6 +47,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        title="Back to Home"
       >
         dl<span style={{ color: '#fe3c01' }}>*</span>
       </a>
@@ -64,7 +69,13 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
       >
         <button
           className="des4-corner-anchor"
-          onClick={() => scrollTo('d4-work')}
+          onClick={() => {
+            if (activeView === 'work') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (onOpenWork) {
+              onOpenWork();
+            }
+          }}
           style={{
             position: 'relative',
             fontFamily: 'var(--font-outfit)',
@@ -77,11 +88,14 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
             lineHeight: 1,
             color: '#ffffff',
             mixBlendMode: 'difference',
+            cursor: 'pointer',
+            borderBottom: activeView === 'work' ? '2px solid #fe3c01' : 'none',
+            paddingBottom: activeView === 'work' ? 2 : 0,
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          work
+          work{activeView === 'work' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
         </button>
 
         <button
@@ -99,6 +113,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
             lineHeight: 1,
             color: '#ffffff',
             mixBlendMode: 'difference',
+            cursor: 'pointer',
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -106,6 +121,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome }) {
           blog
         </button>
       </div>
+
 
       {/* Bottom Left: about */}
       <button

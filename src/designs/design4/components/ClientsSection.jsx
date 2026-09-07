@@ -227,7 +227,7 @@ export default function ClientsSection() {
           </div>
         </div>
 
-        {/* Drag / Swipe Hint */}
+        {/* Drag / Swipe Hint
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           <span
             style={{
@@ -240,7 +240,7 @@ export default function ClientsSection() {
           >
             ← Swipe / Drag to rotate →
           </span>
-        </div>
+        </div> */}
       </div>
     </section>
   );
