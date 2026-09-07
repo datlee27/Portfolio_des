@@ -3,7 +3,6 @@ import './styles/design4.css';
 import CornerNav from './components/CornerNav';
 import HeroSection from './components/HeroSection';
 import IntroSection from './components/IntroSection';
-import ShowreelSection from './components/ShowreelSection';
 import FeaturedProjectsSection from './components/FeaturedProjectsSection';
 import WhatIDoSection from './components/WhatIDoSection';
 import SkillsSection from './components/SkillsSection';
@@ -50,13 +49,10 @@ export default function Design4App() {
           {/* 1. Hero: the chaos of making sh*t real */}
           <HeroSection />
 
-          {/* 2. Intro: Statement with 3D stickers & .FINAL_FINAL badge */}
+          {/* 2. Intro: Statement & Core Technical Pillars */}
           <IntroSection />
 
-          {/* 3. Showreel: Colorful Bento Grid & Video Player */}
-          <ShowreelSection />
-
-          {/* 4. Featured Work: Marquee + 6 Real Project Rows */}
+          {/* 3. Featured Work: Marquee + 6 Real Project Rows */}
           <FeaturedProjectsSection />
 
           {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
