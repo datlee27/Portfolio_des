@@ -162,23 +162,28 @@
     min-height: 80vh !important;
     padding: 100px 20px 40px !important;
   }
+
   .des4-hero-headline {
     font-size: clamp(34px, 6.2vw, 64px) !important;
     line-height: 1.04 !important;
   }
+
   .des4-hero-top-left {
     top: 90px !important;
     left: 24px !important;
   }
+
   .des4-hero-top-right {
     top: 86px !important;
     right: 24px !important;
   }
+
   .des4-hero-chip-left,
   .des4-hero-chip-right {
     position: static !important;
     transform: none !important;
   }
+
   .des4-hero-chips-container {
     display: flex !important;
     align-items: center;
@@ -197,19 +202,23 @@
     padding: 75px 16px 36px !important;
     justify-content: flex-start !important;
   }
+
   .des4-hero-headline {
     font-size: clamp(25px, 7.6vw, 38px) !important;
     line-height: 1.08 !important;
     letter-spacing: -0.03em !important;
     margin-top: 8px;
   }
+
   .des4-hero-row {
     flex-wrap: wrap !important;
   }
+
   .des4-hero-top-left,
   .des4-hero-top-right {
     display: none !important;
   }
+
   .des4-hero-mobile-hud {
     display: flex !important;
     align-items: center;
@@ -220,11 +229,13 @@
     gap: 8px;
     z-index: 15;
   }
+
   .des4-hero-chip-left,
   .des4-hero-chip-right {
     position: static !important;
     transform: none !important;
   }
+
   .des4-hero-chips-container {
     display: flex !important;
     align-items: center;
@@ -343,38 +354,89 @@
 
 /* Animations */
 @keyframes floatGentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
 }
 
 @keyframes floatInverse {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(10px) rotate(-2deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(10px) rotate(-2deg);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.06); opacity: 0.9; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 0.9;
+  }
 }
 
 @keyframes rotateInfinite {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pixelBob {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes pulseLive {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translate(-50%, 8px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -462,33 +524,75 @@
 
 /* Audio Visualizer Waves */
 @keyframes audioWave1 {
-  0%, 100% { height: 6px; }
-  50% { height: 28px; }
+
+  0%,
+  100% {
+    height: 6px;
+  }
+
+  50% {
+    height: 28px;
+  }
 }
 
 @keyframes audioWave2 {
-  0%, 100% { height: 18px; }
-  50% { height: 8px; }
+
+  0%,
+  100% {
+    height: 18px;
+  }
+
+  50% {
+    height: 8px;
+  }
 }
 
 @keyframes audioWave3 {
-  0%, 100% { height: 10px; }
-  50% { height: 32px; }
+
+  0%,
+  100% {
+    height: 10px;
+  }
+
+  50% {
+    height: 32px;
+  }
 }
 
 @keyframes audioWave4 {
-  0%, 100% { height: 24px; }
-  50% { height: 12px; }
+
+  0%,
+  100% {
+    height: 24px;
+  }
+
+  50% {
+    height: 12px;
+  }
 }
 
 @keyframes tapeSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes dataPulseGlow {
-  0%, 100% { opacity: 0.3; transform: scaleX(0.8); }
-  50% { opacity: 1; transform: scaleX(1); }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
 @media (max-width: 900px) {
@@ -496,8 +600,244 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
+
   .des4-intro-wrapper {
     padding: 30px 0 50px;
   }
 }
 
+/* ==========================================================================
+   Clothesline Gallery (Hanging Polaroids on Curved Wire)
+   ========================================================================== */
+.des4-clothesline-wrapper {
+  width: 100%;
+  position: relative;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  user-select: none;
+}
+
+.des4-clothesline-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 30px;
+}
+
+.des4-clothesline-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.des4-clothesline-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  height: 480px;
+  flex-shrink: 0;
+}
+
+.des4-clothesline-wire-svg {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 270px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.des4-clothesline-pin-group {
+  position: absolute;
+  cursor: pointer;
+  transform: translate(-50%, 0);
+  transition: z-index 0.2s;
+}
+
+.des4-clothesline-card-pivot {
+  position: relative;
+  transform-origin: top center;
+  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+
+.des4-clothesline-clip-img {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  transform: translate(-50%, -12px);
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+}
+
+.des4-clothesline-polaroid {
+  background: #ffffff;
+  padding: 10px 10px 24px 10px;
+  border-radius: 4px;
+  box-shadow: 0 12px 26px -6px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 180px;
+  height: 190px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.des4-clothesline-polaroid.is-hovered {
+  box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.35), 0 0 0 2px #fe3c01, 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.des4-clothesline-photo-container {
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f1f5f9;
+}
+
+.des4-clothesline-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.des4-clothesline-polaroid.is-hovered .des4-clothesline-photo-img {
+  transform: scale(1.05);
+}
+
+.des4-clothesline-mobile-cue {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 1150px) {
+  .des4-clothesline-viewport {
+    justify-content: flex-start;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .des4-clothesline-stage {
+    width: 960px;
+    min-width: 960px;
+  }
+
+  .des4-clothesline-mobile-cue {
+    display: flex;
+  }
+}
+
+/* Lightbox Modal */
+.des4-clothesline-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeInModal 0.25s ease-out;
+}
+
+.des4-clothesline-modal-content {
+  position: relative;
+  max-width: 640px;
+  width: 100%;
+  animation: scaleUpModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.des4-clothesline-modal-close {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.des4-clothesline-modal-close:hover {
+  background: #fe3c01;
+  border-color: #fe3c01;
+  transform: scale(1.1);
+}
+
+.des4-clothesline-modal-card {
+  background: #ffffff;
+  padding: 16px 16px 24px 16px;
+  border-radius: 12px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+.des4-clothesline-modal-img {
+  width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #0f172a;
+}
+
+.des4-clothesline-modal-footer {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.des4-clothesline-modal-title {
+  font-family: var(--font-inter);
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.des4-clothesline-modal-sub {
+  font-family: monospace;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUpModal {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
