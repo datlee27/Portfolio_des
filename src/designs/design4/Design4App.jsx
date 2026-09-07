@@ -18,7 +18,7 @@ export default function Design4App() {
   useEffect(() => {
     document.title = activeView === 'lab'
       ? 'Lab – Dat Le Design Experiments'
-      : 'Dat Le - Turning Creative Chaos into Reality';
+      : 'Dat Le – Engineering Logic, Crafting Digital Experiences';
   }, [activeView]);
 
   return (

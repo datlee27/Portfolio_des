@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NekoCat from './NekoCat';
+import PixelMonster from './PixelMonster';
 
 export default function HeroSection() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isVinylFast, setIsVinylFast] = useState(false);
-  const [smileyEmoji, setSmileyEmoji] = useState('👾');
   const [isCreativeMode, setIsCreativeMode] = useState(false);
-  const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
 
-  // Drag positions for Hero elements in Creative Mode
+  // Drag positions for elements in Creative Mode
   const [dragPositions, setDragPositions] = useState({
-    devMode: { x: 0, y: 0 },
-    customSticker: { x: 0, y: 0 },
-    colorPalette: { x: 0, y: 0 },
-    badge: { x: 0, y: 0 },
+    statusHud: { x: 0, y: 0 },
+    avatarHud: { x: 0, y: 0 },
+    pixelMonster: { x: 0, y: 0 },
+    datLePillar: { x: 0, y: 0 },
+    techChip1: { x: 0, y: 0 },
+    techChip2: { x: 0, y: 0 },
     headline: { x: 0, y: 0 },
   });
   const dragTargetRef = useRef(null);
@@ -58,10 +58,12 @@ export default function HeroSection() {
   const resetPositions = (e) => {
     e.stopPropagation();
     setDragPositions({
-      devMode: { x: 0, y: 0 },
-      customSticker: { x: 0, y: 0 },
-      colorPalette: { x: 0, y: 0 },
-      badge: { x: 0, y: 0 },
+      statusHud: { x: 0, y: 0 },
+      avatarHud: { x: 0, y: 0 },
+      pixelMonster: { x: 0, y: 0 },
+      datLePillar: { x: 0, y: 0 },
+      techChip1: { x: 0, y: 0 },
+      techChip2: { x: 0, y: 0 },
       headline: { x: 0, y: 0 },
     });
   };
@@ -72,27 +74,24 @@ export default function HeroSection() {
       const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
       const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
       setMousePos({ x, y });
-
-      // Pupil offset for interactive eye
-      setPupilOffset({
-        x: Math.max(-6, Math.min(6, x * 8)),
-        y: Math.max(-6, Math.min(6, y * 8)),
-      });
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const emojis = ['👾', '😎', '🔥', '✨', '⚡', '👀', '🎨'];
-  const cycleSmiley = () => {
-    const next = emojis[(emojis.indexOf(smileyEmoji) + 1) % emojis.length];
-    setSmileyEmoji(next);
+  const scrollToWork = () => {
+    const el = document.getElementById('featured-work') || document.getElementById('d4-work') || document.getElementById('projects');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' });
+    }
   };
 
   return (
     <section id="top" ref={heroRef} className="des4-hero-section">
-      {/* Interactive Neko Cat - Controlled directly by Creative Mode (No standalone bottom-right pill) */}
+      {/* Interactive Neko Cat - Controlled in Creative Mode */}
       <NekoCat
         followCursor={isCreativeMode}
         showToggle={false}
@@ -102,18 +101,18 @@ export default function HeroSection() {
         size="1.25x"
       />
 
-      {/* Ambient background decorative grid/blobs */}
+      {/* Ambient background lighting blobs */}
       <div
         className="des4-hide-mobile"
         style={{
           position: 'absolute',
-          top: '20%',
-          left: '10%',
-          width: 320,
-          height: 320,
+          top: '15%',
+          left: '8%',
+          width: 360,
+          height: 360,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(254,60,1,0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, rgba(147, 51, 234, 0.08) 0%, rgba(254, 60, 1, 0.04) 50%, transparent 70%)',
+          filter: 'blur(50px)',
           pointerEvents: 'none',
           transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)`,
           transition: 'transform 0.2s ease-out',
@@ -123,195 +122,255 @@ export default function HeroSection() {
         className="des4-hide-mobile"
         style={{
           position: 'absolute',
-          bottom: '15%',
-          right: '10%',
-          width: 400,
-          height: 400,
+          bottom: '12%',
+          right: '8%',
+          width: 420,
+          height: 420,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(11,29,255,0.06) 0%, transparent 70%)',
-          filter: 'blur(50px)',
+          background: 'radial-gradient(circle, rgba(11, 29, 255, 0.07) 0%, rgba(0, 242, 254, 0.04) 50%, transparent 70%)',
+          filter: 'blur(60px)',
           pointerEvents: 'none',
           transform: `translate(${mousePos.x * -25}px, ${mousePos.y * -25}px)`,
           transition: 'transform 0.2s ease-out',
         }}
       />
 
-
-
-      {/* Floating Interactive Stickers with Parallax & Drag */}
-
-      {/* 1. Cyber Terminal Sticker (Top Left) */}
+      {/* ─── 1. TOP HUD (Desktop & Tablet): Status & Coordinates (Top Left) ─── */}
       <div
-        className="des4-hide-mobile"
-        onPointerDown={(e) => handlePointerDown('devMode', e)}
-        onPointerMove={(e) => handlePointerMove('devMode', e)}
+        className="des4-hero-top-left"
+        onPointerDown={(e) => handlePointerDown('statusHud', e)}
+        onPointerMove={(e) => handlePointerMove('statusHud', e)}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{
-          position: 'absolute',
-          top: '18%',
-          left: '8%',
-          zIndex: 5,
-          cursor: isCreativeMode ? 'grab' : 'pointer',
+          cursor: isCreativeMode ? 'grab' : 'default',
           touchAction: 'none',
-          transform: `translate(${mousePos.x * 30 + dragPositions.devMode.x}px, ${mousePos.y * 30 + dragPositions.devMode.y}px)`,
-          transition: dragTargetRef.current?.key === 'devMode' ? 'none' : 'transform 0.15s ease-out',
+          transform: `translate(${mousePos.x * 24 + dragPositions.statusHud.x}px, ${mousePos.y * 24 + dragPositions.statusHud.y}px)`,
+          transition: dragTargetRef.current?.key === 'statusHud' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
         <div
           style={{
-            background: '#0d1117',
-            color: '#25ff8d',
-            border: isCreativeMode ? '2px dashed #fe3c01' : '2px solid #30363d',
-            borderRadius: 12,
+            background: 'rgba(255, 255, 255, 0.92)',
+            backdropFilter: 'blur(12px)',
+            border: isCreativeMode ? '2px dashed #fe3c01' : '1px solid rgba(0, 0, 0, 0.12)',
+            borderRadius: 14,
             padding: '8px 14px',
-            fontFamily: 'monospace',
-            fontSize: 'clamp(12px, 1.5vw, 16px)',
-            fontWeight: 800,
-            boxShadow: isCreativeMode
-              ? '0 12px 30px rgba(254,60,1,0.4)'
-              : '0 12px 28px rgba(37,255,141,0.2), 0 4px 12px rgba(0,0,0,0.4)',
-            animation: isCreativeMode ? 'none' : 'floatGentle 4s ease-in-out infinite',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.06)',
             display: 'flex',
-            alignItems: 'center',
-            gap: 8,
+            flexDirection: 'column',
+            gap: 3,
             userSelect: 'none',
+            animation: isCreativeMode ? 'none' : 'floatGentle 4.5s ease-in-out infinite',
           }}
         >
-          <span style={{ color: '#fe3c01', fontWeight: 900 }}>&gt;_</span>
-          <span>dev.mode</span>
-          <span style={{ width: 8, height: 14, background: '#25ff8d', display: 'inline-block', animation: 'pulseGlow 1s infinite' }} />
-          {isCreativeMode && <span style={{ fontSize: 10, color: '#fe3c01', marginLeft: 4 }}>🖐 drag</span>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#10b981',
+                boxShadow: '0 0 8px #10b981',
+                display: 'inline-block',
+                animation: 'pulseLive 2s infinite',
+              }}
+            />
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#111827',
+                fontFamily: 'var(--font-inter)',
+              }}
+            >
+              Available for Projects
+            </span>
+          </div>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 500,
+              color: '#6b7280',
+              fontFamily: 'monospace',
+              letterSpacing: '0.02em',
+            }}
+          >
+            Da Nang • 16.0544° N, 108.2022° E
+          </span>
         </div>
       </div>
 
-      {/* 2. Interactive Custom SVG Sticker & Color Palette (Top Right) */}
+      {/* ─── 2. TOP RIGHT (Desktop & Tablet): Avatar Sketch Card (Image 2) ─── */}
       <div
-        className="des4-hide-mobile"
+        className="des4-hero-top-right"
+        onPointerDown={(e) => handlePointerDown('avatarHud', e)}
+        onPointerMove={(e) => handlePointerMove('avatarHud', e)}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
-          position: 'absolute',
-          top: '22%',
-          right: '8%',
-          zIndex: 5,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
+          cursor: isCreativeMode ? 'grab' : 'pointer',
+          touchAction: 'none',
+          transform: `translate(${mousePos.x * -24 + dragPositions.avatarHud.x}px, ${mousePos.y * -24 + dragPositions.avatarHud.y}px)`,
+          transition: dragTargetRef.current?.key === 'avatarHud' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
-        {/* User Custom SVG Sticker */}
         <div
-          onPointerDown={(e) => handlePointerDown('customSticker', e)}
-          onPointerMove={(e) => handlePointerMove('customSticker', e)}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
           style={{
-            width: 64,
-            height: 64,
-            filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.18))',
-            animation: isCreativeMode ? 'none' : 'floatGentle 4.2s ease-in-out infinite',
-            cursor: isCreativeMode ? 'grab' : 'pointer',
-            touchAction: 'none',
-            userSelect: 'none',
-            transform: `translate(${mousePos.x * -25 + dragPositions.customSticker.x}px, ${mousePos.y * -25 + dragPositions.customSticker.y}px)`,
-            transition: dragTargetRef.current?.key === 'customSticker' ? 'none' : 'transform 0.15s ease-out',
-            outline: isCreativeMode ? '2px dashed #fe3c01' : 'none',
-            outlineOffset: 4,
-            borderRadius: 12,
-          }}
-          title={isCreativeMode ? 'Kéo thả phần tử!' : 'Custom Character Sticker'}
-        >
-          <img src="/assets/custom-sticker.svg" alt="Custom Sticker" style={{ width: '100%', height: '100%', display: 'block', pointerEvents: 'none' }} />
-        </div>
-
-        {/* Color Palette Glass Lens */}
-        <div
-          onPointerDown={(e) => handlePointerDown('colorPalette', e)}
-          onPointerMove={(e) => handlePointerMove('colorPalette', e)}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(10px)',
-            border: isCreativeMode ? '3px dashed #fe3c01' : '3px solid #000000',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+            background: 'rgba(255, 255, 255, 0.94)',
+            backdropFilter: 'blur(16px)',
+            border: isCreativeMode ? '2px dashed #fe3c01' : '1.5px solid #111111',
+            borderRadius: 18,
+            padding: '8px 14px',
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0,0,0,0.04)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            animation: isCreativeMode ? 'none' : 'floatInverse 4.5s ease-in-out infinite',
-            cursor: isCreativeMode ? 'grab' : 'pointer',
-            touchAction: 'none',
+            gap: 10,
             userSelect: 'none',
-            transform: `translate(${mousePos.x * -20 + dragPositions.colorPalette.x}px, ${mousePos.y * -20 + dragPositions.colorPalette.y}px)`,
-            transition: dragTargetRef.current?.key === 'colorPalette' ? 'none' : 'transform 0.15s ease-out',
+            animation: isCreativeMode ? 'none' : 'floatInverse 4.8s ease-in-out infinite',
+            transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
           }}
-          onClick={(e) => {
-            if (!isCreativeMode) cycleSmiley();
-          }}
-          title={isCreativeMode ? 'Kéo thả Color Lens!' : 'Designer Color Lens (Click to change emoji)'}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05) rotate(2deg)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
+          title="Lê Văn Đạt (Dat Le) - Technical Artisan"
         >
-          {/* Tri-color palette pupil */}
+          {/* Preserved Avatar Line-Art Sketch (Image 2) */}
           <div
             style={{
-              width: 22,
-              height: 22,
+              width: 46,
+              height: 46,
               borderRadius: '50%',
-              background: 'conic-gradient(#fe3c01 0deg 120deg, #0b1dff 120deg 240deg, #ffe815 240deg 360deg)',
-              transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px) rotate(${mousePos.x * 45}deg)`,
-              transition: 'transform 0.1s ease-out',
-              boxShadow: 'inset 0 0 4px rgba(0,0,0,0.3)',
-              pointerEvents: 'none',
+              background: '#f3f4f6',
+              border: '1.5px solid #111',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              flexShrink: 0,
             }}
-          />
+          >
+            <img
+              src="/assets/custom-sticker.svg"
+              alt="Dat Le Sketch Avatar"
+              style={{ width: '88%', height: '88%', objectFit: 'contain', pointerEvents: 'none' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-outfit)',
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: '-0.02em',
+                color: '#000000',
+              }}
+            >
+              DAT LE
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-inter)',
+                fontSize: 10.5,
+                fontWeight: 600,
+                color: '#6366f1',
+                letterSpacing: '0.02em',
+              }}
+            >
+              Technical Artisan
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* 3. Glowing Dev & Design Badge Pill */}
-      <div
-        className="des4-hide-mobile"
-        onPointerDown={(e) => handlePointerDown('badge', e)}
-        onPointerMove={(e) => handlePointerMove('badge', e)}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        style={{
-          position: 'absolute',
-          bottom: '22%',
-          left: '10%',
-          zIndex: 5,
-          cursor: isCreativeMode ? 'grab' : 'pointer',
-          touchAction: 'none',
-          transform: `translate(${mousePos.x * 20 + dragPositions.badge.x}px, ${mousePos.y * 20 + dragPositions.badge.y}px)`,
-          transition: dragTargetRef.current?.key === 'badge' ? 'none' : 'transform 0.15s ease-out',
-        }}
-      >
+      {/* ─── MOBILE HUD: Rendered above headline on screens <= 640px ─── */}
+      <div className="des4-hero-mobile-hud">
+        {/* Mobile Status Pill */}
         <div
           style={{
-            background: isCreativeMode ? '#fe3c01' : '#090a0f',
-            color: '#ffffff',
-            border: isCreativeMode ? '2px dashed #ffffff' : '1px solid rgba(255,255,255,0.15)',
-            padding: '8px 18px',
+            background: 'rgba(255, 255, 255, 0.92)',
+            border: '1px solid rgba(0, 0, 0, 0.12)',
             borderRadius: 100,
-            fontSize: 12,
-            fontWeight: 800,
-            fontFamily: 'var(--font-inter)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-            animation: isCreativeMode ? 'none' : 'floatGentle 5.5s ease-in-out infinite',
+            padding: '6px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              background: '#10b981',
+              display: 'inline-block',
+              animation: 'pulseLive 2s infinite',
+            }}
+          />
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: '#111827',
+              fontFamily: 'var(--font-inter)',
+            }}
+          >
+            Available • Da Nang
+          </span>
+        </div>
+
+        {/* Mobile Avatar Badge */}
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.94)',
+            border: '1.5px solid #111111',
+            borderRadius: 100,
+            padding: '4px 10px 4px 6px',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            userSelect: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           }}
         >
-          <span style={{ color: isCreativeMode ? '#ffffff' : '#25ff8d' }}>⚡</span>
-          <span style={{ letterSpacing: '0.05em' }}>FULLSTACK DEV &amp; UI ARTISAN</span>
-          {isCreativeMode && <span style={{ fontSize: 10, opacity: 0.8 }}>🖐 drag</span>}
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              background: '#f3f4f6',
+              border: '1px solid #111',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}
+          >
+            <img
+              src="/assets/custom-sticker.svg"
+              alt="Dat Le"
+              style={{ width: '88%', height: '88%', objectFit: 'contain' }}
+            />
+          </div>
+          <span
+            style={{
+              fontFamily: 'var(--font-outfit)',
+              fontWeight: 900,
+              fontSize: 11,
+              color: '#000000',
+            }}
+          >
+            DAT LE
+          </span>
         </div>
       </div>
 
-      {/* Main Dynamic Kinetic Typography Collage */}
+      {/* ─── 3. MAIN CENTRAL KINETIC TYPOGRAPHY ─── */}
       <div
         className="des4-hero-headline"
         onPointerDown={(e) => handlePointerDown('headline', e)}
@@ -325,394 +384,259 @@ export default function HeroSection() {
           outline: isCreativeMode ? '2px dashed rgba(254, 60, 1, 0.6)' : 'none',
           outlineOffset: 12,
           borderRadius: 24,
-          transform: `perspective(1000px) rotateX(${mousePos.y * -5}deg) rotateY(${mousePos.x * 5}deg) translate(${dragPositions.headline.x}px, ${dragPositions.headline.y}px)`,
+          transform: `perspective(1000px) rotateX(${mousePos.y * -4}deg) rotateY(${mousePos.x * 4}deg) translate(${dragPositions.headline.x}px, ${dragPositions.headline.y}px)`,
           transition: dragTargetRef.current?.key === 'headline' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
-        {/* Line 1: "TURNING," */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.03em' }}>
+        {/* Line 1: "ENGINEERING" + Claude Code Mascot */}
+        <div className="des4-hero-row" style={{ gap: '0.03em', position: 'relative' }}>
           <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-4deg)')}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-3deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            tu
+            ENGINEER
           </span>
 
-          {/* Interactive Wobbly Emoji Cube */}
+          {/* Official Claude Code Pixel Mascot (Clawd) */}
           <div
-            onClick={cycleSmiley}
+            onPointerDown={(e) => handlePointerDown('pixelMonster', e)}
+            onPointerMove={(e) => handlePointerMove('pixelMonster', e)}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             style={{
-              width: '0.65em',
-              height: '0.65em',
-              background: '#ff6200',
-              borderRadius: '0.14em',
-              display: 'flex',
+              margin: '0 0.04em',
+              display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '0.35em',
-              boxShadow: '0 6px 16px rgba(255,98,0,0.35)',
-              transform: 'translateY(-0.02em)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              transition: 'transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease',
+              cursor: isCreativeMode ? 'grab' : 'pointer',
+              touchAction: 'none',
+              animation: isCreativeMode ? 'none' : 'pixelBob 3s ease-in-out infinite',
+              transform: `translate(${dragPositions.pixelMonster.x}px, ${dragPositions.pixelMonster.y}px)`,
+              transition: dragTargetRef.current?.key === 'pixelMonster' ? 'none' : 'transform 0.15s ease-out',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.25) rotate(12deg)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) rotate(0deg)')}
-            title="Click me!"
+            title="Official Claude Code Mascot (Click me!)"
           >
-            {smileyEmoji}
+            <PixelMonster size="0.68em" />
           </div>
 
           <span
-            style={{ color: '#a3821a', marginLeft: '0.02em', display: 'inline-block', transition: 'transform 0.25s ease' }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-          >
-            rn
-          </span>
-
-          <span
             style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(4deg)')}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(3deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            ing
+            ING
           </span>
-          <span style={{ color: '#fe3c01' }}>,</span>
         </div>
 
-        {/* Line 2: "CREATIVE CHAOS" with rotated DAT LE & Pen Tool */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.06em', marginTop: '-0.05em' }}>
+        {/* Line 2: "LOGIC," + Vertical "DAT LE" Gradient Pillar (Image 4) + "CRAFTING" */}
+        <div
+          className="des4-hero-row"
+          style={{
+            gap: '0.05em',
+            marginTop: '0.02em',
+          }}
+        >
           <span
-            style={{ color: '#0b1dff', display: 'inline-block', transition: 'transform 0.25s ease' }}
+            style={{
+              color: '#0b1dff',
+              display: 'inline-block',
+              transition: 'transform 0.25s ease',
+            }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            creative
+            LOGIC
+          </span>
+          <span
+            style={{
+              color: '#fe3c01',
+              display: 'inline-block',
+              transform: 'translateY(-0.15em)',
+              marginLeft: '-0.02em',
+              fontWeight: 900,
+            }}
+          >
+            ,
           </span>
 
-          {/* Vertical DAT LE kinetic badge */}
+          {/* Vertical "DAT LE" Gradient Typography */}
           <div
+            onPointerDown={(e) => handlePointerDown('datLePillar', e)}
+            onPointerMove={(e) => handlePointerMove('datLePillar', e)}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             style={{
               writingMode: 'vertical-rl',
-              transform: 'rotate(180deg)',
-              fontSize: '0.14em',
+              transform: `rotate(180deg) translate(${dragPositions.datLePillar.x}px, ${dragPositions.datLePillar.y}px)`,
+              fontSize: '0.15em',
               fontFamily: 'var(--font-outfit)',
               fontWeight: 900,
-              letterSpacing: '0.22em',
-              color: '#000000',
+              letterSpacing: '0.24em',
               lineHeight: 1,
               padding: '4px 6px',
-              borderRadius: 4,
-              background: 'linear-gradient(180deg, #fe3c01, #0b1dff)',
+              borderRadius: 6,
+              background: 'linear-gradient(180deg, #9333ea 0%, #ec4899 50%, #fe3c01 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
-              cursor: 'pointer',
-              transition: 'transform 0.3s ease',
+              filter: 'drop-shadow(0 2px 6px rgba(236, 72, 153, 0.35))',
+              cursor: isCreativeMode ? 'grab' : 'pointer',
+              touchAction: 'none',
+              transition: dragTargetRef.current?.key === 'datLePillar' ? 'none' : 'transform 0.3s ease',
+              margin: '0 0.02em',
+              userSelect: 'none',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'rotate(180deg) scale(1.25)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'rotate(180deg) scale(1)')}
+            onMouseEnter={(e) => {
+              if (!isCreativeMode) e.currentTarget.style.transform = 'rotate(180deg) scale(1.22)';
+            }}
+            onMouseLeave={(e) => {
+              if (!isCreativeMode) e.currentTarget.style.transform = 'rotate(180deg) scale(1)';
+            }}
+            title="DAT LE - Signature Brand Mark"
           >
             DAT LE
           </div>
 
           <span
-            style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-4deg)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
-          >
-            chaos
-          </span>
-
-          {/* Designer Vector Pen Tool Node */}
-          <div
             style={{
-              width: '0.45em',
-              height: '0.85em',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transform: `rotate(${mousePos.x * 24 - 10}deg)`,
-              position: 'relative',
-              cursor: 'pointer',
-              transition: 'transform 0.15s ease-out',
-            }}
-            title="UI Vector Pen Tool"
-          >
-            {/* Pen Tool Nib */}
-            <div
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: '0.18em solid transparent',
-                borderRight: '0.18em solid transparent',
-                borderBottom: '0.42em solid #fe3c01',
-                filter: 'drop-shadow(0 4px 8px rgba(254,60,1,0.35))',
-              }}
-            />
-            {/* Handle / Node Point */}
-            <div
-              style={{
-                width: '0.14em',
-                height: '0.3em',
-                background: '#111111',
-                borderRadius: '0.04em',
-                marginTop: '-0.04em',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Line 3: "INTO DIGITAL" with Vinyl, Tech Chip & Vibe Code */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.03em', marginTop: '-0.05em' }}>
-          <span
-            style={{ display: 'inline-block', transition: 'transform 0.25s ease' }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-          >
-            into
-          </span>
-
-          {/* Green Vinyl Record (Interactive Spinning) */}
-          <div
-            onClick={() => setIsVinylFast(!isVinylFast)}
-            style={{
-              width: '0.7em',
-              height: '0.7em',
-              borderRadius: '50%',
-              background: '#00d66c',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(0,214,108,0.45)',
-              border: '2px solid rgba(0,0,0,0.1)',
-              cursor: 'pointer',
-              animation: `rotateInfinite ${isVinylFast ? '0.8s' : '4s'} linear infinite`,
-              transition: 'transform 0.3s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-            title="Click to change vinyl spin speed!"
-          >
-            <div
-              style={{
-                width: '0.24em',
-                height: '0.24em',
-                borderRadius: '50%',
-                background: '#ffffff',
-                border: '1px solid #111',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.1em',
-              }}
-            >
-              ♫
-            </div>
-          </div>
-
-          <span style={{ color: '#8bc200', display: 'inline-block' }}>digi</span>
-
-          {/* 3D React/TS Tech Chip Badge (<tsx/>) */}
-          <div
-            style={{
-              width: '0.7em',
-              height: '0.65em',
-              background: '#090d16',
-              borderRadius: '0.14em',
-              border: '2px solid #0b1dff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#61dafb',
-              fontSize: '0.28em',
-              fontWeight: 900,
-              fontFamily: 'monospace',
-              boxShadow: '0 4px 16px rgba(11,29,255,0.4)',
-              cursor: 'pointer',
-              transition: 'transform 0.3s ease, border-color 0.3s ease',
-              lineHeight: 1,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.25) rotate(-10deg)';
-              e.currentTarget.style.borderColor = '#fe3c01';
-              e.currentTarget.style.color = '#fe3c01';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-              e.currentTarget.style.borderColor = '#0b1dff';
-              e.currentTarget.style.color = '#61dafb';
-            }}
-            title="React & TS Code Stack"
-          >
-            &lt;tsx/&gt;
-          </div>
-
-          <span>tal</span>
-
-          {/* Cyber "VIBE CODE" Cassette Badge */}
-          <div
-            style={{
-              width: '0.55em',
-              height: '0.75em',
-              background: 'linear-gradient(135deg, #161b22, #0d1117)',
-              border: '1.5px solid #30363d',
-              borderRadius: '0.08em',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#25ff8d',
-              fontSize: '0.11em',
-              fontWeight: 900,
-              writingMode: 'vertical-rl',
-              transform: 'rotate(180deg)',
-              letterSpacing: '0.12em',
-              boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
-              marginLeft: '0.04em',
-              cursor: 'pointer',
-              transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'rotate(180deg) scale(1.25) translateY(-8px)';
-              e.currentTarget.style.borderColor = '#25ff8d';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'rotate(180deg) scale(1) translateY(0)';
-              e.currentTarget.style.borderColor = '#30363d';
-            }}
-            title="Vibe Code Architecture"
-          >
-            vibe code
-          </div>
-
-          {/* Blue Wave */}
-          <div
-            style={{
-              color: '#0b1dff',
-              fontSize: '0.8em',
-              margin: '0 0.04em',
-              animation: 'floatGentle 3s ease-in-out infinite',
-              display: 'inline-block',
-            }}
-          >
-            ~
-          </div>
-        </div>
-
-        {/* Line 4: "REALITY" */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.02em', marginTop: '-0.05em' }}>
-          <span
-            style={{
-              color: '#0b1dff',
+              color: '#000000',
               display: 'inline-block',
               transition: 'transform 0.25s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-6deg)')}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(2deg)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
           >
-            real
+            CRAFTING
           </span>
-
-          {/* 3D Glossy Inflatable Balloon 'e' */}
-          <span
-            style={{
-              color: '#6e1d3b',
-              background: 'radial-gradient(circle at 35% 30%, #ff5286 0%, #a83d64 45%, #4a1024 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 6px 12px rgba(168,61,100,0.4))',
-              display: 'inline-block',
-              transform: 'scale(1.08)',
-              cursor: 'pointer',
-              transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.4)',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.35) rotate(10deg)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.08) rotate(0deg)')}
-          >
-            e
-          </span>
-
-          <span
-            style={{
-              color: '#ffe815',
-              display: 'inline-block',
-              transition: 'transform 0.25s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-          >
-            ity
-          </span>
-          <span style={{ color: '#fe3c01', fontWeight: 900 }}>.</span>
         </div>
-      </div>
 
-      {/* Floating Consolidated Play Reel / Creative Playground Button */}
-      <div
-        style={{
-          marginTop: 'clamp(20px, 4vw, 36px)',
-          zIndex: 15,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
+        {/* Line 3: "DIGITAL EXPERIENCES." */}
         <div
-          onClick={() => setIsCreativeMode(!isCreativeMode)}
+          className="des4-hero-row"
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 10,
-            background: isCreativeMode ? '#fe3c01' : '#000000',
-            color: '#ffffff',
-            padding: '12px 26px',
-            borderRadius: 100,
-            cursor: 'pointer',
-            fontFamily: 'var(--font-inter)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: '0.02em',
-            boxShadow: isCreativeMode
-              ? '0 12px 35px rgba(254,60,1,0.5)'
-              : '0 10px 30px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-            userSelect: 'none',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.08)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
+            gap: '0.04em',
+            marginTop: '0.04em',
           }}
         >
           <span
             style={{
-              color: isCreativeMode ? '#ffffff' : '#fe3c01',
-              fontSize: 14,
-              animation: isCreativeMode ? 'pulseGlow 1s ease-in-out infinite' : 'none',
+              color: '#000000',
+              display: 'inline-block',
+              transition: 'transform 0.25s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            {isCreativeMode ? '▶' : '▶'}
+            DIGITAL
           </span>
-          <span>
-            {isCreativeMode
-              ? 'play reel: CREATIVE MODE ON'
-              : 'play reel'}
-          </span>
-        </div>
 
+          <span
+            style={{
+              color: '#0b1dff',
+              display: 'inline-block',
+              transition: 'transform 0.25s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px) rotate(-2deg)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0) rotate(0)')}
+          >
+            EXPERIENCES
+          </span>
+
+          <span style={{ color: '#fe3c01', fontWeight: 900 }}>.</span>
+        </div>
+      </div>
+
+      {/* ─── 4. REFINED CALL TO ACTION / PLAYGROUND CONTROLS ─── */}
+      <div
+        style={{
+          marginTop: 'clamp(20px, 4vw, 36px)',
+          zIndex: 20,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 12,
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}
+      >
+        {/* Primary CTA: Explore Work */}
+        <button
+          onClick={scrollToWork}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#000000',
+            color: '#ffffff',
+            padding: '12px clamp(20px, 3.5vw, 28px)',
+            borderRadius: 100,
+            cursor: 'pointer',
+            border: 'none',
+            fontFamily: 'var(--font-inter)',
+            fontSize: 'clamp(13px, 1.8vw, 14px)',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.18)',
+            transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+            userSelect: 'none',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
+            e.currentTarget.style.boxShadow = '0 16px 32px rgba(0, 0, 0, 0.25)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.18)';
+          }}
+        >
+          <span>Explore Works</span>
+          <span style={{ color: '#fe3c01', fontSize: 15 }}>↓</span>
+        </button>
+
+        {/* Secondary CTA: Interactive Playground Mode Toggle */}
+        <button
+          onClick={() => setIsCreativeMode(!isCreativeMode)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            background: isCreativeMode ? '#fe3c01' : 'rgba(0, 0, 0, 0.05)',
+            color: isCreativeMode ? '#ffffff' : '#111827',
+            padding: '11px clamp(16px, 2.5vw, 22px)',
+            borderRadius: 100,
+            cursor: 'pointer',
+            border: isCreativeMode ? '1px solid #fe3c01' : '1px solid rgba(0, 0, 0, 0.1)',
+            fontFamily: 'var(--font-inter)',
+            fontSize: 'clamp(12px, 1.6vw, 13px)',
+            fontWeight: 700,
+            transition: 'all 0.25s ease',
+            userSelect: 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (!isCreativeMode) {
+              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.08)';
+              e.currentTarget.style.transform = 'scale(1.03)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isCreativeMode) {
+              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }
+          }}
+          title={isCreativeMode ? 'Tắt chế độ kéo thả' : 'Bật chế độ kéo thả tự do các phần tử'}
+        >
+          <span>{isCreativeMode ? ' Creative Mode: ON' : ' Playground'}</span>
+        </button>
+
+        {/* Reset button when Creative Mode is active */}
         {isCreativeMode && (
           <button
             onClick={resetPositions}
             style={{
-              background: 'rgba(0, 0, 0, 0.8)',
-              color: '#25ff8d',
-              border: '1px solid rgba(37, 255, 141, 0.4)',
-              padding: '10px 16px',
+              background: '#090a0f',
+              color: '#00f2fe',
+              border: '1px solid rgba(0, 242, 254, 0.4)',
+              padding: '9px 16px',
               borderRadius: 100,
               fontSize: 12,
               fontWeight: 700,
@@ -723,21 +647,103 @@ export default function HeroSection() {
               gap: 6,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#000000';
               e.currentTarget.style.transform = 'scale(1.05)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
               e.currentTarget.style.transform = 'scale(1)';
             }}
-            title="Reset element positions"
+            title="Reset positions"
           >
-            <span></span> Reset
+            <span>↺</span>
+            <span>Reset</span>
           </button>
         )}
+      </div>
+
+      {/* ─── 5. RESPONSIVE TECH MATRIX CHIPS ─── */}
+      <div className="des4-hero-chips-container">
+        {/* Chip 1: Fullstack & AI */}
+        <div
+          className="des4-hero-chip-left"
+          onPointerDown={(e) => handlePointerDown('techChip1', e)}
+          onPointerMove={(e) => handlePointerMove('techChip1', e)}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{
+            cursor: isCreativeMode ? 'grab' : 'default',
+            touchAction: 'none',
+            transform: `translate(${mousePos.x * 20 + dragPositions.techChip1.x}px, ${mousePos.y * 20 + dragPositions.techChip1.y}px)`,
+            transition: dragTargetRef.current?.key === 'techChip1' ? 'none' : 'transform 0.15s ease-out',
+          }}
+        >
+          <div
+            style={{
+              background: '#0a0d14',
+              color: '#ffffff',
+              border: isCreativeMode ? '2px dashed #fe3c01' : '1px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: 100,
+              padding: '7px 16px',
+              fontSize: 'clamp(10.5px, 1.4vw, 12px)',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              fontFamily: 'var(--font-inter)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              userSelect: 'none',
+              animation: isCreativeMode ? 'none' : 'floatGentle 5.2s ease-in-out infinite',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {/* <FaLayerGroup size={12} style={{ color: '#00f2fe' }} />
+              <SiClaude size={14} style={{ color: '#d97706' }} /> */}
+            </div>
+            <span>FULLSTACK &amp; AI SYSTEMS</span>
+          </div>
+        </div>
+
+        {/* Chip 2: React 19 & Spring Boot */}
+        <div
+          className="des4-hero-chip-right"
+          onPointerDown={(e) => handlePointerDown('techChip2', e)}
+          onPointerMove={(e) => handlePointerMove('techChip2', e)}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{
+            cursor: isCreativeMode ? 'grab' : 'default',
+            touchAction: 'none',
+            transform: `translate(${mousePos.x * -20 + dragPositions.techChip2.x}px, ${mousePos.y * -20 + dragPositions.techChip2.y}px)`,
+            transition: dragTargetRef.current?.key === 'techChip2' ? 'none' : 'transform 0.15s ease-out',
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              color: '#111827',
+              border: isCreativeMode ? '2px dashed #fe3c01' : '1.5px solid #000000',
+              borderRadius: 100,
+              padding: '7px 16px',
+              fontSize: 'clamp(10.5px, 1.4vw, 12px)',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              fontFamily: 'var(--font-inter)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              userSelect: 'none',
+              animation: isCreativeMode ? 'none' : 'floatInverse 5s ease-in-out infinite',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {/* <SiReact size={15} style={{ color: '#61dafb' }} />
+              <SiSpringboot size={14} style={{ color: '#6db33f' }} /> */}
+            </div>
+            <span>REACT 19 • SPRING BOOT</span>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
-

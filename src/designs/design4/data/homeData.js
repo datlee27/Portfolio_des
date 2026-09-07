@@ -26,7 +26,7 @@ export const heroData = {
   lastName: 'Le',
   fullName: 'DAT LEE',
   role: portfolioData.personal.title,
-  subtitle: 'Turning Creative Chaos into Reality',
+  subtitle: 'Engineering Logic, Crafting Digital Experiences',
   subtext: portfolioData.personal.heroSubtext,
   stickers: [
     {

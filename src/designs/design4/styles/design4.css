@@ -89,7 +89,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px 40px;
+  padding: 80px 24px 50px;
   background: #ffffff;
   overflow: hidden;
   user-select: none;
@@ -102,31 +102,138 @@
   justify-content: center;
   font-family: var(--font-outfit);
   font-weight: 900;
-  font-size: clamp(52px, 12vw, 150px);
-  line-height: 0.95;
+  font-size: clamp(48px, 9vw, 130px);
+  line-height: 1;
   letter-spacing: -0.04em;
   color: #000000;
   z-index: 10;
   max-width: 100%;
+  text-align: center;
 }
 
-@media (max-width: 640px) {
-  .des4-hero-section {
-    min-height: 70vh !important;
-    padding: 75px 16px 30px !important;
-  }
-  .des4-hero-headline {
-    font-size: clamp(44px, 13.5vw, 76px) !important;
-  }
+.des4-hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 100%;
 }
 
+/* Positioning for Hero HUD and Chips */
+.des4-hero-top-left {
+  position: absolute;
+  top: 14%;
+  left: 6%;
+  z-index: 15;
+}
+
+.des4-hero-top-right {
+  position: absolute;
+  top: 13%;
+  right: 6%;
+  z-index: 15;
+}
+
+.des4-hero-chip-left {
+  position: absolute;
+  bottom: 18%;
+  left: 6%;
+  z-index: 12;
+}
+
+.des4-hero-chip-right {
+  position: absolute;
+  bottom: 18%;
+  right: 6%;
+  z-index: 12;
+}
+
+.des4-hero-chips-container {
+  display: contents;
+}
+
+.des4-hero-mobile-hud {
+  display: none;
+}
+
+/* Tablet Optimizations (641px - 1024px) */
 @media (min-width: 641px) and (max-width: 1024px) {
   .des4-hero-section {
     min-height: 80vh !important;
-    padding: 85px 24px 40px !important;
+    padding: 100px 20px 40px !important;
   }
   .des4-hero-headline {
-    font-size: clamp(60px, 10.5vw, 110px) !important;
+    font-size: clamp(34px, 6.2vw, 64px) !important;
+    line-height: 1.04 !important;
+  }
+  .des4-hero-top-left {
+    top: 90px !important;
+    left: 24px !important;
+  }
+  .des4-hero-top-right {
+    top: 86px !important;
+    right: 24px !important;
+  }
+  .des4-hero-chip-left,
+  .des4-hero-chip-right {
+    position: static !important;
+    transform: none !important;
+  }
+  .des4-hero-chips-container {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    z-index: 12;
+  }
+}
+
+/* Mobile Optimizations (<= 640px) */
+@media (max-width: 640px) {
+  .des4-hero-section {
+    min-height: auto !important;
+    padding: 75px 16px 36px !important;
+    justify-content: flex-start !important;
+  }
+  .des4-hero-headline {
+    font-size: clamp(25px, 7.6vw, 38px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.03em !important;
+    margin-top: 8px;
+  }
+  .des4-hero-row {
+    flex-wrap: wrap !important;
+  }
+  .des4-hero-top-left,
+  .des4-hero-top-right {
+    display: none !important;
+  }
+  .des4-hero-mobile-hud {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 16px;
+    gap: 8px;
+    z-index: 15;
+  }
+  .des4-hero-chip-left,
+  .des4-hero-chip-right {
+    position: static !important;
+    transform: none !important;
+  }
+  .des4-hero-chips-container {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    z-index: 12;
+    width: 100%;
   }
 }
 
@@ -253,4 +360,19 @@
 @keyframes rotateInfinite {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes pixelBob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
