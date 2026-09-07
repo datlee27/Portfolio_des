@@ -5,8 +5,7 @@ import HeroSection from './components/HeroSection';
 import IntroSection from './components/IntroSection';
 import FeaturedProjectsSection from './components/FeaturedProjectsSection';
 import WhatIDoSection from './components/WhatIDoSection';
-import SkillsSection from './components/SkillsSection';
-import ClientsSection from './components/ClientsSection';
+import Spiral3DSlider from './components/Spiral3DSlider';
 import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
@@ -91,11 +90,8 @@ export default function Design4App() {
           {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
           <WhatIDoSection />
 
-          {/* 5.5 Technical Capabilities & Skills Logo Loop + Trail Effect */}
-          <SkillsSection />
-
-          {/* 6. Clients: Deep Black 3D Rotating Carousel */}
-          <ClientsSection />
+          {/* 6. Interactive WebGL Spiral 3D Gallery (Experience & Visual Archive) */}
+          <Spiral3DSlider />
 
           {/* 7. Articles & Journal / Blog Section */}
           <BlogSection />

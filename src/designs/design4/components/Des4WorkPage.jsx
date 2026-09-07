@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { featuredProjects } from '../data/homeData';
 import FooterSection from './FooterSection';
 import PDFViewer from './PDFViewer';
+import SkillsSection from './SkillsSection';
 
 export default function Des4WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
@@ -32,6 +33,12 @@ export default function Des4WorkPage({ onGoHome }) {
       count: featuredProjects.filter((p) =>
         p.tags.some((t) => ['AI', 'Arduino', 'IoT', 'Sensors'].includes(t))
       ).length,
+    },
+    {
+      key: 'SKILLS',
+      label: '⚡ Skills & Stack',
+      count: 'TECH',
+      isSkills: true,
     },
     {
       key: 'CV',
@@ -102,7 +109,14 @@ export default function Des4WorkPage({ onGoHome }) {
               return (
                 <button
                   key={cat.key}
-                  onClick={() => setSelectedCategory(cat.key)}
+                  onClick={() => {
+                    if (cat.key === 'SKILLS') {
+                      const el = document.getElementById('d4-skills');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      setSelectedCategory(cat.key);
+                    }
+                  }}
                   className={`des4-work-filter-pill ${isActive ? 'is-active' : ''}`}
                   style={
                     cat.isSpecial && !isActive
@@ -110,6 +124,12 @@ export default function Des4WorkPage({ onGoHome }) {
                           borderColor: '#fe3c01',
                           color: '#fe3c01',
                           background: 'rgba(254, 60, 1, 0.05)',
+                        }
+                      : cat.isSkills
+                      ? {
+                          borderColor: 'rgba(37, 255, 141, 0.4)',
+                          color: '#25ff8d',
+                          background: 'rgba(37, 255, 141, 0.05)',
                         }
                       : {}
                   }
@@ -238,6 +258,9 @@ export default function Des4WorkPage({ onGoHome }) {
           )}
         </div>
       </div>
+
+      {/* ─── Skills & Technical Capabilities Section (Moved to /work) ─── */}
+      <SkillsSection />
 
       {/* ─── Footer Section ─── */}
       <FooterSection />
