@@ -378,10 +378,10 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Intro Section & Core Pillars Cards
+   Intro Section & Visual Interactive Bento
    ═══════════════════════════════════════════════════════════════════════ */
 .des4-intro-wrapper {
-  padding: 50px 0 80px;
+  padding: 40px 0 70px;
   background: #ffffff;
   position: relative;
   z-index: 2;
@@ -397,17 +397,18 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #6b7280;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .des4-intro-narrative {
   font-family: var(--font-outfit);
-  font-size: clamp(22px, 3.4vw, 38px);
+  font-size: clamp(22px, 3.2vw, 36px);
   font-weight: 600;
-  line-height: 1.48;
+  line-height: 1.44;
   letter-spacing: -0.02em;
   color: #0d1117;
-  margin: 0 0 54px 0;
+  margin: 0 0 36px 0;
+  max-width: 980px;
 }
 
 .des4-intro-tag {
@@ -439,52 +440,64 @@
   letter-spacing: 0.01em;
 }
 
-.des4-intro-pillars-grid {
+/* Visual Interactive Bento Grid */
+.des4-visual-bento {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
   width: 100%;
 }
 
-.des4-intro-pillar-card {
-  background: #fafafa;
-  border: 1.5px solid #e5e7eb;
+.des4-bento-card {
   border-radius: 20px;
-  padding: 28px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
-.des4-intro-pillar-card:hover {
-  transform: translateY(-6px);
-  background: #ffffff;
-  border-color: #111111;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+.des4-bento-card:hover {
+  transform: translateY(-4px);
 }
 
-.des4-intro-pillar-tag {
-  display: inline-block;
-  font-family: monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6b7280;
-  margin-bottom: 12px;
+/* Audio Visualizer Waves */
+@keyframes audioWave1 {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+@keyframes audioWave2 {
+  0%, 100% { height: 18px; }
+  50% { height: 8px; }
+}
+
+@keyframes audioWave3 {
+  0%, 100% { height: 10px; }
+  50% { height: 32px; }
+}
+
+@keyframes audioWave4 {
+  0%, 100% { height: 24px; }
+  50% { height: 12px; }
+}
+
+@keyframes tapeSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dataPulseGlow {
+  0%, 100% { opacity: 0.3; transform: scaleX(0.8); }
+  50% { opacity: 1; transform: scaleX(1); }
 }
 
 @media (max-width: 900px) {
-  .des4-intro-pillars-grid {
+  .des4-visual-bento {
     grid-template-columns: 1fr;
     gap: 16px;
   }
   .des4-intro-wrapper {
-    padding: 40px 0 60px;
+    padding: 30px 0 50px;
   }
 }
 
