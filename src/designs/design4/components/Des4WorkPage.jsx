@@ -3,9 +3,11 @@ import { featuredProjects } from '../data/homeData';
 import FooterSection from './FooterSection';
 import PDFViewer from './PDFViewer';
 import SkillsSection from './SkillsSection';
+import ProjectModalD4 from './ProjectModalD4';
 
 export default function Des4WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -170,10 +172,9 @@ export default function Des4WorkPage({ onGoHome }) {
                   {/* Media Container */}
                   <div
                     className="des4-work-card-media"
-                    onClick={() => {
-                      const targetUrl = project.deploy || project.github;
-                      if (targetUrl) window.open(targetUrl, '_blank', 'noopener,noreferrer');
-                    }}
+                    onClick={() => setSelectedProject(project)}
+                    style={{ cursor: 'pointer' }}
+                    title={`View ${project.title} Case Study`}
                   >
                     {/* Status Pill */}
                     {project.status && (
@@ -209,7 +210,14 @@ export default function Des4WorkPage({ onGoHome }) {
                       >
                         {project.client || 'Digital Product'}
                       </span>
-                      <h3 className="des4-work-card-title">
+                      <h3
+                        className="des4-work-card-title"
+                        onClick={() => setSelectedProject(project)}
+                        style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = '#fe3c01')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = '#ffffff')}
+                        title={`View ${project.title} Case Study`}
+                      >
                         {project.title}
                       </h3>
                       <p className="des4-work-card-desc">
@@ -229,12 +237,25 @@ export default function Des4WorkPage({ onGoHome }) {
 
                       {/* Action Links */}
                       <div className="des4-work-card-actions">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProject(project)}
+                          className="des4-work-btn-primary"
+                          style={{
+                            cursor: 'pointer',
+                            border: 'none',
+                            outline: 'none',
+                          }}
+                        >
+                          Details ↗
+                        </button>
+
                         {project.deploy && (
                           <a
                             href={project.deploy}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="des4-work-btn-primary"
+                            className="des4-work-btn-secondary"
                           >
                             Live Demo ↗
                           </a>
@@ -264,6 +285,12 @@ export default function Des4WorkPage({ onGoHome }) {
 
       {/* ─── Footer Section ─── */}
       <FooterSection />
+
+      {/* macOS TitleBar Project Details Modal */}
+      <ProjectModalD4
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </div>
   );
 }

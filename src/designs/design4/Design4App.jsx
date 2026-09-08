@@ -10,6 +10,7 @@ import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
 import Des4WorkPage from './components/Des4WorkPage';
+import Des4BlogPage from './components/Des4BlogPage';
 
 export default function Design4App() {
   // Determine initial view from URL path
@@ -17,6 +18,7 @@ export default function Design4App() {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       if (path === '/work' || path.startsWith('/work/')) return 'work';
+      if (path === '/blog' || path.startsWith('/blog/')) return 'blog';
       if (path === '/lab' || path.startsWith('/lab/')) return 'lab';
     }
     return 'main';
@@ -37,6 +39,8 @@ export default function Design4App() {
       const path = window.location.pathname;
       if (path === '/work' || path.startsWith('/work/')) {
         setActiveView('work');
+      } else if (path === '/blog' || path.startsWith('/blog/')) {
+        setActiveView('blog');
       } else if (path === '/lab' || path.startsWith('/lab/')) {
         setActiveView('lab');
       } else {
@@ -52,6 +56,8 @@ export default function Design4App() {
   useEffect(() => {
     if (activeView === 'work') {
       document.title = 'Work – Dat Le Selected Projects';
+    } else if (activeView === 'blog') {
+      document.title = 'Threads / Blog – Dat Le Tech Notes';
     } else if (activeView === 'lab') {
       document.title = 'Lab – Dat Le Design Experiments';
     } else {
@@ -65,6 +71,7 @@ export default function Design4App() {
       <CornerNav
         activeView={activeView}
         onOpenWork={() => navigateTo('work', '/work')}
+        onOpenBlog={() => navigateTo('blog', '/blog')}
         onOpenLab={() => navigateTo('lab', '/lab')}
         onGoHome={() => navigateTo('main', '/')}
       />
@@ -72,6 +79,9 @@ export default function Design4App() {
       {activeView === 'work' ? (
         /* Dedicated Work Page (/work) with 6 Projects & Footer */
         <Des4WorkPage onGoHome={() => navigateTo('main', '/')} />
+      ) : activeView === 'blog' ? (
+        /* Dedicated Blog Threads Page (/blog) */
+        <Des4BlogPage onGoHome={() => navigateTo('main', '/')} />
       ) : activeView === 'lab' ? (
         /* Lab View (/lab) */
         <Des4LabView onBack={() => navigateTo('main', '/')} />
@@ -94,7 +104,7 @@ export default function Design4App() {
           <Spiral3DSlider />
 
           {/* 7. Articles & Journal / Blog Section */}
-          <BlogSection />
+          <BlogSection onOpenBlog={() => navigateTo('blog', '/blog')} />
 
           {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
           <FooterSection />

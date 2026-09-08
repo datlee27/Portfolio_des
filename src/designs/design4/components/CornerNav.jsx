@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork }) {
+export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork, onOpenBlog }) {
   const scrollTo = (id) => {
-    if (activeView === 'lab' || activeView === 'work') {
+    if (activeView === 'lab' || activeView === 'work' || activeView === 'blog') {
       if (onGoHome) onGoHome();
       setTimeout(() => {
         const el = document.getElementById(id);
@@ -26,7 +26,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork 
         className="des4-corner-anchor"
         onClick={(e) => {
           e.preventDefault();
-          if (activeView === 'work') {
+          if (activeView === 'work' || activeView === 'blog') {
             if (onGoHome) onGoHome();
           } else {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,7 +100,15 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork 
 
         <button
           className="des4-corner-anchor"
-          onClick={() => scrollTo('d4-blog')}
+          onClick={() => {
+            if (activeView === 'blog') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (onOpenBlog) {
+              onOpenBlog();
+            } else {
+              scrollTo('d4-blog');
+            }
+          }}
           style={{
             position: 'relative',
             fontFamily: 'var(--font-outfit)',
@@ -114,11 +122,13 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork 
             color: '#ffffff',
             mixBlendMode: 'difference',
             cursor: 'pointer',
+            borderBottom: activeView === 'blog' ? '2px solid #fe3c01' : 'none',
+            paddingBottom: activeView === 'blog' ? 2 : 0,
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          blog
+          blog{activeView === 'blog' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
         </button>
       </div>
 

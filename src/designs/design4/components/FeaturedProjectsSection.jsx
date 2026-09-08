@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { featuredProjects } from '../data/homeData';
+import ProjectModalD4 from './ProjectModalD4';
 
 export default function FeaturedProjectsSection() {
+  const [selectedProject, setSelectedProject] = useState(null);
   return (
     <section
       id="d4-work"
@@ -75,10 +77,8 @@ export default function FeaturedProjectsSection() {
                   transition: 'transform 0.3s ease',
                   width: '100%',
                 }}
-                onClick={() => {
-                  const targetUrl = project.deploy || project.github;
-                  if (targetUrl) window.open(targetUrl, '_blank', 'noopener,noreferrer');
-                }}
+                onClick={() => setSelectedProject(project)}
+                title={`View ${project.title} Case Study`}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
@@ -126,6 +126,8 @@ export default function FeaturedProjectsSection() {
                       {project.code}
                     </span>
                     <h3
+                      onClick={() => setSelectedProject(project)}
+                      title={`View ${project.title} Case Study`}
                       style={{
                         fontFamily: 'var(--font-outfit)',
                         fontSize: 'clamp(20px, 2.2vw, 32px)',
@@ -133,7 +135,11 @@ export default function FeaturedProjectsSection() {
                         letterSpacing: '-0.02em',
                         color: '#000000',
                         margin: 0,
+                        cursor: 'pointer',
+                        transition: 'color 0.2s ease',
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = '#fe3c01')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = '#000000')}
                     >
                       {project.title}
                     </h3>
@@ -183,44 +189,44 @@ export default function FeaturedProjectsSection() {
 
                   {/* Links Action Buttons */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(project)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        background: '#000000',
+                        color: '#ffffff',
+                        border: '1.5px solid #000000',
+                        fontFamily: 'var(--font-inter)',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        minHeight: 44,
+                        padding: '8px 18px',
+                        borderRadius: 100,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        touchAction: 'manipulation',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#fe3c01';
+                        e.currentTarget.style.borderColor = '#fe3c01';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#000000';
+                        e.currentTarget.style.borderColor = '#000000';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      View Details ↗
+                    </button>
+
                     {project.deploy && (
                       <a
                         href={project.deploy}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 6,
-                          background: '#000000',
-                          color: '#ffffff',
-                          fontFamily: 'var(--font-inter)',
-                          fontSize: 13,
-                          fontWeight: 600,
-                          minHeight: 44,
-                          padding: '8px 18px',
-                          borderRadius: 100,
-                          textDecoration: 'none',
-                          transition: 'all 0.2s ease',
-                          touchAction: 'manipulation',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#fe3c01';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = '#000000';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                      >
-                        Live Demo ↗
-                      </a>
-                    )}
-
-                    {project.github && (
-                      <a
-                        href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -250,6 +256,44 @@ export default function FeaturedProjectsSection() {
                           e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
+                        Live Demo ↗
+                      </a>
+                    )}
+
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                          background: '#ffffff',
+                          color: '#000000',
+                          border: '1.5px solid #e4e4e7',
+                          fontFamily: 'var(--font-inter)',
+                          fontSize: 13,
+                          fontWeight: 600,
+                          minHeight: 44,
+                          padding: '8px 18px',
+                          borderRadius: 100,
+                          textDecoration: 'none',
+                          transition: 'all 0.2s ease',
+                          touchAction: 'manipulation',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f4f4f5';
+                          e.currentTarget.style.borderColor = '#000000';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#ffffff';
+                          e.currentTarget.style.borderColor = '#e4e4e7';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
                         GitHub Code ↗
                       </a>
                     )}
@@ -260,6 +304,12 @@ export default function FeaturedProjectsSection() {
           ))}
         </div>
       </div>
+
+      {/* macOS TitleBar Project Details Modal */}
+      <ProjectModalD4
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </section>
   );
 }

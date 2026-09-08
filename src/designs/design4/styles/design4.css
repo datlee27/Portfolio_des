@@ -1424,5 +1424,36 @@
   }
 }
 
+/* Threads Feed Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .des4-corner-group {
+    gap: 12px !important;
+  }
+}
+
+
 
 

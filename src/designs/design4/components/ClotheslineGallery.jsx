@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { IoCloseOutline } from 'react-icons/io5';
 
 // Default sample photos stored locally with fallback to Framer CDN
 const DEFAULT_PHOTOS = [
@@ -143,11 +142,8 @@ export default function ClotheslineGallery({
       startX: e.clientX,
       scrollLeft: viewportRef.current ? viewportRef.current.scrollLeft : 0,
       hasMoved: false,
+      isCapturing: false,
     };
-    setIsDragging(true);
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch { }
   };
 
   const handlePointerMove = (e) => {
@@ -155,16 +151,26 @@ export default function ClotheslineGallery({
     const deltaX = e.clientX - dragRef.current.startX;
     if (Math.abs(deltaX) > 5) {
       dragRef.current.hasMoved = true;
+      setIsDragging(true);
+      if (!dragRef.current.isCapturing) {
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current.isCapturing = true;
+        } catch { }
+      }
+      viewportRef.current.scrollLeft = dragRef.current.scrollLeft - deltaX;
     }
-    viewportRef.current.scrollLeft = dragRef.current.scrollLeft - deltaX;
   };
 
   const handlePointerUp = (e) => {
+    if (dragRef.current.isCapturing) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch { }
+    }
     dragRef.current.isDown = false;
+    dragRef.current.isCapturing = false;
     setIsDragging(false);
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch { }
   };
 
   const handleCardClick = useCallback((item) => {
@@ -297,25 +303,125 @@ export default function ClotheslineGallery({
         </div>
       </div>
 
-      {/* Interactive Lightbox Modal */}
+      {/* macOS Preview Modal (Synchronized with Design 3 & Image 1) */}
       {activeModalPhoto && (
         <div
-          className="des4-clothesline-modal-backdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999999,
+            background: 'rgba(0, 0, 0, 0.65)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px 16px',
+            animation: 'des4ModalFadeIn 0.25s ease-out forwards',
+          }}
           onClick={() => setActiveModalPhoto(null)}
         >
           <div
-            className="des4-clothesline-modal-content"
+            style={{
+              width: '100%',
+              maxWidth: 780,
+              maxHeight: '90vh',
+              background: '#09090b',
+              borderRadius: 18,
+              boxShadow: '0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              animation: 'des4ModalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="des4-clothesline-modal-close"
-              onClick={() => setActiveModalPhoto(null)}
-              aria-label="Close"
+            {/* macOS TitleBar */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 18px',
+                background: '#f4f4f5',
+                borderBottom: '1px solid #e4e4e7',
+                userSelect: 'none',
+              }}
             >
-              <IoCloseOutline size={26} />
-            </button>
+              {/* 3 Traffic Lights */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  onClick={() => setActiveModalPhoto(null)}
+                  title="Close"
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#ff5f57',
+                    border: '1px solid rgba(0,0,0,0.15)',
+                    cursor: 'pointer',
+                    padding: 0,
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  onClick={() => setActiveModalPhoto(null)}
+                  title="Minimize"
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#ffbd2e',
+                    border: '1px solid rgba(0,0,0,0.15)',
+                    cursor: 'pointer',
+                    padding: 0,
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  title="Maximize"
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: '#28ca42',
+                    border: '1px solid rgba(0,0,0,0.15)',
+                    cursor: 'pointer',
+                    padding: 0,
+                    outline: 'none',
+                  }}
+                />
+              </div>
 
-            <div className="des4-clothesline-modal-card">
+              {/* Centered Title */}
+              <span
+                style={{
+                  fontFamily: 'monospace, system-ui',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#27272a',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Preview – {activeModalPhoto.title || 'Photo.png'}
+              </span>
+
+              <div style={{ width: 44 }} />
+            </div>
+
+            {/* Dark Preview Body (Matching Image 1) */}
+            <div
+              style={{
+                padding: '24px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#09090b',
+                overflowY: 'auto',
+              }}
+            >
               <img
                 src={activeModalPhoto.src}
                 onError={(e) => {
@@ -324,13 +430,38 @@ export default function ClotheslineGallery({
                   }
                 }}
                 alt={activeModalPhoto.title}
-                className="des4-clothesline-modal-img"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '64vh',
+                  borderRadius: 8,
+                  objectFit: 'contain',
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.7)',
+                }}
               />
-              <div className="des4-clothesline-modal-footer">
-                <div className="des4-clothesline-modal-title">
+
+              <div
+                style={{
+                  marginTop: 18,
+                  textAlign: 'center',
+                  fontFamily: 'var(--font-inter)',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    marginBottom: 4,
+                  }}
+                >
                   {activeModalPhoto.title}
                 </div>
-                <div className="des4-clothesline-modal-sub">
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: '#94a3b8',
+                  }}
+                >
                   {activeModalPhoto.subtitle}
                 </div>
               </div>
