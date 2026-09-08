@@ -1566,34 +1566,16 @@ export default function Des4LabView({ onBack }) {
                   background: '#27272a',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  justifyContent: 'flex-start',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <TrafficDots>
-                    <button
-                      type="button"
-                      className="traffic-dot red"
-                      onClick={() => setSelectedMedia(null)}
-                    />
-                  </TrafficDots>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <TrafficLightsGroup onClose={() => setSelectedMedia(null)} />
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>
                     {selectedMedia.name}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedMedia(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#a1a1aa',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <X size={18} />
-                </button>
               </div>
 
               <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -1667,50 +1649,32 @@ export default function Des4LabView({ onBack }) {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    {selectedMedia.id === 'dev-roadmap' && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedMedia(null);
-                          setSelectedProject(featuredProjects[0]);
-                        }}
-                        style={{
-                          background: '#007aff',
-                          border: 'none',
-                          color: '#ffffff',
-                          padding: '7px 16px',
-                          borderRadius: 8,
-                          fontSize: 12.5,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)',
-                        }}
-                      >
-                        <ExternalLink size={13} />
-                        View Project
-                      </button>
-                    )}
+                  {selectedMedia.id === 'dev-roadmap' && (
                     <button
                       type="button"
-                      onClick={() => setSelectedMedia(null)}
+                      onClick={() => {
+                        setSelectedMedia(null);
+                        setSelectedProject(featuredProjects[0]);
+                      }}
                       style={{
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        background: '#007aff',
+                        border: 'none',
                         color: '#ffffff',
-                        padding: '7px 14px',
+                        padding: '7px 16px',
                         borderRadius: 8,
                         fontSize: 12.5,
                         fontWeight: 600,
                         cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)',
                       }}
                     >
-                      Done
+                      <ExternalLink size={13} />
+                      View Project
                     </button>
-                  </div>
+                  )}
                 </div>
               </div>
             </motion.div>
