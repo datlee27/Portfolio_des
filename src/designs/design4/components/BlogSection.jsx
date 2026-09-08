@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, ArrowUpRight, Calendar, Clock } from 'lucide-react';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { blogPostsData } from '../data/homeData';
+import NeubrutalismButton from './NeubrutalismButton';
 
 export default function BlogSection({ onOpenBlog }) {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -97,40 +98,48 @@ export default function BlogSection({ onOpenBlog }) {
           </p>
 
           {onOpenBlog && (
-            <button
-              type="button"
+            <NeubrutalismButton
               onClick={onOpenBlog}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: '#09090b',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: 100,
-                padding: '10px 22px',
-                fontSize: 13,
-                fontWeight: 700,
-                fontFamily: 'var(--font-inter)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#fe3c01';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#09090b';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
+              buttonColor="rgb(143, 171, 255)"
+              textColor="#000000"
+              borderColor="#18181b"
+              defaultShadow="6px 6px 0px 0px #000000"
+              hoverShadow="2px 2px 0px 0px #000000"
+              activeShadow="0px 0px 0px 0px #000000"
+              borderRadius={12}
             >
-              <span>Threads Feed (/blog)</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#fe3c01', background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-                <span>Live</span>
-                <ArrowUpRight size={12} />
+              <span style={{ fontFamily: 'var(--font-outfit)', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em' }}>
+                Blog
               </span>
-            </button>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  color: '#000000',
+                  background: 'rgba(255, 255, 255, 0.7)',
+                  border: '1px solid rgba(0, 0, 0, 0.15)',
+                  padding: '3px 9px',
+                  borderRadius: 100,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                }}
+              >
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: '#10b981',
+                    boxShadow: '0 0 8px #10b981',
+                    display: 'inline-block',
+                  }}
+                />
+                <span>Live</span>
+                <ArrowUpRight size={12} strokeWidth={2.5} />
+              </span>
+            </NeubrutalismButton>
           )}
         </div>
 
