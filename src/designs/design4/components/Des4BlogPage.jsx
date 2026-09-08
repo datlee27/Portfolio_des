@@ -104,10 +104,22 @@ export default function Des4BlogPage({ onGoHome }) {
     return [...thoughts, ...articles];
   });
 
-  // Scroll to top on page load
+  // Scroll to top on page load and ensure body scroll is unlocked
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = '';
   }, []);
+
+  // Lock body scroll ONLY when full article modal is open
+  useEffect(() => {
+    if (selectedArticle) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original || '';
+      };
+    }
+  }, [selectedArticle]);
 
   // Auto clear toast after 2.5s
   useEffect(() => {

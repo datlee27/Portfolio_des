@@ -306,10 +306,12 @@ export default function FeaturedProjectsSection() {
       </div>
 
       {/* macOS TitleBar Project Details Modal */}
-      <ProjectModalD4
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
+      {selectedProject && (
+        <ProjectModalD4
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </section>
   );
 }

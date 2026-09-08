@@ -11,6 +11,7 @@ export default function Des4WorkPage({ onGoHome }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = '';
   }, []);
 
   const categories = [
@@ -123,17 +124,17 @@ export default function Des4WorkPage({ onGoHome }) {
                   style={
                     cat.isSpecial && !isActive
                       ? {
-                          borderColor: '#fe3c01',
-                          color: '#fe3c01',
-                          background: 'rgba(254, 60, 1, 0.05)',
-                        }
+                        borderColor: '#fe3c01',
+                        color: '#fe3c01',
+                        background: 'rgba(254, 60, 1, 0.05)',
+                      }
                       : cat.isSkills
-                      ? {
+                        ? {
                           borderColor: 'rgba(37, 255, 141, 0.4)',
                           color: '#25ff8d',
                           background: 'rgba(37, 255, 141, 0.05)',
                         }
-                      : {}
+                        : {}
                   }
                 >
                   <span>{cat.label}</span>
@@ -287,10 +288,12 @@ export default function Des4WorkPage({ onGoHome }) {
       <FooterSection />
 
       {/* macOS TitleBar Project Details Modal */}
-      <ProjectModalD4
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
+      {selectedProject && (
+        <ProjectModalD4
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </div>
   );
 }

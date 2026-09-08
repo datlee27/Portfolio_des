@@ -52,8 +52,9 @@ export default function Design4App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Update document title based on current view
+  // Update document title and ensure body scroll is unlocked based on current view
   useEffect(() => {
+    document.body.style.overflow = '';
     if (activeView === 'work') {
       document.title = 'Work – Dat Le Selected Projects';
     } else if (activeView === 'blog') {

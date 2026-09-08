@@ -2,19 +2,22 @@ import React, { useEffect } from 'react';
 
 export default function ProjectModalD4({ project, onClose }) {
   useEffect(() => {
+    if (!project) return;
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
-    // Prevent body scrolling when modal is open
+
+    // Prevent body scrolling ONLY when modal is actively open
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = originalOverflow || '';
     };
-  }, [onClose]);
+  }, [project, onClose]);
 
   if (!project) return null;
 
