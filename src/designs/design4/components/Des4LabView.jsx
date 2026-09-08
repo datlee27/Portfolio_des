@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FiBox, FiFolder } from 'react-icons/fi';
+import { Folder, MapPin, Mail, Send } from 'lucide-react';
 import d3Projects from '../data/labProjects';
 import profile from '../../../data/profile';
 import ProjectModalD3 from './LabProjectModal';
@@ -966,9 +966,15 @@ export default function Des4LabView({ onBack }) {
                 <div>
                   <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 12px 0' }}>About Dat Le</h3>
                   <p style={{ lineHeight: 1.7, color: '#4b5563', fontSize: 15 }}>{profile.bio.join(' ')}</p>
-                  <div style={{ marginTop: 20, padding: 16, background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb' }}>
-                    <strong>📍 Location:</strong> {profile.location.name}<br />
-                    <strong>✉️ Email:</strong> {profile.email}
+                  <div style={{ marginTop: 20, padding: 16, background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#374151' }}>
+                      <MapPin size={15} style={{ color: '#0b1dff' }} />
+                      <span><strong>Location:</strong> {profile.location.name}</span>
+                    </div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#374151' }}>
+                      <Mail size={15} style={{ color: '#0b1dff' }} />
+                      <span><strong>Email:</strong> {profile.email}</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -991,7 +997,7 @@ export default function Des4LabView({ onBack }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {['01. Brand Strategy & Visual Identity', '02. UI/UX Design & Design Systems', '03. 2D/3D Motion & Interactive Prototyping', '04. End-to-End Creative Direction'].map((s, idx) => (
                       <div key={idx} style={{ padding: '12px 16px', background: '#f3f4f6', borderRadius: 10, fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <FiFolder style={{ color: '#0b1dff' }} />
+                        <Folder size={16} style={{ color: '#0b1dff' }} />
                         <span>{s}</span>
                       </div>
                     ))}
@@ -1006,7 +1012,10 @@ export default function Des4LabView({ onBack }) {
                     <input type="text" placeholder="Your Name" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                     <input type="email" placeholder="Your Email" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                     <textarea rows="4" placeholder="Tell me about your project..." required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <button type="submit" style={{ padding: '12px', background: '#111827', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Send Message</button>
+                    <button type="submit" style={{ padding: '12px', background: '#111827', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <Send size={15} />
+                      <span>Send Message</span>
+                    </button>
                   </form>
                 </div>
               )}

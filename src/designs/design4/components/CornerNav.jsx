@@ -136,6 +136,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
       {/* Bottom Left: about */}
       <button
         className="des4-corner-anchor"
+        aria-label="Scroll to about section"
         onClick={() => scrollTo('d4-intro')}
         style={{
           position: 'fixed',
@@ -152,6 +153,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
           lineHeight: 1,
           color: '#ffffff',
           mixBlendMode: 'difference',
+          cursor: 'pointer',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -162,6 +164,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
       {/* Bottom Right: lab */}
       <button
         className="des4-corner-anchor"
+        aria-label="Open experiments lab"
         onClick={() => {
           if (onOpenLab) onOpenLab();
         }}
@@ -180,6 +183,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
           lineHeight: 1,
           color: '#ffffff',
           mixBlendMode: 'difference',
+          cursor: 'pointer',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}

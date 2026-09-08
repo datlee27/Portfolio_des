@@ -1,4 +1,6 @@
 import React from 'react';
+import { Mail, ArrowUpRight } from 'lucide-react';
+import { SiGithub, SiFacebook } from 'react-icons/si';
 import { siteMeta } from '../data/homeData';
 
 export default function FooterSection() {
@@ -10,7 +12,6 @@ export default function FooterSection() {
         background: '#000000',
         color: '#ffffff',
         position: 'relative',
-        userSelect: 'none',
       }}
     >
       <div className="des4-container">
@@ -61,7 +62,7 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '10px 18px',
+                padding: '10px 20px',
                 minHeight: 44,
                 borderRadius: 100,
                 background: '#ffffff',
@@ -82,7 +83,8 @@ export default function FooterSection() {
                 e.currentTarget.style.color = '#000000';
               }}
             >
-              ✉ EMAIL ME
+              <Mail size={16} />
+              <span>EMAIL ME</span>
             </a>
 
             <a
@@ -94,12 +96,12 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '10px 18px',
+                padding: '10px 20px',
                 minHeight: 44,
                 borderRadius: 100,
-                background: '#222222',
+                background: '#18181b',
                 color: '#ffffff',
-                border: '1px solid #444444',
+                border: '1px solid #27272a',
                 fontFamily: 'var(--font-inter)',
                 fontSize: 13,
                 fontWeight: 700,
@@ -112,11 +114,13 @@ export default function FooterSection() {
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#444444';
+                e.currentTarget.style.borderColor = '#27272a';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              🐙 GITHUB (DATLEE27) ↗
+              <SiGithub size={15} />
+              <span>GITHUB (DATLEE27)</span>
+              <ArrowUpRight size={15} style={{ opacity: 0.7 }} />
             </a>
 
             <a
@@ -128,12 +132,12 @@ export default function FooterSection() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                padding: '10px 18px',
+                padding: '10px 20px',
                 minHeight: 44,
                 borderRadius: 100,
-                background: '#222222',
+                background: '#18181b',
                 color: '#ffffff',
-                border: '1px solid #444444',
+                border: '1px solid #27272a',
                 fontFamily: 'var(--font-inter)',
                 fontSize: 13,
                 fontWeight: 700,
@@ -147,12 +151,14 @@ export default function FooterSection() {
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#444444';
+                e.currentTarget.style.borderColor = '#27272a';
                 e.currentTarget.style.color = '#ffffff';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              📘 FACEBOOK ↗
+              <SiFacebook size={15} />
+              <span>FACEBOOK</span>
+              <ArrowUpRight size={15} style={{ opacity: 0.7 }} />
             </a>
           </div>
         </div>

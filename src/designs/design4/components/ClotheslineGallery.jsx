@@ -82,14 +82,23 @@ export default function ClotheslineGallery({
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  // Keyboard escape for modal
+  // Keyboard escape & body scroll lock isolation for modal
   useEffect(() => {
+    if (!activeModalPhoto) return;
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') setActiveModalPhoto(null);
     };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow || '';
+    };
+  }, [activeModalPhoto]);
 
   // Stage dimensions based on screen width
   const stageWidth = useMemo(() => {
@@ -322,6 +331,9 @@ export default function ClotheslineGallery({
           onClick={() => setActiveModalPhoto(null)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="des4-clothesline-modal-title"
             style={{
               width: '100%',
               maxWidth: 780,
@@ -354,6 +366,7 @@ export default function ClotheslineGallery({
                 <button
                   onClick={() => setActiveModalPhoto(null)}
                   title="Close"
+                  aria-label="Close photo preview"
                   style={{
                     width: 12,
                     height: 12,
@@ -396,6 +409,7 @@ export default function ClotheslineGallery({
 
               {/* Centered Title */}
               <span
+                id="des4-clothesline-modal-title"
                 style={{
                   fontFamily: 'monospace, system-ui',
                   fontSize: 13,

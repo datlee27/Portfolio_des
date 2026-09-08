@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowDown, Wand2, RotateCcw, Layers, Cpu, Code2, Terminal } from 'lucide-react';
 import NekoCat from './NekoCat';
 import PixelMonster from './PixelMonster';
 
@@ -589,7 +590,7 @@ export default function HeroSection() {
           }}
         >
           <span>Explore Works</span>
-          <span style={{ color: '#fe3c01', fontSize: 15 }}>↓</span>
+          <ArrowDown size={14} style={{ color: '#fe3c01' }} />
         </button>
 
         {/* Secondary CTA: Interactive Playground Mode Toggle */}
@@ -625,7 +626,8 @@ export default function HeroSection() {
           }}
           title={isCreativeMode ? 'Tắt chế độ kéo thả' : 'Bật chế độ kéo thả tự do các phần tử'}
         >
-          <span>{isCreativeMode ? ' Creative Mode: ON' : ' Playground'}</span>
+          <Wand2 size={13} style={{ color: isCreativeMode ? '#ffffff' : '#fe3c01' }} />
+          <span>{isCreativeMode ? 'Creative Mode: ON' : 'Playground'}</span>
         </button>
 
         {/* Reset button when Creative Mode is active */}
@@ -654,7 +656,7 @@ export default function HeroSection() {
             }}
             title="Reset positions"
           >
-            <span>↺</span>
+            <RotateCcw size={12} />
             <span>Reset</span>
           </button>
         )}
@@ -696,8 +698,8 @@ export default function HeroSection() {
             }}
           >
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              {/* <FaLayerGroup size={12} style={{ color: '#00f2fe' }} />
-              <SiClaude size={14} style={{ color: '#d97706' }} /> */}
+              <Layers size={13} style={{ color: '#00f2fe' }} />
+              <Cpu size={13} style={{ color: '#fe3c01' }} />
             </div>
             <span>FULLSTACK &amp; AI SYSTEMS</span>
           </div>
@@ -737,8 +739,8 @@ export default function HeroSection() {
             }}
           >
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              {/* <SiReact size={15} style={{ color: '#61dafb' }} />
-              <SiSpringboot size={14} style={{ color: '#6db33f' }} /> */}
+              <Code2 size={13} style={{ color: '#0b1dff' }} />
+              <Terminal size={13} style={{ color: '#10b981' }} />
             </div>
             <span>REACT 19 • SPRING BOOT</span>
           </div>

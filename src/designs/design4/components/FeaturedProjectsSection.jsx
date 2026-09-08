@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Eye, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { featuredProjects } from '../data/homeData';
 import ProjectModalD4 from './ProjectModalD4';
@@ -221,7 +223,9 @@ export default function FeaturedProjectsSection() {
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
                     >
-                      View Details ↗
+                      <Eye size={14} />
+                      <span>View Details</span>
+                      <ArrowUpRight size={14} style={{ opacity: 0.7 }} />
                     </button>
 
                     {project.deploy && (
@@ -256,7 +260,8 @@ export default function FeaturedProjectsSection() {
                           e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
-                        Live Demo ↗
+                        <ExternalLink size={14} />
+                        <span>Live Demo</span>
                       </a>
                     )}
 
@@ -294,7 +299,9 @@ export default function FeaturedProjectsSection() {
                           e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
-                        GitHub Code ↗
+                        <SiGithub size={14} />
+                        <span>GitHub Code</span>
+                        <ArrowUpRight size={14} style={{ opacity: 0.7 }} />
                       </a>
                     )}
                   </div>

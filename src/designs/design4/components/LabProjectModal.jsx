@@ -1,4 +1,6 @@
 import React from 'react';
+import { X, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 
 export default function LabProjectModal({ project, onClose }) {
   if (!project) return null;
@@ -35,6 +37,7 @@ export default function LabProjectModal({ project, onClose }) {
       >
         <button
           onClick={onClose}
+          aria-label="Close dialog"
           style={{
             position: 'absolute',
             top: 20,
@@ -44,12 +47,17 @@ export default function LabProjectModal({ project, onClose }) {
             borderRadius: '50%',
             width: 36,
             height: 36,
-            fontSize: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             cursor: 'pointer',
-            fontWeight: 700,
+            color: '#18181b',
+            transition: 'background 0.2s ease',
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#e4e4e7')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = '#f4f4f5')}
         >
-          ✕
+          <X size={18} />
         </button>
 
         {project.coverImage && (
@@ -79,6 +87,9 @@ export default function LabProjectModal({ project, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
                 padding: '10px 20px',
                 borderRadius: 100,
                 background: '#fe3c01',
@@ -89,7 +100,9 @@ export default function LabProjectModal({ project, onClose }) {
                 textDecoration: 'none',
               }}
             >
-              Live Demo ↗
+              <ExternalLink size={14} />
+              <span>Live Demo</span>
+              <ArrowUpRight size={13} />
             </a>
           )}
           {project.githubUrl && (
@@ -98,6 +111,9 @@ export default function LabProjectModal({ project, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
                 padding: '10px 20px',
                 borderRadius: 100,
                 background: '#000000',
@@ -108,7 +124,9 @@ export default function LabProjectModal({ project, onClose }) {
                 textDecoration: 'none',
               }}
             >
-              GitHub ↗
+              <SiGithub size={14} />
+              <span>GitHub</span>
+              <ArrowUpRight size={13} />
             </a>
           )}
         </div>

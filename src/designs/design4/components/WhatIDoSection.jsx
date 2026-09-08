@@ -10,7 +10,6 @@ export default function WhatIDoSection() {
         background: '#ff5500',
         color: '#000000',
         position: 'relative',
-        userSelect: 'none',
       }}
     >
       <div className="des4-container">
@@ -26,7 +25,7 @@ export default function WhatIDoSection() {
             margin: '0 0 20px 0',
           }}
         >
-          what i do<span style={{ color: '#0b1dff' }}>*</span>
+          what i do<span style={{ color: '#000000' }}>*</span>
         </h2>
 
         {/* Subtitle */}
@@ -41,7 +40,7 @@ export default function WhatIDoSection() {
             lineHeight: 1.6,
           }}
         >
-          <span style={{ color: '#0b1dff', fontWeight: 700 }}>* </span>
+          <span style={{ color: '#000000', fontWeight: 700 }}>* </span>
           {whatIDoData.subheading}
         </p>
 

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 import { featuredProjects } from '../data/homeData';
 import FooterSection from './FooterSection';
 import PDFViewer from './PDFViewer';
@@ -39,13 +41,15 @@ export default function Des4WorkPage({ onGoHome }) {
     },
     {
       key: 'SKILLS',
-      label: '⚡ Skills & Stack',
+      label: 'Skills & Stack',
+      icon: Layers,
       count: 'TECH',
       isSkills: true,
     },
     {
       key: 'CV',
-      label: '📄 CV / Resume',
+      label: 'CV / Resume',
+      icon: FileText,
       count: 'PDF',
       isSpecial: true,
     },
@@ -75,8 +79,10 @@ export default function Des4WorkPage({ onGoHome }) {
             <button
               onClick={onGoHome}
               className="des4-work-back-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
             >
-              ← Back to Overview
+              <ArrowLeft size={14} />
+              <span>Back to Overview</span>
             </button>
           </div>
 
@@ -128,15 +134,28 @@ export default function Des4WorkPage({ onGoHome }) {
                         color: '#fe3c01',
                         background: 'rgba(254, 60, 1, 0.05)',
                       }
-                      : cat.isSkills
+                      : cat.isSpecial && isActive
                         ? {
-                          borderColor: 'rgba(37, 255, 141, 0.4)',
-                          color: '#25ff8d',
-                          background: 'rgba(37, 255, 141, 0.05)',
+                          borderColor: '#fe3c01',
+                          color: '#ffffff',
+                          background: '#fe3c01',
                         }
-                        : {}
+                        : cat.isSkills
+                          ? {
+                            borderColor: '#cbd5e1',
+                            color: '#0f172a',
+                            background: '#f8fafc',
+                          }
+                          : {}
                   }
                 >
+                  {cat.icon && (
+                    <cat.icon
+                      size={13}
+                      strokeWidth={2}
+                      style={{ flexShrink: 0 }}
+                    />
+                  )}
                   <span>{cat.label}</span>
                   <span className="des4-work-filter-count">
                     {typeof cat.count === 'number'
@@ -246,9 +265,14 @@ export default function Des4WorkPage({ onGoHome }) {
                             cursor: 'pointer',
                             border: 'none',
                             outline: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
                           }}
                         >
-                          Details ↗
+                          <Eye size={14} />
+                          <span>Details</span>
+                          <ArrowUpRight size={13} style={{ opacity: 0.7 }} />
                         </button>
 
                         {project.deploy && (
@@ -257,8 +281,10 @@ export default function Des4WorkPage({ onGoHome }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="des4-work-btn-secondary"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                           >
-                            Live Demo ↗
+                            <ExternalLink size={14} />
+                            <span>Live Demo</span>
                           </a>
                         )}
                         {project.github && (
@@ -267,8 +293,11 @@ export default function Des4WorkPage({ onGoHome }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="des4-work-btn-secondary"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                           >
-                            GitHub Code ↗
+                            <SiGithub size={14} />
+                            <span>GitHub Code</span>
+                            <ArrowUpRight size={13} style={{ opacity: 0.7 }} />
                           </a>
                         )}
                       </div>

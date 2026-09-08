@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiZoomIn,
-  FiZoomOut,
-  FiMaximize2,
-  FiMinimize2,
-  FiRotateCw,
-  FiDownload,
-  FiFileText,
-  FiLayout,
-} from 'react-icons/fi';
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Minimize2,
+  RotateCw,
+  Download,
+  FileText,
+  Layout,
+} from 'lucide-react';
 
 const PDFJS_SCRIPT_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const PDFJS_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -216,7 +216,7 @@ export default function PDFViewer({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <FiFileText style={{ color: '#fe3c01', fontSize: 18 }} />
+          <FileText size={18} style={{ color: '#fe3c01' }} />
           <span style={{ color: '#ffffff', fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 700 }}>
             {title}
           </span>
@@ -257,7 +257,7 @@ export default function PDFViewer({
             }}
             title="Switch between Canvas renderer and Native Browser viewer"
           >
-            <FiLayout />
+            <Layout size={14} />
             <span>{renderMode === 'canvas' ? 'Switch to Native Embed' : 'Switch to Canvas 3D'}</span>
           </button>
         </div>
@@ -286,7 +286,7 @@ export default function PDFViewer({
             title="Previous Page"
             style={{ opacity: currentPage <= 1 ? 0.35 : 1 }}
           >
-            <FiChevronLeft />
+            <ChevronLeft size={16} />
           </button>
 
           <span
@@ -308,14 +308,14 @@ export default function PDFViewer({
             title="Next Page"
             style={{ opacity: currentPage >= numPages ? 0.35 : 1 }}
           >
-            <FiChevronRight />
+            <ChevronRight size={16} />
           </button>
         </div>
 
         {/* Center: Zoom Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={handleZoomOut} className="des4-pdf-btn" title="Zoom Out">
-            <FiZoomOut />
+            <ZoomOut size={16} />
           </button>
 
           <span
@@ -332,7 +332,7 @@ export default function PDFViewer({
           </span>
 
           <button onClick={handleZoomIn} className="des4-pdf-btn" title="Zoom In">
-            <FiZoomIn />
+            <ZoomIn size={16} />
           </button>
 
           <button
@@ -348,7 +348,7 @@ export default function PDFViewer({
         {/* Right: Rotate, Download, Fullscreen */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={handleRotate} className="des4-pdf-btn" title="Rotate 90°">
-            <FiRotateCw />
+            <RotateCw size={15} />
           </button>
 
           <button
@@ -364,12 +364,12 @@ export default function PDFViewer({
             }}
             title="Download PDF"
           >
-            <FiDownload />
+            <Download size={14} />
             <span style={{ fontSize: 11 }}>Download</span>
           </button>
 
           <button onClick={handleFullscreen} className="des4-pdf-btn" title="Toggle Fullscreen">
-            {isFullscreen ? <FiMinimize2 /> : <FiMaximize2 />}
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
           </button>
         </div>
       </div>

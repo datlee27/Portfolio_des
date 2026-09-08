@@ -25,11 +25,14 @@ export default function Design4App() {
   });
 
   // Client-side router navigation helper
-  const navigateTo = (view, path) => {
+  const navigateTo = (view, path, targetHash) => {
     setActiveView(view);
     if (typeof window !== 'undefined') {
-      window.history.pushState({ view }, '', path);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const fullPath = targetHash ? `${path}#${targetHash}` : path;
+      window.history.pushState({ view }, '', fullPath);
+      if (!targetHash) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
@@ -105,7 +108,12 @@ export default function Design4App() {
           <Spiral3DSlider />
 
           {/* 7. Articles & Journal / Blog Section */}
-          <BlogSection onOpenBlog={() => navigateTo('blog', '/blog')} />
+          <BlogSection
+            onOpenBlog={(post) => {
+              const targetHash = post?.slug || (post?.id ? `post-${post.id}` : '');
+              navigateTo('blog', '/blog', targetHash);
+            }}
+          />
 
           {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
           <FooterSection />

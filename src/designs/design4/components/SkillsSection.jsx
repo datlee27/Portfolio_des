@@ -269,8 +269,7 @@ export default function SkillsSection() {
           fontFamily: 'var(--font-inter)',
         }}
       >
-        <span>⚡ Move cursor over logos to trigger trail effect</span>
-        <span style={{ color: '#25ff8d', fontWeight: 600 }}>● 100% PRODUCTION READY</span>
+
       </div>
     </section>
   );

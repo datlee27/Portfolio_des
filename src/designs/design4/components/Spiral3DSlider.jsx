@@ -282,6 +282,11 @@ export default function Spiral3DSlider({
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
 
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+
   useEffect(() => {
     const onResize = () => setIsMobileScreen(window.innerWidth < 768);
     window.addEventListener('resize', onResize);
@@ -473,7 +478,7 @@ export default function Spiral3DSlider({
                   smoothing={smoothing}
                   blurStrength={blurStrength}
                   bend={bend}
-                  reducedMotion={{ current: false }}
+                  reducedMotion={{ current: prefersReducedMotion }}
                   lastInteraction={lastInteraction}
                 />
               </Suspense>

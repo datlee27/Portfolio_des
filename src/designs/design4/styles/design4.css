@@ -54,6 +54,28 @@
   color: var(--token-black);
 }
 
+/* WCAG 2.2 AAA Focus Appearance & Navigation */
+.des4-root a:focus-visible,
+.des4-root button:focus-visible,
+.des4-root [tabindex]:focus-visible {
+  outline: 2px solid var(--token-red-orange, #fe3c01) !important;
+  outline-offset: 3px !important;
+  border-radius: 4px;
+}
+
+/* Interactive Feedback (Active Press State) */
+.des4-root button:active,
+.des4-root .des4-corner-anchor:active {
+  transform: scale(0.96) !important;
+}
+
+/* Corner Nav Interactive Anchor */
+.des4-corner-anchor {
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
 /* Container */
 .des4-container {
   width: 100%;

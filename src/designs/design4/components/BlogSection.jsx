@@ -1,9 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, ArrowUpRight, Calendar, Clock } from 'lucide-react';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { blogPostsData } from '../data/homeData';
 
 export default function BlogSection({ onOpenBlog }) {
   const [selectedPost, setSelectedPost] = useState(null);
+
+  // Keyboard navigation (ESC) & Body scroll lock isolation
+  useEffect(() => {
+    if (!selectedPost) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedPost(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow || '';
+    };
+  }, [selectedPost]);
 
   const openPost = (post) => {
     setSelectedPost(post);
@@ -104,8 +125,10 @@ export default function BlogSection({ onOpenBlog }) {
               }}
             >
               <span>Threads Feed (/blog)</span>
-              <span style={{ color: '#fe3c01', background: 'rgba(255,255,255,0.15)', padding: '2px 6px', borderRadius: 4, fontSize: 11 }}>
-                Live ↗
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#fe3c01', background: 'rgba(255,255,255,0.12)', padding: '3px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                <span>Live</span>
+                <ArrowUpRight size={12} />
               </span>
             </button>
           )}
@@ -159,13 +182,15 @@ export default function BlogSection({ onOpenBlog }) {
               {/* Content */}
               <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#fe3c01', fontFamily: 'var(--font-inter)' }}>
-                      {post.date}
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#fe3c01', fontFamily: 'var(--font-inter)' }}>
+                      <Calendar size={12} />
+                      <span>{post.date}</span>
                     </span>
                     <span style={{ fontSize: 12, color: '#a1a1aa' }}>•</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#71717a', fontFamily: 'var(--font-inter)' }}>
-                      {post.readTime}
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: '#71717a', fontFamily: 'var(--font-inter)' }}>
+                      <Clock size={12} />
+                      <span>{post.readTime}</span>
                     </span>
                   </div>
 
@@ -218,6 +243,9 @@ export default function BlogSection({ onOpenBlog }) {
           onClick={closePost}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="des4-blog-modal-title"
             style={{
               background: '#0e0e11',
               color: '#f4f4f5',
@@ -294,6 +322,7 @@ export default function BlogSection({ onOpenBlog }) {
 
               {/* Title */}
               <div
+                id="des4-blog-modal-title"
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
@@ -308,21 +337,8 @@ export default function BlogSection({ onOpenBlog }) {
                 Preview – {selectedPost.title}
               </div>
 
-              <div style={{ width: 80, display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  type="button"
-                  onClick={closePost}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#a1a1aa',
-                    fontSize: 12,
-                    cursor: 'pointer',
-                  }}
-                >
-                  ESC
-                </button>
-              </div>
+              {/* Right Spacer for balance (Close is handled by top-left traffic lights & keyboard ESC) */}
+              <div style={{ width: 80 }} />
             </div>
 
             {/* Content Body */}
@@ -392,19 +408,40 @@ export default function BlogSection({ onOpenBlog }) {
               >
                 <button
                   type="button"
-                  onClick={closePost}
+                  onClick={() => {
+                    const target = selectedPost;
+                    closePost();
+                    if (onOpenBlog) {
+                      onOpenBlog(target);
+                    }
+                  }}
+                  aria-label="View this article on /blog"
                   style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
                     background: '#fe3c01',
                     border: 'none',
                     color: '#ffffff',
                     borderRadius: 100,
-                    padding: '8px 22px',
+                    padding: '9px 24px',
                     fontSize: 13,
                     fontWeight: 700,
+                    fontFamily: 'var(--font-inter)',
                     cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#e03500';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#fe3c01';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  Close Window
+                  <span>→ blog</span>
+                  <ArrowRight size={14} />
                 </button>
               </div>
             </div>

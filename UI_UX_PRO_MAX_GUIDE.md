@@ -2,6 +2,9 @@
 
 Tài liệu này hướng dẫn cách sử dụng và các câu lệnh tra cứu của skill **UI/UX Pro Max** (`ui-ux-pro-max`) đã được tích hợp cục bộ trong dự án của bạn.
 
+> 🚀 **CẦN COPY PROMPT & CÂU LỆNH MẪU NGAY?**
+> Hãy mở file [UI_UX_PROMPTS.md](file:///d:/workspace/portfolio_project/UI_UX_PROMPTS.md) để copy-paste các mẫu prompt chat AI và lệnh Terminal điền vào chỗ trống!
+
 ---
 
 ## 1. Thông Tin Skill & Vị Trí Cài Đặt

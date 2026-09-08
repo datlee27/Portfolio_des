@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { BookOpen, RotateCcw, FileText } from 'lucide-react';
 
 // Default sample pages with technical artisan sketches and designs
 const DEFAULT_BOOK_PAGES = [
@@ -303,12 +304,23 @@ export default function InteractiveBook({
 
       {/* Subtle Micro-Interaction Hint */}
       <div className="des4-book-turn-hint">
-        <span>
-          {isBookClosed
-            ? '📖 Click to open journal'
-            : flippedCount >= totalLeaves
-            ? '↺ Click to close book'
-            : `📄 Page ${flippedCount + 1} of ${totalLeaves} (Click to flip)`}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          {isBookClosed ? (
+            <>
+              <BookOpen size={14} style={{ color: '#fe3c01' }} />
+              <span>Click to open journal</span>
+            </>
+          ) : flippedCount >= totalLeaves ? (
+            <>
+              <RotateCcw size={13} style={{ color: '#fe3c01' }} />
+              <span>Click to close book</span>
+            </>
+          ) : (
+            <>
+              <FileText size={13} style={{ color: '#fe3c01' }} />
+              <span>Page {flippedCount + 1} of {totalLeaves} (Click to flip)</span>
+            </>
+          )}
         </span>
       </div>
     </div>

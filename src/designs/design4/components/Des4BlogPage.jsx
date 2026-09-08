@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { portfolioData } from '../../../../portfolioData';
+import {
+  Heart,
+  MessageCircle,
+  Repeat2,
+  Share2,
+  MoreHorizontal,
+  ArrowLeft,
+  ArrowUpRight,
+  Send,
+  Eye,
+  Check,
+  MapPin,
+} from 'lucide-react';
 
 // Initial thoughts / micro-posts in addition to articles
 const INITIAL_THOUGHTS = [
@@ -104,10 +117,31 @@ export default function Des4BlogPage({ onGoHome }) {
     return [...thoughts, ...articles];
   });
 
-  // Scroll to top on page load and ensure body scroll is unlocked
+  // Scroll to targeted post if hash exists in URL, else scroll to top
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
     document.body.style.overflow = '';
+    const hash = window.location.hash?.replace('#', '');
+    if (hash) {
+      setTimeout(() => {
+        const el =
+          document.getElementById(hash) ||
+          document.getElementById(`post-${hash}`) ||
+          document.querySelector(`[id*="${hash}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.style.transition = 'background 0.4s ease, border-radius 0.4s ease, box-shadow 0.4s ease';
+          el.style.background = 'rgba(254, 60, 1, 0.14)';
+          el.style.borderRadius = '12px';
+          el.style.boxShadow = '0 0 0 1px #fe3c01';
+          setTimeout(() => {
+            el.style.background = 'transparent';
+            el.style.boxShadow = 'none';
+          }, 2600);
+        }
+      }, 180);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, []);
 
   // Lock body scroll ONLY when full article modal is open
@@ -280,7 +314,8 @@ export default function Des4BlogPage({ onGoHome }) {
               e.currentTarget.style.borderColor = '#27272a';
             }}
           >
-            ← Overview
+            <ArrowLeft size={14} />
+            <span>Overview</span>
           </button>
 
           {/* Center Brand Title */}
@@ -387,7 +422,7 @@ export default function Des4BlogPage({ onGoHome }) {
                     fontWeight: 900,
                   }}
                 >
-                  ✓
+                  <Check size={11} strokeWidth={3} />
                 </span>
               </h1>
               <div
@@ -456,7 +491,9 @@ export default function Des4BlogPage({ onGoHome }) {
               color: '#71717a',
             }}
           >
-            <span>📍 Đà Nẵng, VN</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <MapPin size={13} style={{ color: '#fe3c01' }} /> Đà Nẵng, VN
+            </span>
             <span>•</span>
             <span>{posts.length} Threads & Articles</span>
             <span>•</span>
@@ -468,9 +505,13 @@ export default function Des4BlogPage({ onGoHome }) {
                 color: '#fe3c01',
                 textDecoration: 'none',
                 fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
               }}
             >
-              github.com/datlee27 ↗
+              <span>github.com/datlee27</span>
+              <ArrowUpRight size={13} />
             </a>
           </div>
         </section>
@@ -542,6 +583,7 @@ export default function Des4BlogPage({ onGoHome }) {
           {filteredPosts.map((post) => (
             <article
               key={post.id}
+              id={post.slug || (post.id ? `post-${post.id}` : undefined)}
               style={{
                 display: 'flex',
                 gap: 14,
@@ -652,14 +694,14 @@ export default function Des4BlogPage({ onGoHome }) {
                       border: 'none',
                       color: '#71717a',
                       cursor: 'pointer',
-                      fontSize: 16,
-                      lineHeight: 1,
-                      padding: 4,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = '#71717a')}
                   >
-                    •••
+                    <MoreHorizontal size={17} />
                   </button>
                 </div>
 
@@ -790,18 +832,11 @@ export default function Des4BlogPage({ onGoHome }) {
                     }}
                     title="Like thread"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
+                    <Heart
+                      size={17}
                       fill={post.isLiked ? '#fe3c01' : 'none'}
-                      stroke={post.isLiked ? '#fe3c01' : 'currentColor'}
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
+                      color={post.isLiked ? '#fe3c01' : 'currentColor'}
+                    />
                     <span>{post.likes}</span>
                   </button>
 
@@ -824,18 +859,7 @@ export default function Des4BlogPage({ onGoHome }) {
                     }}
                     title="Reply to thread"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                    </svg>
+                    <MessageCircle size={17} />
                     <span>{post.repliesList?.length || 0}</span>
                   </button>
 
@@ -858,21 +882,7 @@ export default function Des4BlogPage({ onGoHome }) {
                     }}
                     title="Repost thread"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="m17 2 4 4-4 4" />
-                      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-                      <path d="m7 22-4-4 4-4" />
-                      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-                    </svg>
+                    <Repeat2 size={17} />
                     <span>{post.reposts}</span>
                   </button>
 
@@ -895,19 +905,7 @@ export default function Des4BlogPage({ onGoHome }) {
                     }}
                     title="Share thread"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="22" y1="2" x2="11" y2="13" />
-                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                    </svg>
+                    <Share2 size={16} />
                     <span>Share</span>
                   </button>
 
@@ -926,7 +924,9 @@ export default function Des4BlogPage({ onGoHome }) {
                         fontSize: 12,
                         fontWeight: 600,
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = '#fe3c01';
@@ -939,7 +939,9 @@ export default function Des4BlogPage({ onGoHome }) {
                         e.currentTarget.style.color = '#f4f4f5';
                       }}
                     >
-                      Read full ↗
+                      <Eye size={12} />
+                      <span>Read full</span>
+                      <ArrowUpRight size={12} />
                     </button>
                   )}
                 </div>
@@ -1064,11 +1066,13 @@ export default function Des4BlogPage({ onGoHome }) {
                           padding: '8px 16px',
                           fontSize: 13,
                           fontWeight: 600,
-                          cursor: post.replyInput.trim() ? 'pointer' : 'default',
-                          transition: 'background 0.2s ease',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
                         }}
                       >
-                        Post
+                        <Send size={12} />
+                        <span>Post</span>
                       </button>
                     </div>
                   </div>
@@ -1243,12 +1247,14 @@ export default function Des4BlogPage({ onGoHome }) {
                     fontSize: 12,
                     fontWeight: 600,
                     cursor: 'pointer',
-                    padding: '4px 8px',
-                    borderRadius: 4,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
                   }}
                   title="Copy link"
                 >
-                  Share ↗
+                  <Share2 size={12} />
+                  <span>Share</span>
                 </button>
               </div>
             </div>
@@ -1354,10 +1360,17 @@ export default function Des4BlogPage({ onGoHome }) {
                       padding: '8px 18px',
                       fontSize: 13,
                       fontWeight: 600,
-                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
                     }}
                   >
-                    ❤️ {selectedArticle.likes} Likes
+                    <Heart
+                      size={14}
+                      fill={selectedArticle.isLiked ? '#fe3c01' : 'none'}
+                      color={selectedArticle.isLiked ? '#fe3c01' : 'currentColor'}
+                    />
+                    <span>{selectedArticle.likes} Likes</span>
                   </button>
                   <button
                     type="button"
@@ -1371,9 +1384,13 @@ export default function Des4BlogPage({ onGoHome }) {
                       fontSize: 13,
                       fontWeight: 600,
                       cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
                     }}
                   >
-                    ↗ Share Article
+                    <Share2 size={14} />
+                    <span>Share Article</span>
                   </button>
                 </div>
 
@@ -1389,9 +1406,13 @@ export default function Des4BlogPage({ onGoHome }) {
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
                   }}
                 >
-                  Done Reading ✓
+                  <span>Done Reading</span>
+                  <Check size={14} strokeWidth={2.5} />
                 </button>
               </div>
             </div>

@@ -40,7 +40,7 @@ export default function IntroSection() {
               Scalable Backends,
             </span>{' '}
             and{' '}
-            <span className="des4-intro-serif" style={{ color: '#10b981' }}>
+            <span className="des4-intro-serif" style={{ color: '#059669' }}>
               Tactile UI
             </span>{' '}
             into cohesive, production-ready digital products.

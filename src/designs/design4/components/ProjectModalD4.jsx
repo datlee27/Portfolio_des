@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { ExternalLink, ArrowUpRight } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 
 export default function ProjectModalD4({ project, onClose }) {
   useEffect(() => {
@@ -54,6 +56,9 @@ export default function ProjectModalD4({ project, onClose }) {
     >
       <div
         className="des4-project-modal-window"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="des4-project-modal-title"
         style={{
           width: '100%',
           maxWidth: 860,
@@ -87,6 +92,7 @@ export default function ProjectModalD4({ project, onClose }) {
             <button
               onClick={onClose}
               title="Close"
+              aria-label="Close project modal"
               style={{
                 width: 12,
                 height: 12,
@@ -182,6 +188,7 @@ export default function ProjectModalD4({ project, onClose }) {
 
           {/* H1 Project Name */}
           <h1
+            id="des4-project-modal-title"
             style={{
               fontFamily: 'var(--font-outfit)',
               fontSize: 'clamp(28px, 4vw, 42px)',
@@ -352,7 +359,9 @@ export default function ProjectModalD4({ project, onClose }) {
                   e.currentTarget.style.boxShadow = '0 4px 14px rgba(254, 60, 1, 0.35)';
                 }}
               >
-                Live Demo ↗
+                <ExternalLink size={14} />
+                <span>Live Demo</span>
+                <ArrowUpRight size={13} />
               </a>
             )}
 
@@ -378,7 +387,9 @@ export default function ProjectModalD4({ project, onClose }) {
                 onMouseEnter={(e) => (e.currentTarget.style.background = '#27272a')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = '#09090b')}
               >
-                GitHub Code ↗
+                <SiGithub size={14} />
+                <span>GitHub Code</span>
+                <ArrowUpRight size={13} />
               </a>
             )}
           </div>
