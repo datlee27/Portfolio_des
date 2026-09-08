@@ -126,3 +126,100 @@ Mỗi khi tạo mới một trang hoặc một component trong dự án, đối 
 - [ ] **Responsive (Thích ứng đa màn hình)**:
   - Kiểm tra hoàn hảo ở các kích thước: `375px` (Mobile), `768px` (Tablet), `1024px` (Laptop), `1440px` (Desktop).
   - Không xuất hiện thanh cuộn ngang ngoài ý muốn (`no horizontal scroll`).
+
+---
+
+## 6. Mẫu Prompt Dùng Cho AI (Copy & Dán Ngay Vào Chat)
+
+Khi bạn muốn AI (Antigravity) tự động thiết kế hoặc chỉnh sửa, chỉ cần **copy một trong các prompt dưới đây**, thay đổi phần trong ngoặc vuông `[...]` theo ý bạn rồi gửi:
+
+### 🎯 Mẫu 1: Thiết kế trang mới hoặc làm mới giao diện
+```text
+Hãy sử dụng skill ui-ux-pro-max để thiết kế giao diện cho trang [ví dụ: /services hoặc /contact].
+Yêu cầu:
+- Phong cách: [ví dụ: Brutalism hiện đại, nền tối Dark Obsidian, viền mỏng sắc nét]
+- Điểm nhấn: màu [ví dụ: Cam Neon #fe3c01]
+- Stack: React + CSS
+Hãy tự chạy lệnh search.py --design-system để lấy bảng màu, font chữ, layout và áp dụng code hoàn chỉnh cho tôi.
+```
+
+### 🎨 Mẫu 2: Tìm bảng màu và màu nhấn (Color Palette)
+```text
+Hãy dùng skill ui-ux-pro-max tra cứu bảng màu Dark Mode phù hợp cho [ví dụ: portfolio lập trình viên / trang kỹ thuật].
+Yêu cầu:
+- Tone nền: [ví dụ: Tối sâu obsidian #09090b]
+- Màu nhấn (Accent): [ví dụ: Cam neon hoặc Xanh electric]
+- Đảm bảo độ tương phản text WCAG AA >= 4.5:1.
+Hãy xuất ra mã HEX và CSS variables để tôi dùng trong dự án.
+```
+
+### 🔤 Mẫu 3: Chọn cặp Font chữ (Typography Pairing)
+```text
+Hãy dùng skill ui-ux-pro-max tra cứu cho tôi 1 cặp Google Fonts hoàn hảo cho website phong cách [ví dụ: Technical Editorial / Brutalist Minimal]:
+- 1 font Heading: [ví dụ: đậm, hình học, cá tính mạnh mẽ]
+- 1 font Body: [ví dụ: rõ ràng, dễ đọc khi đọc bài viết dài]
+Cho tôi kèm đường dẫn Google Fonts link và cấu hình CSS font-family.
+```
+
+### ✨ Mẫu 4: Thêm chuyển động / Micro-interactions
+```text
+Hãy dùng skill ui-ux-pro-max tra cứu các hiệu ứng chuyển động cho [ví dụ: card dự án khi hover / nút tương tác like / hiệu ứng cuộn trang].
+Yêu cầu:
+- Thời gian animation: 150ms - 300ms
+- Easing mượt mà: cubic-bezier
+- Tối ưu GPU (chỉ dùng transform và opacity, không gây layout shift).
+Áp dụng trực tiếp vào component [ví dụ: FeaturedProjectsSection.jsx].
+```
+
+### 📱 Mẫu 5: Kiểm tra và tối ưu hiển thị Mobile (Audit Responsive)
+```text
+Hãy dùng skill ui-ux-pro-max đối chiếu trang [ví dụ: /work hoặc /blog] với bộ quy tắc UX Mobile:
+- Kiểm tra kích thước nút bấm (touch targets >= 44x44px, gap >= 8px).
+- Kiểm tra không bị tràn thanh cuộn ngang (overflow-x).
+- Tối ưu font chữ và lề padding trên màn hình 375px - 390px.
+Sau đó sửa code trực tiếp giúp tôi.
+```
+
+### 🛡️ Mẫu 6: Review toàn diện và sửa lỗi UX / Trợ năng
+```text
+Hãy dùng skill ui-ux-pro-max chạy Pre-Delivery Checklist để review trang [ví dụ: /work].
+Kiểm tra:
+1. Độ tương phản màu sắc
+2. Phím tắt điều hướng (ESC, Tab focus)
+3. Trạng thái hover, active, loading
+4. Lỗi khóa cuộn trang (scroll lock isolation)
+Cho tôi bản đánh giá ngắn và tự động sửa các lỗi tìm thấy.
+```
+
+---
+
+## 7. Bộ Lệnh Terminal "Điền Vào Chỗ Trống" (Chạy Trong Terminal)
+
+Bạn có thể mở Terminal (`Ctrl + ~`) và copy nguyên dòng lệnh, chỉ cần thay đổi từ khóa trong dấu ngoặc kép:
+
+```bash
+# 1. Tạo trọn bộ Design System cho sản phẩm mới:
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<loại_sản_phẩm> <phong_cách>" --design-system -p "<Tên_Dự_Án>"
+
+# 2. Điều chỉnh 3 thanh trượt (Độ phá cách, Hoạt họa, Mật độ bố cục):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<từ_khóa>" --design-system --variance <1-10> --motion <1-10> --density <1-10>
+
+# 3. Tìm phong cách giao diện (Style):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<từ_khóa_phong_cách>" --domain style
+
+# 4. Tìm bảng màu chuẩn (Color):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<từ_khóa_màu_sắc>" --domain color
+
+# 5. Tìm font chữ (Typography):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<gu_font_chữ>" --domain typography
+
+# 6. Tìm quy tắc UX & Touch Target (UX):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<vấn_đề_cần_tra_cứu>" --domain ux
+
+# 7. Tìm code chuyển động cuộn / hover (GSAP):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<loại_chuyển_động>" --domain gsap
+
+# 8. Tra cứu tối ưu kỹ thuật React (Stack):
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<vấn_đề_react>" --stack react
+```
+
