@@ -318,8 +318,8 @@ const DesktopCanvas = styled.div`
   left: 0;
   right: 0;
   bottom: 80px;
-  overflow: hidden;
-  pointer-events: auto;
+  overflow: visible;
+  pointer-events: none;
 `;
 
 const DraggableCard = styled(motion.div)`
@@ -332,6 +332,7 @@ const DraggableCard = styled(motion.div)`
   cursor: grab;
   z-index: 10;
   touch-action: none;
+  pointer-events: auto;
 
   &:active {
     cursor: grabbing;
@@ -477,12 +478,13 @@ const DockContainer = styled(motion.nav)`
   align-items: flex-end;
   gap: 8px;
   height: 64px;
-  padding: 0 12px 6px;
+  padding: 8px 12px;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(40px) saturate(190%);
   -webkit-backdrop-filter: blur(40px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 22px;
+  border-radius: 20px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.25);
 
   & .dock-item-wrapper {
@@ -496,9 +498,10 @@ const DockContainer = styled(motion.nav)`
 
   & .dock-divider {
     width: 1px;
-    height: 38px;
+    height: 36px;
     background: rgba(255, 255, 255, 0.35);
-    margin: 0 4px 10px;
+    margin: 0 4px;
+    align-self: center;
   }
 `;
 
@@ -545,14 +548,18 @@ const DockIconImageWrapper = styled.div`
 `;
 
 const DockDot = styled.div`
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
-  margin-top: 3px;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.85);
   opacity: ${props => (props.$active ? 1 : 0)};
   transition: opacity 0.2s ease;
+  pointer-events: none;
 `;
 
 /* ─── macOS Realistic Framer Window ─── */
@@ -841,9 +848,10 @@ export default function Des4LabView({ onBack }) {
             dragMomentum={true}
             dragElastic={0.12}
             dragConstraints={containerRef}
-            initial={{ opacity: 0, scale: 0.8, x: item.defaultPos.x, y: item.defaultPos.y }}
-            animate={{ opacity: 1, scale: 1, x: item.defaultPos.x, y: item.defaultPos.y }}
-            whileHover={{ scale: 1.05, y: -4, transition: { type: 'spring', stiffness: 400, damping: 20 } }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{ left: item.defaultPos.x, top: item.defaultPos.y }}
+            whileHover={{ scale: 1.05 }}
             whileDrag={{ scale: 1.1, zIndex: 850, cursor: 'grabbing', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
             transition={{ type: 'spring', stiffness: 350, damping: 25 }}
             onDoubleClick={() => setSelectedMedia(item)}
