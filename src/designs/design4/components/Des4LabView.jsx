@@ -27,12 +27,41 @@ import { featuredProjects, siteMeta } from '../data/homeData';
 import profile from '../../../data/profile';
 import ProjectModalD4 from './ProjectModalD4';
 
-/* ─── Apple Vector SVG Icon ─── */
-function AppleLogoSvg({ size = 15, style = {} }) {
+/* ─── macOS Traffic Light Buttons ─── */
+function TrafficLightsGroup({ onClose }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 170 170" fill="currentColor" style={style}>
-      <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.59-7.71-11.66-14.01-6.19-9.56-11.03-20.93-14.52-34.1-3.48-13.17-5.23-25.04-5.23-35.61 0-16.74 4.13-30.73 12.38-41.97 8.25-11.24 18.77-17 31.56-17.29 4.35 0 9.25 1.03 14.71 3.1 5.46 2.07 9.38 3.15 11.76 3.23 2.18-.08 6.1-1.16 11.76-3.23 5.66-2.07 10.39-3.04 14.2-2.92 10.22.44 18.9 3.97 26.04 10.6 7.14 6.63 12.08 14.86 14.82 24.69-9.13 5.54-13.6 13.37-13.41 23.48.19 8.26 3.42 15.22 9.7 20.87 6.28 5.65 13.8 8.92 22.56 9.8-2.61 8.04-5.98 16.52-10.11 25.44zM119.22 31.97c0-7.39 2.66-14.35 7.98-20.87 5.32-6.52 11.85-10.43 19.59-11.73.54 1.74.82 3.48.82 5.22 0 7.39-2.77 14.56-8.31 21.52-5.54 6.96-12.23 10.97-20.08 12.02z" />
-    </svg>
+    <TrafficDots>
+      <button
+        type="button"
+        className="traffic-dot red"
+        title="Close window (Đóng)"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        className="traffic-dot yellow"
+        title="Minimize (Thu nhỏ / Đóng)"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        className="traffic-dot green"
+        title="Zoom / Close"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+    </TrafficDots>
   );
 }
 
@@ -129,18 +158,26 @@ const CREATIVE_SHOTS = [
   },
 ];
 
-/* ─── Pointer Drag Hook for Windows ─── */
+/* ─── Pointer Drag Hook for Windows (Silky 2D Dragging) ─── */
 function useDraggableWindow(initialPos = { x: 0, y: 0 }) {
   const [pos, setPos] = useState(initialPos);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
+  const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
 
   const onPointerDown = useCallback((e) => {
-    // Only drag from header, ignore buttons
-    if (e.target.closest('button')) return;
+    // Only drag from header, ignore buttons, inputs, traffic lights
+    if (
+      e.target.closest('button') ||
+      e.target.closest('input') ||
+      e.target.closest('textarea') ||
+      e.target.closest('a') ||
+      e.target.closest('.traffic-dot')
+    ) {
+      return;
+    }
+    e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
-    setIsDragging(true);
     dragRef.current = {
+      isDragging: true,
       startX: e.clientX,
       startY: e.clientY,
       startPosX: pos.x,
@@ -149,23 +186,23 @@ function useDraggableWindow(initialPos = { x: 0, y: 0 }) {
   }, [pos]);
 
   const onPointerMove = useCallback((e) => {
-    if (!isDragging) return;
+    if (!dragRef.current.isDragging) return;
     const dx = e.clientX - dragRef.current.startX;
     const dy = e.clientY - dragRef.current.startY;
     setPos({
       x: dragRef.current.startPosX + dx,
       y: dragRef.current.startPosY + dy,
     });
-  }, [isDragging]);
+  }, []);
 
   const onPointerUp = useCallback((e) => {
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {}
-    setIsDragging(false);
+    dragRef.current.isDragging = false;
   }, []);
 
-  return { pos, onPointerDown, onPointerMove, onPointerUp, isDragging };
+  return { pos, onPointerDown, onPointerMove, onPointerUp };
 }
 
 /* ─── Styled Components ─── */
@@ -417,7 +454,7 @@ const WindowWrapper = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: des4WindowOpen 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: des4WindowFadeIn 0.18s ease-out;
 `;
 
 const WindowTitleBar = styled.div`
@@ -429,6 +466,8 @@ const WindowTitleBar = styled.div`
   justify-content: space-between;
   padding: 0 14px;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
   cursor: grab;
 
   &:active {
@@ -441,18 +480,26 @@ const TrafficDots = styled.div`
   align-items: center;
   gap: 8px;
   width: 60px;
+  z-index: 10;
 
-  & span {
+  & .traffic-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    transition: transform 0.15s ease;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, filter 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    outline: none;
   }
 
-  & span:hover {
-    transform: scale(1.1);
+  & .traffic-dot:hover {
+    transform: scale(1.15);
+    filter: brightness(0.92);
   }
 
   & .red {
@@ -479,7 +526,6 @@ export default function Des4LabView({ onBack }) {
   const [previewCv, setPreviewCv] = useState(false);
 
   // Menus & Spotlight
-  const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [spotlightQuery, setSpotlightQuery] = useState('');
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -518,9 +564,6 @@ export default function Des4LabView({ onBack }) {
   // Close menus on outside click
   useEffect(() => {
     const handleGlobalClick = (e) => {
-      if (!e.target.closest('#des4-apple-menu') && !e.target.closest('#des4-apple-btn')) {
-        setAppleMenuOpen(false);
-      }
       if (!e.target.closest('#des4-control-center') && !e.target.closest('#des4-control-btn')) {
         setControlCenterOpen(false);
       }
@@ -534,7 +577,6 @@ export default function Des4LabView({ onBack }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setSpotlightOpen(false);
-        setAppleMenuOpen(false);
         setControlCenterOpen(false);
         setSelectedPhoto(null);
       }
@@ -600,21 +642,17 @@ export default function Des4LabView({ onBack }) {
       {/* ─── macOS Top Menu Bar ─── */}
       <MenuBar>
         <MenuBarLeft>
-          {/*  Apple Logo Button */}
+          {/* Exit Lab Menu Item (plain text like File/Edit, replacing Apple logo) */}
           <MenuButton
-            id="des4-apple-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              setAppleMenuOpen(!appleMenuOpen);
-            }}
-            title="Apple Menu"
-            style={{ padding: '2px 6px' }}
+            onClick={onBack}
+            title="Exit Lab & Return to Overview"
+            style={{ fontWeight: 600, padding: '2px 8px' }}
           >
-            <AppleLogoSvg size={14} />
+            ← Exit Lab
           </MenuButton>
 
           {/* Active App Name (Bold) */}
-          <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff', letterSpacing: '-0.01em' }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff', letterSpacing: '-0.01em', marginLeft: 2 }}>
             {activeWindow === 'finder'
               ? 'Finder'
               : activeWindow === 'notes'
@@ -640,29 +678,6 @@ export default function Des4LabView({ onBack }) {
         </MenuBarLeft>
 
         <MenuBarRight>
-          {/* Quick Exit Pill */}
-          <button
-            type="button"
-            onClick={onBack}
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              color: '#ffffff',
-              borderRadius: 100,
-              padding: '2px 10px',
-              fontSize: 11,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              transition: 'all 0.2s ease',
-            }}
-            title="Back to standard web view"
-          >
-            <span>← Exit Lab</span>
-          </button>
-
           {/* Battery Status */}
           <MacOSBattery percentage={100} />
 
@@ -696,78 +711,6 @@ export default function Des4LabView({ onBack }) {
           </span>
         </MenuBarRight>
       </MenuBar>
-
-      {/* ─── Apple Dropdown Menu ─── */}
-      {appleMenuOpen && (
-        <DropdownMenu id="des4-apple-menu">
-          <DropdownItem
-            onClick={() => {
-              setActiveWindow('about-mac');
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>About This Portfolio</span>
-          </DropdownItem>
-          <DropdownDivider />
-          <DropdownItem
-            onClick={() => {
-              onBack();
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>Overview (Home)</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘H</span>
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              window.location.href = '/work';
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>Selected Works (/work)</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘W</span>
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              window.location.href = '/blog';
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>Threads Feed (/blog)</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘B</span>
-          </DropdownItem>
-          <DropdownDivider />
-          <DropdownItem
-            onClick={() => {
-              setSpotlightOpen(true);
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>Spotlight Search...</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘Space</span>
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              setActiveWindow('terminal');
-              setAppleMenuOpen(false);
-            }}
-          >
-            <span>Open Terminal</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘T</span>
-          </DropdownItem>
-          <DropdownDivider />
-          <DropdownItem
-            onClick={() => {
-              onBack();
-              setAppleMenuOpen(false);
-            }}
-            style={{ color: '#ff453a' }}
-          >
-            <span>Log Out Dat Le...</span>
-            <span style={{ fontSize: 11, opacity: 0.6 }}>⇧⌘Q</span>
-          </DropdownItem>
-        </DropdownMenu>
-      )}
 
       {/* ─── Control Center Popover ─── */}
       {controlCenterOpen && (
@@ -1113,18 +1056,13 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="820px"
           style={{
-            top: '12%',
-            left: 'calc(50% - 410px + ' + finderDrag.pos.x + 'px)',
-            transform: `translateY(${finderDrag.pos.y}px)`,
+            top: 70 + finderDrag.pos.y,
+            left: `calc(50% - 410px + ${finderDrag.pos.x}px)`,
           }}
           onClick={bringToFront}
         >
           <WindowTitleBar onPointerDown={finderDrag.onPointerDown} onPointerMove={finderDrag.onPointerMove} onPointerUp={finderDrag.onPointerUp}>
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('finder')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
               Finder – Projects & Engineering Lab
             </span>
@@ -1281,18 +1219,13 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="740px"
           style={{
-            top: '14%',
-            left: 'calc(50% - 370px + ' + notesDrag.pos.x + 'px)',
-            transform: `translateY(${notesDrag.pos.y}px)`,
+            top: 85 + notesDrag.pos.y,
+            left: `calc(50% - 370px + ${notesDrag.pos.x}px)`,
           }}
           onClick={bringToFront}
         >
           <WindowTitleBar onPointerDown={notesDrag.onPointerDown} onPointerMove={notesDrag.onPointerMove} onPointerUp={notesDrag.onPointerUp}>
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('notes')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
               Notes – About Dat Le & Technical Artisan
             </span>
@@ -1367,18 +1300,13 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="780px"
           style={{
-            top: '16%',
-            left: 'calc(50% - 390px + ' + photosDrag.pos.x + 'px)',
-            transform: `translateY(${photosDrag.pos.y}px)`,
+            top: 95 + photosDrag.pos.y,
+            left: `calc(50% - 390px + ${photosDrag.pos.x}px)`,
           }}
           onClick={bringToFront}
         >
           <WindowTitleBar onPointerDown={photosDrag.onPointerDown} onPointerMove={photosDrag.onPointerMove} onPointerUp={photosDrag.onPointerUp}>
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('photos')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
               Photos – Creative Experiments & Visual R&D
             </span>
@@ -1419,18 +1347,13 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="640px"
           style={{
-            top: '15%',
-            left: 'calc(50% - 320px + ' + mailDrag.pos.x + 'px)',
-            transform: `translateY(${mailDrag.pos.y}px)`,
+            top: 90 + mailDrag.pos.y,
+            left: `calc(50% - 320px + ${mailDrag.pos.x}px)`,
           }}
           onClick={bringToFront}
         >
           <WindowTitleBar onPointerDown={mailDrag.onPointerDown} onPointerMove={mailDrag.onPointerMove} onPointerUp={mailDrag.onPointerUp}>
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('mail')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
               Mail – Compose: New Message to Dat Le
             </span>
@@ -1533,9 +1456,8 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="680px"
           style={{
-            top: '18%',
-            left: 'calc(50% - 340px + ' + terminalDrag.pos.x + 'px)',
-            transform: `translateY(${terminalDrag.pos.y}px)`,
+            top: 110 + terminalDrag.pos.y,
+            left: `calc(50% - 340px + ${terminalDrag.pos.x}px)`,
             background: '#18181b',
             color: '#f4f4f5',
           }}
@@ -1547,11 +1469,7 @@ export default function Des4LabView({ onBack }) {
             onPointerMove={terminalDrag.onPointerMove}
             onPointerUp={terminalDrag.onPointerUp}
           >
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('terminal')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>
               datle@macbook-pro: ~ (zsh)
             </span>
@@ -1602,25 +1520,20 @@ export default function Des4LabView({ onBack }) {
           $zIndex={windowZIndex}
           $width="460px"
           style={{
-            top: '22%',
-            left: 'calc(50% - 230px + ' + aboutMacDrag.pos.x + 'px)',
-            transform: `translateY(${aboutMacDrag.pos.y}px)`,
+            top: 130 + aboutMacDrag.pos.y,
+            left: `calc(50% - 230px + ${aboutMacDrag.pos.x}px)`,
             textAlign: 'center',
           }}
           onClick={bringToFront}
         >
           <WindowTitleBar onPointerDown={aboutMacDrag.onPointerDown} onPointerMove={aboutMacDrag.onPointerMove} onPointerUp={aboutMacDrag.onPointerUp}>
-            <TrafficDots>
-              <span className="red" onClick={() => setActiveWindow(null)} />
-              <span className="yellow" onClick={() => setActiveWindow(null)} />
-              <span className="green" onClick={() => setActiveWindow('about-mac')} />
-            </TrafficDots>
+            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>About This Portfolio</span>
             <div style={{ width: 60 }} />
           </WindowTitleBar>
 
           <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <AppleLogoSvg size={54} style={{ color: '#09090b' }} />
+            <Laptop size={48} style={{ color: '#18181b' }} />
             <div>
               <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MacBook Pro 16"</h2>
               <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>macOS Sequoia 15.2 (Portfolio Edition)</div>
@@ -1777,14 +1690,14 @@ export default function Des4LabView({ onBack }) {
 
       {/* Global CSS Keyframes */}
       <style>{`
-        @keyframes des4WindowOpen {
+        @keyframes des4WindowFadeIn {
           from {
             opacity: 0;
-            transform: scale(0.95) translateY(16px);
+            transform: scale(0.98);
           }
           to {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: scale(1);
           }
         }
       `}</style>
