@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+  useSpring,
+} from 'framer-motion';
 import {
   Wifi,
   Search,
@@ -17,53 +24,100 @@ import {
   Laptop,
   Send,
   Sparkles,
-  ArrowRight,
-  Maximize2,
-  Minimize2,
-  Layers,
-  Code2,
+  Play,
+  Film,
+  Image as ImageIcon,
+  Compass,
+  Trash2,
 } from 'lucide-react';
 import { featuredProjects, siteMeta } from '../data/homeData';
-import profile from '../../../data/profile';
 import ProjectModalD4 from './ProjectModalD4';
 
-/* ─── macOS Traffic Light Buttons ─── */
-function TrafficLightsGroup({ onClose }) {
-  return (
-    <TrafficDots>
-      <button
-        type="button"
-        className="traffic-dot red"
-        title="Close window (Đóng)"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-        onPointerDown={(e) => e.stopPropagation()}
-      />
-      <button
-        type="button"
-        className="traffic-dot yellow"
-        title="Minimize (Thu nhỏ / Đóng)"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-        onPointerDown={(e) => e.stopPropagation()}
-      />
-      <button
-        type="button"
-        className="traffic-dot green"
-        title="Zoom / Close"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-        onPointerDown={(e) => e.stopPropagation()}
-      />
-    </TrafficDots>
-  );
-}
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ─── DATA: INTERACTIVE DESKTOP FILES (YANXIN LAB STYLE) ─── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const DESKTOP_ITEMS = [
+  {
+    id: 'potato',
+    name: 'Potato.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    title: '3D Procedural Texture & Light Simulation',
+    category: 'Motion R&D',
+    defaultPos: { x: 50, y: 70 },
+  },
+  {
+    id: 'render-module',
+    name: 'RenderModule.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/hgNmKfRPeHqlrN0vENw1gw4wXA.jpg',
+    thumb: 'https://framerusercontent.com/images/hgNmKfRPeHqlrN0vENw1gw4wXA.jpg',
+    title: 'Procedural Terrain & Shading Architecture',
+    category: '3D Graphics',
+    defaultPos: { x: 210, y: 80 },
+  },
+  {
+    id: 'uber-ride',
+    name: 'UberRide.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    title: 'Kinetic Typography & Micro-interactions',
+    category: 'Interaction',
+    defaultPos: { x: 370, y: 65 },
+  },
+  {
+    id: 'z08',
+    name: 'Z08.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    title: 'Character Animation & Dynamic Rigidbodies',
+    category: 'Animation',
+    defaultPos: { x: 70, y: 260 },
+  },
+  {
+    id: 'byte-events',
+    name: 'ByteEvents.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    title: 'Event-Driven Real-time Animation Stream',
+    category: 'Visual R&D',
+    defaultPos: { x: 230, y: 275 },
+  },
+  {
+    id: 'r02',
+    name: 'R02.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    title: 'Cyberpunk UI HUD & Particle Trails',
+    category: 'UI Concept',
+    defaultPos: { x: 390, y: 260 },
+  },
+  {
+    id: 'purple-cat',
+    name: 'PurpleCat.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    title: 'Vector Character Concept Art',
+    category: 'Illustration',
+    defaultPos: { x: 130, y: 455 },
+  },
+  {
+    id: 'dev-roadmap',
+    name: 'DevRoadmap.tsx',
+    type: 'project',
+    src: 'https://framerusercontent.com/images/2y9hWY2pBjaONGzPRqdv67woE.png',
+    thumb: 'https://framerusercontent.com/images/2y9hWY2pBjaONGzPRqdv67woE.png',
+    title: 'Dev Roadmap Tracking System (React 19 + Spring Boot)',
+    category: 'Featured Project',
+    defaultPos: { x: 290, y: 465 },
+  },
+];
 
 /* ─── macOS Battery Indicator ─── */
 function MacOSBattery({ percentage = 100 }) {
@@ -106,106 +160,89 @@ function MacOSBattery({ percentage = 100 }) {
   );
 }
 
-/* ─── Sample Creative Shots / Experiments Data ─── */
-const CREATIVE_SHOTS = [
-  {
-    id: 'potato',
-    name: 'Potato.mp4',
-    type: 'video',
-    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
-    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
-    title: '3D Procedural Texture & Light Simulation',
-  },
-  {
-    id: 'z08',
-    name: 'Z08.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
-    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
-    title: 'Character Animation & Dynamic Rigidbodies',
-  },
-  {
-    id: 'uber-ride',
-    name: 'UberRide.mp4',
-    type: 'video',
-    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
-    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
-    title: 'Kinetic Typography & Micro-interactions',
-  },
-  {
-    id: 'r02',
-    name: 'R02.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
-    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
-    title: 'Cyberpunk UI HUD & Particle Trails',
-  },
-  {
-    id: 'byte-events',
-    name: 'ByteEvents.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
-    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
-    title: 'Event-Driven Real-time Animation',
-  },
-  {
-    id: 'purple-cat',
-    name: 'PurpleCat.jpg',
-    type: 'image',
-    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
-    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
-    title: 'Vector Character Concept Art',
-  },
-];
-
-/* ─── Pointer Drag Hook for Windows (Silky 2D Dragging) ─── */
-function useDraggableWindow(initialPos = { x: 0, y: 0 }) {
-  const [pos, setPos] = useState(initialPos);
-  const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
-
-  const onPointerDown = useCallback((e) => {
-    // Only drag from header, ignore buttons, inputs, traffic lights
-    if (
-      e.target.closest('button') ||
-      e.target.closest('input') ||
-      e.target.closest('textarea') ||
-      e.target.closest('a') ||
-      e.target.closest('.traffic-dot')
-    ) {
-      return;
-    }
-    e.preventDefault();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    dragRef.current = {
-      isDragging: true,
-      startX: e.clientX,
-      startY: e.clientY,
-      startPosX: pos.x,
-      startPosY: pos.y,
-    };
-  }, [pos]);
-
-  const onPointerMove = useCallback((e) => {
-    if (!dragRef.current.isDragging) return;
-    const dx = e.clientX - dragRef.current.startX;
-    const dy = e.clientY - dragRef.current.startY;
-    setPos({
-      x: dragRef.current.startPosX + dx,
-      y: dragRef.current.startPosY + dy,
-    });
-  }, []);
-
-  const onPointerUp = useCallback((e) => {
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {}
-    dragRef.current.isDragging = false;
-  }, []);
-
-  return { pos, onPointerDown, onPointerMove, onPointerUp };
+/* ─── macOS Traffic Light Buttons ─── */
+function TrafficLightsGroup({ onClose }) {
+  return (
+    <TrafficDots>
+      <button
+        type="button"
+        className="traffic-dot red"
+        title="Close (Đóng)"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        className="traffic-dot yellow"
+        title="Minimize (Thu nhỏ / Đóng)"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        className="traffic-dot green"
+        title="Zoom / Close"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      />
+    </TrafficDots>
+  );
 }
 
-/* ─── Styled Components ─── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ─── DOCK ITEM WITH PROPORTIONAL MAGNIFICATION ─── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function DockItem({ mouseX, icon, label, onClick, isActive, isBouncing }) {
+  const ref = useRef(null);
+
+  // Distance from mouse to icon center
+  const distance = useTransform(mouseX, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+
+  // Scale smoothly based on cursor proximity (Apple macOS Dock curve)
+  const widthSync = useTransform(distance, [-130, 0, 130], [48, 70, 48]);
+  const width = useSpring(widthSync, { mass: 0.1, stiffness: 450, damping: 25 });
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ width }}
+      className="dock-item-wrapper"
+      onClick={onClick}
+      animate={isBouncing ? { y: [0, -20, 0, -10, 0] } : { y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
+      <DockIconImageWrapper
+        as={motion.div}
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+      >
+        {typeof icon === 'string' ? (
+          <img src={icon} alt={label} draggable={false} />
+        ) : (
+          icon
+        )}
+        <div className="dock-tooltip">{label}</div>
+      </DockIconImageWrapper>
+      <DockDot $active={isActive} />
+    </motion.div>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ─── STYLED COMPONENTS ─── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const Wrapper = styled.div`
   position: relative;
   width: 100vw;
@@ -215,7 +252,7 @@ const Wrapper = styled.div`
   background-position: center;
   overflow: hidden;
   user-select: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter',
     sans-serif;
   color: #ffffff;
 `;
@@ -227,10 +264,10 @@ const MenuBar = styled.header`
   right: 0;
   z-index: 1000;
   height: 28px;
-  background: rgba(20, 25, 35, 0.45);
+  background: rgba(18, 22, 32, 0.45);
   backdrop-filter: blur(35px) saturate(200%);
   -webkit-backdrop-filter: blur(35px) saturate(200%);
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -238,7 +275,7 @@ const MenuBar = styled.header`
   font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const MenuBarLeft = styled.div`
@@ -274,82 +311,145 @@ const MenuButton = styled.button`
   }
 `;
 
-const DropdownMenu = styled.div`
+/* ─── Desktop Canvas for Draggable Items ─── */
+const DesktopCanvas = styled.div`
   position: absolute;
-  top: 32px;
-  left: ${props => props.$left || '12px'};
-  background: rgba(30, 32, 40, 0.82);
-  backdrop-filter: blur(30px) saturate(220%);
-  -webkit-backdrop-filter: blur(30px) saturate(220%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-  min-width: 210px;
-  z-index: 1001;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const DropdownItem = styled.button`
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 500;
-  text-align: left;
-  padding: 5px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  font-family: inherit;
-
-  &:hover {
-    background: #007aff;
-    color: #ffffff;
-  }
-`;
-
-const DropdownDivider = styled.div`
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
-  margin: 4px 6px;
-`;
-
-/* ─── Desktop Area & Icons ─── */
-const DesktopGrid = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 24px;
-  bottom: 90px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap-reverse;
-  align-content: flex-end;
-  gap: 20px 24px;
-  z-index: 20;
+  top: 30px;
+  left: 0;
+  right: 0;
+  bottom: 80px;
+  overflow: hidden;
   pointer-events: auto;
 `;
 
-const DesktopIconItem = styled.div`
+const DraggableCard = styled(motion.div)`
+  position: absolute;
+  width: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  width: 84px;
+  cursor: grab;
+  z-index: 10;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+`;
+
+const CardThumbnail = styled.div`
+  position: relative;
+  width: 134px;
+  height: 92px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(20, 20, 25, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  & .type-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  & .play-btn {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  &:hover .play-btn {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+`;
+
+const CardLabelPill = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(18, 20, 26, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3px 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  & span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
+`;
+
+/* ─── Desktop Right Icons Grid ─── */
+const DesktopGrid = styled.div`
+  position: absolute;
+  top: 42px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 20;
+  pointer-events: auto;
+`;
+
+const DesktopIconItem = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 80px;
   cursor: pointer;
   padding: 6px 4px;
-  border-radius: 6px;
-  background: ${props => (props.$selected ? 'rgba(0, 122, 255, 0.45)' : 'transparent')};
+  border-radius: 8px;
+  background: ${props => (props.$selected ? 'rgba(0, 122, 255, 0.4)' : 'transparent')};
   border: 1px solid ${props => (props.$selected ? 'rgba(0, 122, 255, 0.8)' : 'transparent')};
   transition: background 0.15s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.12);
+  }
+
+  & img {
+    image-rendering: -webkit-optimize-contrast;
   }
 `;
 
@@ -359,15 +459,15 @@ const DesktopIconLabel = styled.span`
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
   text-align: center;
-  max-width: 80px;
+  max-width: 76px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.2;
 `;
 
-/* ─── macOS Dock ─── */
-const DockContainer = styled.nav`
+/* ─── Ultra-Fluid macOS Dock ─── */
+const DockContainer = styled(motion.nav)`
   position: fixed;
   bottom: 12px;
   left: 50%;
@@ -375,26 +475,67 @@ const DockContainer = styled.nav`
   z-index: 900;
   display: flex;
   align-items: flex-end;
-  gap: 10px;
-  padding: 6px 14px 8px;
+  gap: 8px;
+  height: 64px;
+  padding: 0 12px 6px;
   background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.25);
+
+  & .dock-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    position: relative;
+  }
+
+  & .dock-divider {
+    width: 1px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.35);
+    margin: 0 4px 10px;
+  }
 `;
 
-const DockItem = styled.div`
-  position: relative;
+const DockIconImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  justify-content: center;
+  position: relative;
 
-  &:hover {
-    transform: scale(1.22) translateY(-8px);
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+    pointer-events: none;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  & .dock-tooltip {
+    position: absolute;
+    top: -38px;
+    background: rgba(20, 22, 28, 0.88);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 0.15s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
   }
 
   &:hover .dock-tooltip {
@@ -403,45 +544,19 @@ const DockItem = styled.div`
   }
 `;
 
-const DockIconImg = styled.img`
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
-  pointer-events: none;
-`;
-
 const DockDot = styled.div`
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   margin-top: 3px;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.85);
   opacity: ${props => (props.$active ? 1 : 0)};
+  transition: opacity 0.2s ease;
 `;
 
-const DockTooltip = styled.div`
-  position: absolute;
-  top: -34px;
-  background: rgba(20, 22, 28, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-`;
-
-/* ─── macOS Realistic Window ─── */
-const WindowWrapper = styled.div`
+/* ─── macOS Realistic Framer Window ─── */
+const WindowWrapper = styled(motion.div)`
   position: fixed;
   z-index: ${props => props.$zIndex || 100};
   width: ${props => props.$width || '720px'};
@@ -450,11 +565,11 @@ const WindowWrapper = styled.div`
   background: #ffffff;
   color: #111827;
   border-radius: 12px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: des4WindowFadeIn 0.18s ease-out;
+  touch-action: none;
 `;
 
 const WindowTitleBar = styled.div`
@@ -467,7 +582,6 @@ const WindowTitleBar = styled.div`
   padding: 0 14px;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none;
   cursor: grab;
 
   &:active {
@@ -517,15 +631,20 @@ const TrafficDots = styled.div`
 /* ─── MAIN DES4 LAB VIEW COMPONENT ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Des4LabView({ onBack }) {
+  const containerRef = useRef(null);
+
   // Active window state
   const [activeWindow, setActiveWindow] = useState('finder'); // Default opens Finder
   const [windowZIndex, setWindowZIndex] = useState(150);
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [previewCv, setPreviewCv] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [bouncingApp, setBouncingApp] = useState(null);
 
-  // Menus & Spotlight
+  // Dock mouse tracking
+  const mouseX = useMotionValue(Infinity);
+
+  // Spotlight & Control Center
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [spotlightQuery, setSpotlightQuery] = useState('');
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -535,7 +654,7 @@ export default function Des4LabView({ onBack }) {
   // Terminal state
   const [terminalHistory, setTerminalHistory] = useState([
     'Last login: ' + new Date().toLocaleDateString() + ' on ttys001',
-    'Welcome to Dat Le macOS Portfolio Terminal [v4.2.0]',
+    'Welcome to Dat Le macOS Portfolio Terminal [v4.3.0 - Silk Edition]',
     'Type "help" to view available developer commands.',
   ]);
   const [terminalInput, setTerminalInput] = useState('');
@@ -572,13 +691,13 @@ export default function Des4LabView({ onBack }) {
     return () => window.removeEventListener('click', handleGlobalClick);
   }, []);
 
-  // Global keydown (Esc closes modals, Cmd+K / Cmd+Space opens Spotlight)
+  // Global keydown (Esc closes modals, Cmd+Space opens Spotlight)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setSpotlightOpen(false);
         setControlCenterOpen(false);
-        setSelectedPhoto(null);
+        setSelectedMedia(null);
       }
       if ((e.metaKey || e.ctrlKey) && e.code === 'Space') {
         e.preventDefault();
@@ -589,16 +708,15 @@ export default function Des4LabView({ onBack }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Draggable Window Pos
-  const finderDrag = useDraggableWindow({ x: 0, y: 0 });
-  const notesDrag = useDraggableWindow({ x: 20, y: 20 });
-  const photosDrag = useDraggableWindow({ x: -20, y: 10 });
-  const mailDrag = useDraggableWindow({ x: 10, y: -20 });
-  const terminalDrag = useDraggableWindow({ x: -10, y: -10 });
-  const aboutMacDrag = useDraggableWindow({ x: 0, y: 0 });
-
   const bringToFront = () => {
     setWindowZIndex((prev) => prev + 1);
+  };
+
+  const handleAppLaunch = (appName) => {
+    setBouncingApp(appName);
+    setTimeout(() => setBouncingApp(null), 500);
+    setActiveWindow(appName);
+    bringToFront();
   };
 
   const handleTerminalSubmit = (e) => {
@@ -610,7 +728,7 @@ export default function Des4LabView({ onBack }) {
     if (cmd === 'help') {
       response = 'Available commands: about, skills, projects, contact, clear, whoami, date, exit';
     } else if (cmd === 'about') {
-      response = `Dat Le (Lê Văn Đạt) - Fullstack Software Engineer & UI Artisan based in Da Nang, VN.`;
+      response = `Dat Le (Lê Văn Đạt) - Fullstack Software Engineer & Technical Artisan.`;
     } else if (cmd === 'skills') {
       response = 'Core Stack: React 19, TypeScript, Vite, Spring Boot, Java, Node.js, Tailwind, Docker, MySQL, Redis.';
     } else if (cmd === 'projects') {
@@ -638,11 +756,11 @@ export default function Des4LabView({ onBack }) {
   };
 
   return (
-    <Wrapper style={{ filter: `brightness(${brightness}%)` }}>
+    <Wrapper ref={containerRef} style={{ filter: `brightness(${brightness}%)` }}>
       {/* ─── macOS Top Menu Bar ─── */}
       <MenuBar>
         <MenuBarLeft>
-          {/* Exit Lab Menu Item (plain text like File/Edit, replacing Apple logo) */}
+          {/* Exit Lab Menu Item (plain text like File/Edit) */}
           <MenuButton
             onClick={onBack}
             title="Exit Lab & Return to Overview"
@@ -667,14 +785,14 @@ export default function Des4LabView({ onBack }) {
           </span>
 
           {/* Menus */}
-          <MenuButton onClick={() => setActiveWindow('finder')}>File</MenuButton>
-          <MenuButton onClick={() => setActiveWindow('notes')}>Edit</MenuButton>
-          <MenuButton onClick={() => setActiveWindow('photos')}>View</MenuButton>
+          <MenuButton onClick={() => handleAppLaunch('finder')}>File</MenuButton>
+          <MenuButton onClick={() => handleAppLaunch('notes')}>Edit</MenuButton>
+          <MenuButton onClick={() => handleAppLaunch('photos')}>View</MenuButton>
           <MenuButton onClick={() => onBack()} title="Return to Overview">
             Go
           </MenuButton>
-          <MenuButton onClick={() => setActiveWindow('terminal')}>Window</MenuButton>
-          <MenuButton onClick={() => setActiveWindow('about-mac')}>Help</MenuButton>
+          <MenuButton onClick={() => handleAppLaunch('terminal')}>Window</MenuButton>
+          <MenuButton onClick={() => handleAppLaunch('about-mac')}>Help</MenuButton>
         </MenuBarLeft>
 
         <MenuBarRight>
@@ -712,296 +830,98 @@ export default function Des4LabView({ onBack }) {
         </MenuBarRight>
       </MenuBar>
 
-      {/* ─── Control Center Popover ─── */}
-      {controlCenterOpen && (
-        <div
-          id="des4-control-center"
-          style={{
-            position: 'absolute',
-            top: 36,
-            right: 16,
-            width: 320,
-            background: 'rgba(30, 32, 40, 0.78)',
-            backdropFilter: 'blur(35px) saturate(220%)',
-            border: '1px solid rgba(255, 255, 255, 0.18)',
-            borderRadius: 16,
-            padding: 16,
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-            zIndex: 1002,
-            color: '#ffffff',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}
-        >
-          {/* Quick Switches */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                borderRadius: 12,
-                padding: '10px 12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: '#007aff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Wifi size={16} />
-              </div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700 }}>Wi-Fi</div>
-                <div style={{ fontSize: 10.5, opacity: 0.7 }}>Da Nang 5G</div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                borderRadius: 12,
-                padding: '10px 12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: '#007aff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Sun size={16} />
-              </div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700 }}>Theme</div>
-                <div style={{ fontSize: 10.5, opacity: 0.7 }}>Dark Glass</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Sliders */}
-          <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 8, opacity: 0.8 }}>Display Brightness</div>
-            <input
-              type="range"
-              min="50"
-              max="120"
-              value={brightness}
-              onChange={(e) => setBrightness(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
-            />
-          </div>
-
-          <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 8, opacity: 0.8 }}>Sound Volume</div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              onChange={(e) => setVolume(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
-            />
-          </div>
-
-          {/* Now Playing Widget */}
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: 12,
-              padding: '10px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-            }}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* ─── DESKTOP DRAGGABLE ITEMS CANVAS (YANXIN LAB STYLE) ─── */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <DesktopCanvas>
+        {DESKTOP_ITEMS.map((item) => (
+          <DraggableCard
+            key={item.id}
+            drag
+            dragMomentum={true}
+            dragElastic={0.12}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.8, x: item.defaultPos.x, y: item.defaultPos.y }}
+            animate={{ opacity: 1, scale: 1, x: item.defaultPos.x, y: item.defaultPos.y }}
+            whileHover={{ scale: 1.05, y: -4, transition: { type: 'spring', stiffness: 400, damping: 20 } }}
+            whileDrag={{ scale: 1.1, zIndex: 850, cursor: 'grabbing', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
+            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+            onDoubleClick={() => setSelectedMedia(item)}
           >
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 8,
-                background: '#fe3c01',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: 12,
-              }}
-            >
-              DL*
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Engineering Logic, Crafting Experiences
+            <CardThumbnail onClick={() => setSelectedMedia(item)}>
+              <img src={item.thumb} alt={item.name} draggable={false} />
+              <div className="type-badge">
+                {item.type === 'video' ? <Film size={10} /> : <ImageIcon size={10} />}
+                <span>{item.type}</span>
               </div>
-              <div style={{ fontSize: 11, opacity: 0.7 }}>Dat Le – Portfolio 2026</div>
-            </div>
-          </div>
-        </div>
-      )}
+              {item.type === 'video' && (
+                <div className="play-btn">
+                  <Play size={12} fill="#ffffff" style={{ marginLeft: 1 }} />
+                </div>
+              )}
+            </CardThumbnail>
 
-      {/* ─── macOS Spotlight Search Modal ─── */}
-      {spotlightOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 2000,
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            paddingTop: '18vh',
-            background: 'rgba(0, 0, 0, 0.25)',
-          }}
-          onClick={() => setSpotlightOpen(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              width: 580,
-              maxWidth: '90vw',
-              background: 'rgba(30, 32, 42, 0.88)',
-              backdropFilter: 'blur(35px) saturate(200%)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
-              borderRadius: 16,
-              boxShadow: '0 30px 80px rgba(0, 0, 0, 0.65)',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '14px 20px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}
-            >
-              <Search size={20} style={{ color: '#007aff' }} />
-              <input
-                type="text"
-                autoFocus
-                placeholder="Spotlight Search (apps, projects, skills, documents)..."
-                value={spotlightQuery}
-                onChange={(e) => setSpotlightQuery(e.target.value)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: 18,
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  width: '100%',
-                }}
-              />
-              <span
-                style={{
-                  fontSize: 11,
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  padding: '2px 8px',
-                  borderRadius: 6,
-                  color: '#d1d5db',
-                }}
-              >
-                esc
-              </span>
-            </div>
-
-            {/* Quick Results */}
-            <div style={{ padding: '8px 10px', maxHeight: 320, overflowY: 'auto' }}>
-              {[
-                { name: 'Finder – Projects Archive', type: 'Application', action: () => { setActiveWindow('finder'); setSpotlightOpen(false); } },
-                { name: 'Notes – About Dat Le & Architecture', type: 'Notes', action: () => { setActiveWindow('notes'); setSpotlightOpen(false); } },
-                { name: 'Photos – Creative Experiments', type: 'Gallery', action: () => { setActiveWindow('photos'); setSpotlightOpen(false); } },
-                { name: 'Terminal – Command Center', type: 'Utility', action: () => { setActiveWindow('terminal'); setSpotlightOpen(false); } },
-                { name: 'Mail – Contact & Inquiries', type: 'Mail', action: () => { setActiveWindow('mail'); setSpotlightOpen(false); } },
-                { name: 'About This Mac / Portfolio Spec', type: 'System', action: () => { setActiveWindow('about-mac'); setSpotlightOpen(false); } },
-              ]
-                .filter((item) => item.name.toLowerCase().includes(spotlightQuery.toLowerCase()))
-                .map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={item.action}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '8px 14px',
-                      borderRadius: 8,
-                      cursor: 'pointer',
-                      fontSize: 13,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = '#007aff')}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <span>{item.name}</span>
-                    <span style={{ fontSize: 11, opacity: 0.6 }}>{item.type}</span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
+            <CardLabelPill onClick={() => setSelectedMedia(item)}>
+              <span>{item.name}</span>
+            </CardLabelPill>
+          </DraggableCard>
+        ))}
+      </DesktopCanvas>
 
       {/* ─── Desktop Icons Grid (Right Side) ─── */}
       <DesktopGrid>
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'finder'}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('finder')}
-          onDoubleClick={() => setActiveWindow('finder')}
+          onDoubleClick={() => handleAppLaunch('finder')}
         >
           <img
             src="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png"
             alt="Projects"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+            draggable={false}
           />
           <DesktopIconLabel>Projects</DesktopIconLabel>
         </DesktopIconItem>
 
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'photos'}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('photos')}
-          onDoubleClick={() => setActiveWindow('photos')}
+          onDoubleClick={() => handleAppLaunch('photos')}
         >
           <img
             src="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png"
             alt="Experiments"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+            draggable={false}
           />
           <DesktopIconLabel>Experiments</DesktopIconLabel>
         </DesktopIconItem>
 
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'notes'}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('notes')}
-          onDoubleClick={() => setActiveWindow('notes')}
+          onDoubleClick={() => handleAppLaunch('notes')}
         >
           <img
             src="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png"
             alt="About DatLe"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+            draggable={false}
           />
           <DesktopIconLabel>About_Me.txt</DesktopIconLabel>
         </DesktopIconItem>
 
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'resume'}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('resume')}
           onDoubleClick={() => {
             window.location.href = '/work';
@@ -1027,680 +947,1139 @@ export default function Des4LabView({ onBack }) {
 
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'terminal'}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('terminal')}
-          onDoubleClick={() => setActiveWindow('terminal')}
+          onDoubleClick={() => handleAppLaunch('terminal')}
         >
           <div
             style={{
               width: 48,
               height: 48,
-              borderRadius: 10,
-              background: '#18181b',
+              borderRadius: 11,
+              background: 'linear-gradient(135deg, #27272a, #09090b)',
               border: '1px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+              boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#22c55e',
+              fontFamily: 'monospace',
+              fontWeight: 800,
+              fontSize: 18,
             }}
           >
-            <TerminalIcon size={26} />
+            &gt;_
           </div>
           <DesktopIconLabel>Terminal.app</DesktopIconLabel>
         </DesktopIconItem>
       </DesktopGrid>
 
-      {/* ─── 1. FINDER WINDOW (Projects & Capabilities) ─── */}
-      {activeWindow === 'finder' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="820px"
-          style={{
-            top: 70 + finderDrag.pos.y,
-            left: `calc(50% - 410px + ${finderDrag.pos.x}px)`,
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar onPointerDown={finderDrag.onPointerDown} onPointerMove={finderDrag.onPointerMove} onPointerUp={finderDrag.onPointerUp}>
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-              Finder – Projects & Engineering Lab
-            </span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* ─── MACOS DRAGGABLE WINDOWS (FRAMER MOTION) ─── */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <AnimatePresence>
+        {/* ─── 1. FINDER WINDOW ─── */}
+        {activeWindow === 'finder' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="820px"
+            style={{
+              top: '12%',
+              left: 'calc(50% - 410px)',
+            }}
+            onClick={bringToFront}
+          >
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Finder – Projects & Engineering Lab
+              </span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
 
-          {/* Finder Layout: Sidebar + Main Content Grid */}
-          <div style={{ display: 'flex', height: 480, overflow: 'hidden' }}>
-            {/* Sidebar */}
-            <div
-              style={{
-                width: 190,
-                background: '#f6f8fa',
-                borderRight: '1px solid #e2e5e9',
-                padding: '14px 10px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-                fontSize: 12.5,
-                fontWeight: 600,
-                color: '#4b5563',
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
-                  Favorites
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 10px',
-                    borderRadius: 6,
-                    background: '#e0e7ff',
-                    color: '#3730a3',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Folder size={14} style={{ color: '#007aff' }} />
-                  <span>Projects ({featuredProjects.length})</span>
-                </div>
-                <div
-                  onClick={() => setActiveWindow('photos')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 10px',
-                    borderRadius: 6,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Sparkles size={14} style={{ color: '#ec4899' }} />
-                  <span>Creative Shots</span>
-                </div>
-                <div
-                  onClick={() => setActiveWindow('notes')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 10px',
-                    borderRadius: 6,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <FileText size={14} style={{ color: '#f59e0b' }} />
-                  <span>Documents</span>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
-                  Locations
-                </div>
-                <div
-                  onClick={onBack}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 10px',
-                    borderRadius: 6,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Globe size={14} style={{ color: '#10b981' }} />
-                  <span>Web Overview</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Main File Browser */}
-            <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: '#ffffff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
-                  Selected Works ({featuredProjects.length} items)
-                </h3>
-                <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-                {featuredProjects.map((project) => (
+            <div style={{ display: 'flex', height: 480, overflow: 'hidden' }}>
+              {/* Sidebar */}
+              <div
+                style={{
+                  width: 190,
+                  background: '#f6f8fa',
+                  borderRight: '1px solid #e2e5e9',
+                  padding: '14px 10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: '#4b5563',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
+                    Favorites
+                  </div>
                   <div
-                    key={project.id}
-                    onClick={() => setSelectedProject(project)}
                     style={{
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 10,
-                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '6px 10px',
+                      borderRadius: 6,
+                      background: 'rgba(0, 122, 255, 0.12)',
+                      color: '#007aff',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      background: '#fafafa',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.08)';
-                      e.currentTarget.style.borderColor = '#007aff';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                   >
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      style={{ width: '100%', height: 120, objectFit: 'cover' }}
-                    />
-                    <div style={{ padding: 12 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#fe3c01', textTransform: 'uppercase' }}>
-                        {project.code}
-                      </div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '2px 0 6px' }}>
-                        {project.title}
-                      </div>
-                      <p style={{ fontSize: 11.5, color: '#6b7280', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {project.description}
-                      </p>
-                    </div>
+                    <Folder size={14} fill="#007aff" />
+                    <span>Projects ({featuredProjects.length})</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </WindowWrapper>
-      )}
-
-      {/* ─── 2. NOTES WINDOW (About Dat Le) ─── */}
-      {activeWindow === 'notes' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="740px"
-          style={{
-            top: 85 + notesDrag.pos.y,
-            left: `calc(50% - 370px + ${notesDrag.pos.x}px)`,
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar onPointerDown={notesDrag.onPointerDown} onPointerMove={notesDrag.onPointerMove} onPointerUp={notesDrag.onPointerUp}>
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-              Notes – About Dat Le & Technical Artisan
-            </span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
-
-          <div style={{ display: 'flex', height: 460, overflow: 'hidden' }}>
-            {/* Notes List */}
-            <div
-              style={{
-                width: 220,
-                background: '#f8f9fa',
-                borderRight: '1px solid #e5e7eb',
-                padding: '12px 8px',
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
-            >
-              <div
-                style={{
-                  background: '#fffae5',
-                  border: '1px solid #fde047',
-                  borderRadius: 8,
-                  padding: '10px 12px',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#78350f' }}>01. About Dat Le</div>
-                <div style={{ fontSize: 11, color: '#b45309', marginTop: 3 }}>Engineering logic & craftsmanship</div>
-              </div>
-              <div
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 8,
-                  padding: '10px 12px',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1f2937' }}>02. Core Architecture</div>
-                <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>React 19, Spring Boot, AI</div>
-              </div>
-            </div>
-
-            {/* Note Editor Body */}
-            <div style={{ flex: 1, padding: '24px 30px', overflowY: 'auto', background: '#ffffff', color: '#1f2937' }}>
-              <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, marginBottom: 8 }}>
-                Last edited: Today, 3:15 PM
-              </div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 14px 0', color: '#111827' }}>
-                Lê Văn Đạt (Dat Le)
-              </h2>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, marginBottom: 16 }}>
-                <span>📍 Da Nang, Vietnam</span> • <span>✉️ lvd27012004@gmail.com</span>
-              </div>
-              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#374151', marginBottom: 16 }}>
-                Full-stack Developer & Technical Artisan exploring the intersection between robust distributed systems, brutalist aesthetics, and seamless user experiences. Specializing in high-performance web applications, modern React architecture, and clean decoupled services.
-              </p>
-              <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: 14, fontSize: 13 }}>
-                <strong>Technical Stack:</strong> React, TypeScript, Spring Boot, Java, Vite, Tailwind CSS, Docker, PostgreSQL, MySQL, Redis, AI Inference Pipelines.
-              </div>
-            </div>
-          </div>
-        </WindowWrapper>
-      )}
-
-      {/* ─── 3. PHOTOS WINDOW (Creative Experiments) ─── */}
-      {activeWindow === 'photos' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="780px"
-          style={{
-            top: 95 + photosDrag.pos.y,
-            left: `calc(50% - 390px + ${photosDrag.pos.x}px)`,
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar onPointerDown={photosDrag.onPointerDown} onPointerMove={photosDrag.onPointerMove} onPointerUp={photosDrag.onPointerUp}>
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-              Photos – Creative Experiments & Visual R&D
-            </span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
-
-          <div style={{ padding: 22, maxHeight: 460, overflowY: 'auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
-              {CREATIVE_SHOTS.map((shot) => (
-                <div
-                  key={shot.id}
-                  onClick={() => setSelectedPhoto(shot)}
-                  style={{
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                    border: '1px solid #e5e7eb',
-                    cursor: 'pointer',
-                    background: '#f9fafb',
-                    transition: 'transform 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                >
-                  <img src={shot.thumb} alt={shot.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
-                  <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#1f2937' }}>
-                    {shot.name}
+                  <div
+                    onClick={() => handleAppLaunch('photos')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '6px 10px',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                      marginTop: 2,
+                    }}
+                  >
+                    <Sparkles size={14} style={{ color: '#f59e0b' }} />
+                    <span>Creative Shots</span>
                   </div>
                 </div>
-              ))}
+
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
+                    Locations
+                  </div>
+                  <div
+                    onClick={onBack}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '6px 10px',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Globe size={14} style={{ color: '#10b981' }} />
+                    <span>Web Overview</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main File Browser */}
+              <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: '#ffffff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                    Selected Works ({featuredProjects.length} items)
+                  </h3>
+                  <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+                  {featuredProjects.map((project) => (
+                    <motion.div
+                      key={project.id}
+                      whileHover={{ scale: 1.02, y: -3 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedProject(project)}
+                      style={{
+                        border: '1px solid #e5e7eb',
+                        borderRadius: 10,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        background: '#fafafa',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
+                      }}
+                    >
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        style={{ width: '100%', height: 120, objectFit: 'cover' }}
+                      />
+                      <div style={{ padding: 12 }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#fe3c01', textTransform: 'uppercase' }}>
+                          {project.code}
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '2px 0 6px' }}>
+                          {project.title}
+                        </div>
+                        <p style={{ fontSize: 11.5, color: '#6b7280', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {project.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </WindowWrapper>
-      )}
+          </WindowWrapper>
+        )}
 
-      {/* ─── 4. MAIL WINDOW (Contact Form) ─── */}
-      {activeWindow === 'mail' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="640px"
-          style={{
-            top: 90 + mailDrag.pos.y,
-            left: `calc(50% - 320px + ${mailDrag.pos.x}px)`,
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar onPointerDown={mailDrag.onPointerDown} onPointerMove={mailDrag.onPointerMove} onPointerUp={mailDrag.onPointerUp}>
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-              Mail – Compose: New Message to Dat Le
-            </span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert('Thank you for reaching out! Dat Le will reply shortly.');
-              setActiveWindow(null);
+        {/* ─── 2. NOTES WINDOW ─── */}
+        {activeWindow === 'notes' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="740px"
+            style={{
+              top: '14%',
+              left: 'calc(50% - 370px)',
             }}
-            style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}
+            onClick={bringToFront}
           >
-            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
-              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>To:</span>
-              <span style={{ fontWeight: 700, color: '#111827' }}>lvd27012004@gmail.com</span>
-            </div>
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Notes – About Dat Le & Technical Artisan
+              </span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
 
-            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
-              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>From:</span>
-              <input
-                type="email"
-                required
-                placeholder="your.email@example.com"
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
-              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>Subject:</span>
-              <input
-                type="text"
-                required
-                placeholder="Project Inquiry / Collaboration"
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}
-              />
-            </div>
-
-            <textarea
-              rows="5"
-              required
-              placeholder="Hi Dat, I came across your portfolio and would like to discuss..."
-              style={{
-                width: '100%',
-                border: '1px solid #e5e7eb',
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 13.5,
-                fontFamily: 'inherit',
-                outline: 'none',
-                resize: 'vertical',
-              }}
-            />
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => setActiveWindow(null)}
+            <div style={{ display: 'flex', height: 460, overflow: 'hidden' }}>
+              <div
                 style={{
-                  background: '#f3f4f6',
-                  border: 'none',
-                  color: '#4b5563',
-                  padding: '8px 18px',
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{
-                  background: '#007aff',
-                  border: 'none',
-                  color: '#ffffff',
-                  padding: '8px 20px',
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
+                  width: 220,
+                  background: '#f8f9fa',
+                  borderRight: '1px solid #e5e7eb',
+                  padding: '12px 8px',
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
                   gap: 6,
                 }}
               >
-                <Send size={13} />
-                <span>Send Message</span>
-              </button>
-            </div>
-          </form>
-        </WindowWrapper>
-      )}
-
-      {/* ─── 5. TERMINAL WINDOW ─── */}
-      {activeWindow === 'terminal' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="680px"
-          style={{
-            top: 110 + terminalDrag.pos.y,
-            left: `calc(50% - 340px + ${terminalDrag.pos.x}px)`,
-            background: '#18181b',
-            color: '#f4f4f5',
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar
-            style={{ background: '#27272a', borderBottomColor: '#3f3f46' }}
-            onPointerDown={terminalDrag.onPointerDown}
-            onPointerMove={terminalDrag.onPointerMove}
-            onPointerUp={terminalDrag.onPointerUp}
-          >
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>
-              datle@macbook-pro: ~ (zsh)
-            </span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
-
-          <div
-            style={{
-              padding: 16,
-              height: 380,
-              overflowY: 'auto',
-              fontFamily: 'monospace',
-              fontSize: 13,
-              lineHeight: 1.5,
-              background: '#09090b',
-            }}
-          >
-            {terminalHistory.map((line, idx) => (
-              <div key={idx} style={{ color: line.startsWith('datle@') ? '#38bdf8' : '#e4e4e7' }}>
-                {line}
+                <div
+                  style={{
+                    background: '#fffae5',
+                    border: '1px solid #fde047',
+                    borderRadius: 8,
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#78350f' }}>01. About Dat Le</div>
+                  <div style={{ fontSize: 11, color: '#b45309', marginTop: 3 }}>Engineering logic & craftsmanship</div>
+                </div>
+                <div
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 8,
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#1f2937' }}>02. Core Architecture</div>
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>React 19, Spring Boot, AI</div>
+                </div>
               </div>
-            ))}
-            <form onSubmit={handleTerminalSubmit} style={{ display: 'flex', alignItems: 'center', marginTop: 8 }}>
-              <span style={{ color: '#22c55e', marginRight: 8 }}>datle@macbook-pro ~ %</span>
-              <input
-                type="text"
-                autoFocus
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
+
+              <div style={{ flex: 1, padding: '24px 30px', overflowY: 'auto', background: '#ffffff', color: '#1f2937' }}>
+                <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, marginBottom: 8 }}>
+                  Last edited: Today, 3:15 PM
+                </div>
+                <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 14px 0', color: '#111827' }}>
+                  Lê Văn Đạt (Dat Le)
+                </h2>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, marginBottom: 16 }}>
+                  <span>📍 Da Nang, Vietnam</span> • <span>✉️ lvd27012004@gmail.com</span>
+                </div>
+                <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#374151', marginBottom: 16 }}>
+                  Full-stack Developer & Technical Artisan exploring the intersection between robust distributed systems, brutalist aesthetics, and seamless user experiences. Specializing in high-performance web applications, modern React architecture, and clean decoupled services.
+                </p>
+                <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: 14, fontSize: 13 }}>
+                  <strong>Technical Stack:</strong> React, TypeScript, Spring Boot, Java, Vite, Tailwind CSS, Docker, PostgreSQL, MySQL, Redis, AI Inference Pipelines.
+                </div>
+              </div>
+            </div>
+          </WindowWrapper>
+        )}
+
+        {/* ─── 3. PHOTOS WINDOW ─── */}
+        {activeWindow === 'photos' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="780px"
+            style={{
+              top: '16%',
+              left: 'calc(50% - 390px)',
+            }}
+            onClick={bringToFront}
+          >
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Photos – Creative Experiments & Visual R&D
+              </span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
+
+            <div style={{ padding: 22, maxHeight: 460, overflowY: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
+                {DESKTOP_ITEMS.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSelectedMedia(item)}
+                    style={{
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                      border: '1px solid #e5e7eb',
+                      cursor: 'pointer',
+                      background: '#f9fafb',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                    }}
+                  >
+                    <img src={item.thumb} alt={item.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
+                    <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#1f2937' }}>
+                      {item.name}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </WindowWrapper>
+        )}
+
+        {/* ─── 4. MAIL WINDOW ─── */}
+        {activeWindow === 'mail' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="640px"
+            style={{
+              top: '15%',
+              left: 'calc(50% - 320px)',
+            }}
+            onClick={bringToFront}
+          >
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+                Mail – Compose: New Message to Dat Le
+              </span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                alert('Thank you for reaching out! Dat Le will reply shortly.');
+                setActiveWindow(null);
+              }}
+              style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+                <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>To:</span>
+                <span style={{ fontWeight: 700, color: '#111827' }}>lvd27012004@gmail.com</span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+                <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>From:</span>
+                <input
+                  type="email"
+                  required
+                  placeholder="your.email@example.com"
+                  style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+                <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>Subject:</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="Project Inquiry / Collaboration"
+                  style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}
+                />
+              </div>
+
+              <textarea
+                rows="5"
+                required
+                placeholder="Hi Dat, I came across your portfolio and would like to discuss..."
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#ffffff',
+                  width: '100%',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 8,
+                  padding: 12,
+                  fontSize: 13.5,
                   fontFamily: 'inherit',
-                  fontSize: 13,
                   outline: 'none',
-                  flex: 1,
+                  resize: 'vertical',
                 }}
               />
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveWindow(null)}
+                  style={{
+                    background: '#f3f4f6',
+                    border: 'none',
+                    color: '#4b5563',
+                    padding: '8px 18px',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    background: '#007aff',
+                    border: 'none',
+                    color: '#ffffff',
+                    padding: '8px 20px',
+                    borderRadius: 6,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Send size={13} />
+                  <span>Send Message</span>
+                </button>
+              </div>
             </form>
-          </div>
-        </WindowWrapper>
-      )}
+          </WindowWrapper>
+        )}
 
-      {/* ─── 6. ABOUT THIS MAC DIALOG ─── */}
-      {activeWindow === 'about-mac' && (
-        <WindowWrapper
-          $zIndex={windowZIndex}
-          $width="460px"
-          style={{
-            top: 130 + aboutMacDrag.pos.y,
-            left: `calc(50% - 230px + ${aboutMacDrag.pos.x}px)`,
-            textAlign: 'center',
-          }}
-          onClick={bringToFront}
-        >
-          <WindowTitleBar onPointerDown={aboutMacDrag.onPointerDown} onPointerMove={aboutMacDrag.onPointerMove} onPointerUp={aboutMacDrag.onPointerUp}>
-            <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>About This Portfolio</span>
-            <div style={{ width: 60 }} />
-          </WindowTitleBar>
+        {/* ─── 5. TERMINAL WINDOW ─── */}
+        {activeWindow === 'terminal' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="680px"
+            style={{
+              top: '18%',
+              left: 'calc(50% - 340px)',
+              background: '#18181b',
+              color: '#f4f4f5',
+            }}
+            onClick={bringToFront}
+          >
+            <WindowTitleBar style={{ background: '#27272a', borderBottomColor: '#3f3f46' }}>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>
+                datle@macbook-pro: ~ (zsh)
+              </span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
 
-          <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <Laptop size={48} style={{ color: '#18181b' }} />
-            <div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MacBook Pro 16"</h2>
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>macOS Sequoia 15.2 (Portfolio Edition)</div>
-            </div>
-
-            <div style={{ width: '100%', background: '#f3f4f6', borderRadius: 10, padding: 14, fontSize: 12.5, textAlign: 'left', lineHeight: 1.6 }}>
-              <div><strong>Chip:</strong> Apple M3 Max (Technical Artisan)</div>
-              <div><strong>Memory:</strong> 32 GB Unified RAM</div>
-              <div><strong>Creator:</strong> Lê Văn Đạt (Dat Le)</div>
-              <div><strong>Status:</strong> Active & Ready for Collaboration</div>
-            </div>
-
-            <button
-              onClick={() => setActiveWindow(null)}
+            <div
               style={{
-                background: '#007aff',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '6px 20px',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
+                padding: 16,
+                height: 380,
+                overflowY: 'auto',
+                fontFamily: 'monospace',
+                fontSize: 13,
+                lineHeight: 1.5,
+                background: '#09090b',
               }}
             >
-              Done
-            </button>
-          </div>
-        </WindowWrapper>
-      )}
+              {terminalHistory.map((line, idx) => (
+                <div key={idx} style={{ color: line.startsWith('datle@') ? '#38bdf8' : '#e4e4e7' }}>
+                  {line}
+                </div>
+              ))}
+              <form onSubmit={handleTerminalSubmit} style={{ display: 'flex', alignItems: 'center', marginTop: 8 }}>
+                <span style={{ color: '#22c55e', marginRight: 8 }}>datle@macbook-pro ~ %</span>
+                <input
+                  type="text"
+                  autoFocus
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontFamily: 'inherit',
+                    fontSize: 13,
+                    outline: 'none',
+                    flex: 1,
+                  }}
+                />
+              </form>
+            </div>
+          </WindowWrapper>
+        )}
 
-      {/* ─── Photo Lightbox Viewer ─── */}
-      {selectedPhoto && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 2500,
-            background: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(15px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 24,
-          }}
-          onClick={() => setSelectedPhoto(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
+        {/* ─── 6. ABOUT THIS MAC DIALOG ─── */}
+        {activeWindow === 'about-mac' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="460px"
             style={{
-              maxWidth: 800,
-              width: '100%',
-              background: '#18181b',
-              borderRadius: 16,
-              overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(0,0,0,0.8)',
+              top: '22%',
+              left: 'calc(50% - 230px)',
+              textAlign: 'center',
             }}
+            onClick={bringToFront}
           >
-            <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #27272a' }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>{selectedPhoto.name} – {selectedPhoto.title}</span>
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>About This Portfolio</span>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
+
+            <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+              <Laptop size={48} style={{ color: '#18181b' }} />
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MacBook Pro 16"</h2>
+                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>macOS Sequoia 15.2 (Portfolio Edition)</div>
+              </div>
+
+              <div style={{ width: '100%', background: '#f3f4f6', borderRadius: 10, padding: 14, fontSize: 12.5, textAlign: 'left', lineHeight: 1.6 }}>
+                <div><strong>Chip:</strong> High-Performance M3 Max Architecture</div>
+                <div><strong>Memory:</strong> 32 GB Unified RAM</div>
+                <div><strong>Creator:</strong> Lê Văn Đạt (Dat Le)</div>
+                <div><strong>Status:</strong> Active & Ready for Collaboration</div>
+              </div>
+
               <button
-                onClick={() => setSelectedPhoto(null)}
-                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
+                onClick={() => setActiveWindow(null)}
+                style={{
+                  background: '#007aff',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '6px 20px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
               >
-                <X size={18} />
+                Done
               </button>
             </div>
-            <img src={selectedPhoto.src} alt={selectedPhoto.name} style={{ width: '100%', maxHeight: '65vh', objectFit: 'contain', display: 'block', background: '#09090b' }} />
-          </div>
-        </div>
-      )}
+          </WindowWrapper>
+        )}
+      </AnimatePresence>
 
-      {/* ─── Project Modal D4 ─── */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* ─── QUICK LOOK / MEDIA LIGHTBOX VIEWER ─── */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <AnimatePresence>
+        {selectedMedia && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedMedia(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 2500,
+              background: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(20px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 10 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'relative',
+                maxWidth: 860,
+                width: '100%',
+                background: '#18181b',
+                borderRadius: 16,
+                overflow: 'hidden',
+                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15)',
+              }}
+            >
+              <div
+                style={{
+                  padding: '12px 18px',
+                  background: '#27272a',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <TrafficDots>
+                    <button
+                      type="button"
+                      className="traffic-dot red"
+                      onClick={() => setSelectedMedia(null)}
+                    />
+                  </TrafficDots>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>
+                    {selectedMedia.name}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMedia(null)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#a1a1aa',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    minHeight: 380,
+                    maxHeight: '60vh',
+                    background: 'radial-gradient(ellipse at center, rgba(39, 39, 42, 0.6) 0%, rgba(15, 15, 18, 0.95) 100%)',
+                    borderRadius: 12,
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.4)',
+                  }}
+                >
+                  <img
+                    src={selectedMedia.src}
+                    alt={selectedMedia.name}
+                    style={{
+                      maxWidth: '92%',
+                      maxHeight: '56vh',
+                      borderRadius: 8,
+                      objectFit: 'contain',
+                      imageRendering: '-webkit-optimize-contrast',
+                      boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 18,
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 12,
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
+                      {selectedMedia.title}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          color: '#e4e4e7',
+                          padding: '2px 8px',
+                          borderRadius: 4,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {selectedMedia.category}
+                      </span>
+                      <span style={{ fontSize: 11, color: '#71717a' }}>•</span>
+                      <span style={{ fontSize: 12, color: '#a1a1aa' }}>
+                        File: <strong style={{ color: '#d4d4d8' }}>{selectedMedia.name}</strong>
+                      </span>
+                      <span style={{ fontSize: 11, color: '#71717a' }}>•</span>
+                      <span style={{ fontSize: 12, color: '#a1a1aa' }}>
+                        Type: {selectedMedia.type.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {selectedMedia.id === 'dev-roadmap' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedMedia(null);
+                          setSelectedProject(featuredProjects[0]);
+                        }}
+                        style={{
+                          background: '#007aff',
+                          border: 'none',
+                          color: '#ffffff',
+                          padding: '7px 16px',
+                          borderRadius: 8,
+                          fontSize: 12.5,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)',
+                        }}
+                      >
+                        <ExternalLink size={13} />
+                        View Project
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMedia(null)}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#ffffff',
+                        padding: '7px 14px',
+                        borderRadius: 8,
+                        fontSize: 12.5,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Control Center Popover ─── */}
+      <AnimatePresence>
+        {controlCenterOpen && (
+          <motion.div
+            id="des4-control-center"
+            initial={{ opacity: 0, scale: 0.94, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: -10 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: 'absolute',
+              top: 36,
+              right: 16,
+              width: 320,
+              background: 'rgba(28, 30, 38, 0.82)',
+              backdropFilter: 'blur(35px) saturate(220%)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              borderRadius: 16,
+              padding: 16,
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+              zIndex: 1002,
+              color: '#ffffff',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}
+          >
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  borderRadius: 12,
+                  padding: '10px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    background: '#007aff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Wifi size={16} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Wi-Fi</div>
+                  <div style={{ fontSize: 10.5, opacity: 0.7 }}>Da Nang 5G</div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  borderRadius: 12,
+                  padding: '10px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    background: '#007aff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Sun size={16} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Theme</div>
+                  <div style={{ fontSize: 10.5, opacity: 0.7 }}>Dark Glass</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Display Brightness Slider */}
+            <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 8, opacity: 0.8 }}>
+                <span>Display Brightness</span>
+                <span>{brightness}%</span>
+              </div>
+              <input
+                type="range"
+                min="40"
+                max="100"
+                value={brightness}
+                onChange={(e) => setBrightness(Number(e.target.value))}
+                style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Sound Volume Slider */}
+            <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 8, opacity: 0.8 }}>
+                <span>Sound Volume</span>
+                <span>{volume}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))}
+                style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Spotlight Search Modal (⌘Space) ─── */}
+      <AnimatePresence>
+        {spotlightOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSpotlightOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 2000,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingTop: '18vh',
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: -10 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: -10 }}
+              transition={{ duration: 0.15 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: 600,
+                background: 'rgba(30, 32, 40, 0.88)',
+                backdropFilter: 'blur(35px) saturate(200%)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 14,
+                boxShadow: '0 30px 70px rgba(0, 0, 0, 0.6)',
+                overflow: 'hidden',
+                color: '#ffffff',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', padding: '14px 18px', gap: 12, borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <Search size={18} style={{ opacity: 0.6 }} />
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Spotlight Search (apps, projects, files)..."
+                  value={spotlightQuery}
+                  onChange={(e) => setSpotlightQuery(e.target.value)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontSize: 16,
+                    outline: 'none',
+                    flex: 1,
+                    fontFamily: 'inherit',
+                  }}
+                />
+                <span style={{ fontSize: 11, opacity: 0.5, border: '1px solid rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: 4 }}>
+                  ESC
+                </span>
+              </div>
+
+              <div style={{ maxHeight: 300, overflowY: 'auto', padding: 8 }}>
+                {[
+                  { name: 'Finder – Projects', type: 'Application', action: () => handleAppLaunch('finder') },
+                  { name: 'Notes – About Dat Le', type: 'Application', action: () => handleAppLaunch('notes') },
+                  { name: 'Photos – Creative Experiments', type: 'Application', action: () => handleAppLaunch('photos') },
+                  { name: 'Terminal (zsh)', type: 'Developer Tool', action: () => handleAppLaunch('terminal') },
+                  { name: 'Mail – Contact', type: 'Application', action: () => handleAppLaunch('mail') },
+                  ...DESKTOP_ITEMS.map((item) => ({
+                    name: item.name,
+                    type: item.category,
+                    action: () => setSelectedMedia(item),
+                  })),
+                ]
+                  .filter((item) => item.name.toLowerCase().includes(spotlightQuery.toLowerCase()))
+                  .map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        item.action();
+                        setSpotlightOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 14px',
+                        borderRadius: 8,
+                        cursor: 'pointer',
+                        fontSize: 13,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#007aff')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <span>{item.name}</span>
+                      <span style={{ fontSize: 11, opacity: 0.6 }}>{item.type}</span>
+                    </div>
+                  ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {/* ─── ULTRA-SMOOTH MAGNIFYING MACOS DOCK ─── */}
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <DockContainer
+        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseLeave={() => mouseX.set(Infinity)}
+      >
+        <DockItem
+          mouseX={mouseX}
+          icon="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png"
+          label="Finder"
+          onClick={() => handleAppLaunch('finder')}
+          isActive={activeWindow === 'finder'}
+          isBouncing={bouncingApp === 'finder'}
+        />
+        <DockItem
+          mouseX={mouseX}
+          icon={
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '22%',
+                background: 'linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%)',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                boxShadow: '0 6px 16px rgba(14, 165, 233, 0.45)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '42%',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)',
+                  borderRadius: '22% 22% 0 0',
+                }}
+              />
+              <Compass size={28} color="#ffffff" strokeWidth={2.3} style={{ filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.35))' }} />
+            </div>
+          }
+          label="Safari"
+          onClick={onBack}
+          isActive={false}
+          isBouncing={bouncingApp === 'safari'}
+        />
+        <DockItem
+          mouseX={mouseX}
+          icon="/assets/EVSY45U60gTa9UjvovzPTZx7Hw.png"
+          label="Mail"
+          onClick={() => handleAppLaunch('mail')}
+          isActive={activeWindow === 'mail'}
+          isBouncing={bouncingApp === 'mail'}
+        />
+        <DockItem
+          mouseX={mouseX}
+          icon="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png"
+          label="Notes"
+          onClick={() => handleAppLaunch('notes')}
+          isActive={activeWindow === 'notes'}
+          isBouncing={bouncingApp === 'notes'}
+        />
+        <DockItem
+          mouseX={mouseX}
+          icon="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png"
+          label="Photos"
+          onClick={() => handleAppLaunch('photos')}
+          isActive={activeWindow === 'photos'}
+          isBouncing={bouncingApp === 'photos'}
+        />
+        <DockItem
+          mouseX={mouseX}
+          icon={
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '22%',
+                background: 'linear-gradient(135deg, #1e293b 0%, #090d16 100%)',
+                border: '1px solid rgba(255, 255, 255, 0.22)',
+                boxShadow: '0 6px 16px rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '35%',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%)',
+                  borderRadius: '22% 22% 0 0',
+                }}
+              />
+              <span
+                style={{
+                  color: '#4ade80',
+                  fontFamily: 'SF Mono, Menlo, Monaco, Consolas, monospace',
+                  fontSize: 22,
+                  fontWeight: 800,
+                  letterSpacing: -1,
+                  textShadow: '0 0 8px rgba(74, 222, 128, 0.7)',
+                }}
+              >
+                &gt;_
+              </span>
+            </div>
+          }
+          label="Terminal"
+          onClick={() => handleAppLaunch('terminal')}
+          isActive={activeWindow === 'terminal'}
+          isBouncing={bouncingApp === 'terminal'}
+        />
+
+        <div className="dock-divider" />
+
+        <DockItem
+          mouseX={mouseX}
+          icon="/assets/macos/trash.png"
+          label="Trash"
+          onClick={() => alert('Trash is clean and empty.')}
+          isActive={false}
+          isBouncing={false}
+        />
+      </DockContainer>
+
+      {/* Project Detail Modal */}
       {selectedProject && (
         <ProjectModalD4
           project={selectedProject}
           onClose={() => setSelectedProject(null)}
         />
       )}
-
-      {/* ─── macOS Dock ─── */}
-      <DockContainer>
-        {/* 1. Finder */}
-        <DockItem onClick={() => setActiveWindow(activeWindow === 'finder' ? null : 'finder')}>
-          <DockTooltip className="dock-tooltip">Finder</DockTooltip>
-          <DockIconImg src="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png" alt="Finder" />
-          <DockDot $active={activeWindow === 'finder'} />
-        </DockItem>
-
-        {/* 2. Safari (Overview / Home) */}
-        <DockItem onClick={onBack}>
-          <DockTooltip className="dock-tooltip">Safari (Overview)</DockTooltip>
-          <div
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #007aff, #0051ba)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)',
-            }}
-          >
-            <Globe size={28} />
-          </div>
-          <DockDot $active={false} />
-        </DockItem>
-
-        {/* 3. Mail */}
-        <DockItem onClick={() => setActiveWindow(activeWindow === 'mail' ? null : 'mail')}>
-          <DockTooltip className="dock-tooltip">Mail</DockTooltip>
-          <DockIconImg src="/assets/EVSY45U60gTa9UjvovzPTZx7Hw.png" alt="Mail" />
-          <DockDot $active={activeWindow === 'mail'} />
-        </DockItem>
-
-        {/* 4. Notes */}
-        <DockItem onClick={() => setActiveWindow(activeWindow === 'notes' ? null : 'notes')}>
-          <DockTooltip className="dock-tooltip">Notes</DockTooltip>
-          <DockIconImg src="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png" alt="Notes" />
-          <DockDot $active={activeWindow === 'notes'} />
-        </DockItem>
-
-        {/* 5. Photos */}
-        <DockItem onClick={() => setActiveWindow(activeWindow === 'photos' ? null : 'photos')}>
-          <DockTooltip className="dock-tooltip">Photos</DockTooltip>
-          <DockIconImg src="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png" alt="Photos" />
-          <DockDot $active={activeWindow === 'photos'} />
-        </DockItem>
-
-        {/* 6. Terminal */}
-        <DockItem onClick={() => setActiveWindow(activeWindow === 'terminal' ? null : 'terminal')}>
-          <DockTooltip className="dock-tooltip">Terminal</DockTooltip>
-          <div
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 12,
-              background: '#18181b',
-              border: '1px solid rgba(255,255,255,0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#22c55e',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-            }}
-          >
-            <TerminalIcon size={26} />
-          </div>
-          <DockDot $active={activeWindow === 'terminal'} />
-        </DockItem>
-      </DockContainer>
-
-      {/* Global CSS Keyframes */}
-      <style>{`
-        @keyframes des4WindowFadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-      `}</style>
     </Wrapper>
   );
 }
