@@ -111,34 +111,6 @@ export default function BlogSection({ onOpenBlog }) {
               <span style={{ fontFamily: 'var(--font-outfit)', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em' }}>
                 Blog
               </span>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  color: '#000000',
-                  background: 'rgba(255, 255, 255, 0.7)',
-                  border: '1px solid rgba(0, 0, 0, 0.15)',
-                  padding: '3px 9px',
-                  borderRadius: 100,
-                  fontSize: 11,
-                  fontWeight: 800,
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    background: '#10b981',
-                    boxShadow: '0 0 8px #10b981',
-                    display: 'inline-block',
-                  }}
-                />
-                <span>Live</span>
-                <ArrowUpRight size={12} strokeWidth={2.5} />
-              </span>
             </NeubrutalismButton>
           )}
         </div>
@@ -235,228 +207,230 @@ export default function BlogSection({ onOpenBlog }) {
       </div>
 
       {/* Reader Modal (macOS TitleBar Design) */}
-      {selectedPost && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 999999,
-            background: 'rgba(0,0,0,0.85)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 16,
-          }}
-          onClick={closePost}
-        >
+      {
+        selectedPost && (
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="des4-blog-modal-title"
             style={{
-              background: '#0e0e11',
-              color: '#f4f4f5',
-              borderRadius: 16,
-              border: '1px solid #27272a',
-              maxWidth: 760,
-              width: '100%',
-              maxHeight: '90vh',
-              overflow: 'hidden',
+              position: 'fixed',
+              inset: 0,
+              zIndex: 999999,
+              background: 'rgba(0,0,0,0.85)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
               display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={closePost}
           >
-            {/* macOS TitleBar */}
             <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="des4-blog-modal-title"
               style={{
-                height: 44,
-                borderBottom: '1px solid #27272a',
-                background: '#141418',
+                background: '#0e0e11',
+                color: '#f4f4f5',
+                borderRadius: 16,
+                border: '1px solid #27272a',
+                maxWidth: 760,
+                width: '100%',
+                maxHeight: '90vh',
+                overflow: 'hidden',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 16px',
-                userSelect: 'none',
-                flexShrink: 0,
+                flexDirection: 'column',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Traffic Lights */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: 80 }}>
-                <button
-                  type="button"
-                  onClick={closePost}
-                  title="Close"
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    background: '#ff5f56',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={closePost}
-                  title="Minimize"
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    background: '#ffbd2e',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
-                />
-                <button
-                  type="button"
-                  title="Zoom"
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '50%',
-                    background: '#27c93f',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
-                />
-              </div>
-
-              {/* Title */}
-              <div
-                id="des4-blog-modal-title"
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: '#a1a1aa',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '60%',
-                  textAlign: 'center',
-                }}
-              >
-                Preview – {selectedPost.title}
-              </div>
-
-              {/* Right Spacer for balance (Close is handled by top-left traffic lights & keyboard ESC) */}
-              <div style={{ width: 80 }} />
-            </div>
-
-            {/* Content Body */}
-            <div
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '28px clamp(16px, 4vw, 32px)',
-              }}
-            >
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#fe3c01', fontFamily: 'var(--font-inter)' }}>
-                  {selectedPost.date}
-                </span>
-                <span style={{ fontSize: 12, color: '#71717a' }}>•</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#a1a1aa', fontFamily: 'var(--font-inter)' }}>
-                  {selectedPost.readTime}
-                </span>
-              </div>
-
-              <h2
-                style={{
-                  fontFamily: 'var(--font-outfit)',
-                  fontSize: 'clamp(22px, 3.5vw, 32px)',
-                  fontWeight: 800,
-                  margin: '0 0 20px 0',
-                  lineHeight: 1.25,
-                  color: '#ffffff',
-                }}
-              >
-                {selectedPost.title}
-              </h2>
-
-              {selectedPost.image && (
-                <img
-                  src={selectedPost.image}
-                  alt={selectedPost.title}
-                  style={{
-                    width: '100%',
-                    borderRadius: 14,
-                    height: 280,
-                    objectFit: 'cover',
-                    marginBottom: 24,
-                    border: '1px solid #27272a',
-                  }}
-                />
-              )}
-
+              {/* macOS TitleBar */}
               <div
                 style={{
-                  fontFamily: 'var(--font-inter)',
-                  fontSize: 15.5,
-                  lineHeight: 1.8,
-                  color: '#d4d4d8',
-                }}
-                dangerouslySetInnerHTML={{ __html: selectedPost.content }}
-              />
-
-              <div
-                style={{
-                  marginTop: 32,
-                  paddingTop: 18,
-                  borderTop: '1px solid #27272a',
+                  height: 44,
+                  borderBottom: '1px solid #27272a',
+                  background: '#141418',
                   display: 'flex',
-                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 16px',
+                  userSelect: 'none',
+                  flexShrink: 0,
                 }}
               >
-                <button
-                  type="button"
-                  onClick={() => {
-                    const target = selectedPost;
-                    closePost();
-                    if (onOpenBlog) {
-                      onOpenBlog(target);
-                    }
-                  }}
-                  aria-label="View this article on /blog"
+                {/* Traffic Lights */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: 80 }}>
+                  <button
+                    type="button"
+                    onClick={closePost}
+                    title="Close"
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: '#ff5f56',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={closePost}
+                    title="Minimize"
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: '#ffbd2e',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                  />
+                  <button
+                    type="button"
+                    title="Zoom"
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: '#27c93f',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                  />
+                </div>
+
+                {/* Title */}
+                <div
+                  id="des4-blog-modal-title"
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#fe3c01',
-                    border: 'none',
-                    color: '#ffffff',
-                    borderRadius: 100,
-                    padding: '9px 24px',
                     fontSize: 13,
-                    fontWeight: 700,
-                    fontFamily: 'var(--font-inter)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#e03500';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#fe3c01';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    fontWeight: 600,
+                    color: '#a1a1aa',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '60%',
+                    textAlign: 'center',
                   }}
                 >
-                  <span>→ blog</span>
-                  <ArrowRight size={14} />
-                </button>
+                  Preview – {selectedPost.title}
+                </div>
+
+                {/* Right Spacer for balance (Close is handled by top-left traffic lights & keyboard ESC) */}
+                <div style={{ width: 80 }} />
+              </div>
+
+              {/* Content Body */}
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: 'auto',
+                  padding: '28px clamp(16px, 4vw, 32px)',
+                }}
+              >
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#fe3c01', fontFamily: 'var(--font-inter)' }}>
+                    {selectedPost.date}
+                  </span>
+                  <span style={{ fontSize: 12, color: '#71717a' }}>•</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#a1a1aa', fontFamily: 'var(--font-inter)' }}>
+                    {selectedPost.readTime}
+                  </span>
+                </div>
+
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-outfit)',
+                    fontSize: 'clamp(22px, 3.5vw, 32px)',
+                    fontWeight: 800,
+                    margin: '0 0 20px 0',
+                    lineHeight: 1.25,
+                    color: '#ffffff',
+                  }}
+                >
+                  {selectedPost.title}
+                </h2>
+
+                {selectedPost.image && (
+                  <img
+                    src={selectedPost.image}
+                    alt={selectedPost.title}
+                    style={{
+                      width: '100%',
+                      borderRadius: 14,
+                      height: 280,
+                      objectFit: 'cover',
+                      marginBottom: 24,
+                      border: '1px solid #27272a',
+                    }}
+                  />
+                )}
+
+                <div
+                  style={{
+                    fontFamily: 'var(--font-inter)',
+                    fontSize: 15.5,
+                    lineHeight: 1.8,
+                    color: '#d4d4d8',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+                />
+
+                <div
+                  style={{
+                    marginTop: 32,
+                    paddingTop: 18,
+                    borderTop: '1px solid #27272a',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const target = selectedPost;
+                      closePost();
+                      if (onOpenBlog) {
+                        onOpenBlog(target);
+                      }
+                    }}
+                    aria-label="View this article on /blog"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: '#fe3c01',
+                      border: 'none',
+                      color: '#ffffff',
+                      borderRadius: 100,
+                      padding: '9px 24px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      fontFamily: 'var(--font-inter)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#e03500';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#fe3c01';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <span>→ blog</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </section>
+        )
+      }
+    </section >
   );
 }

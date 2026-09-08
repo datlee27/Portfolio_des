@@ -1,38 +1,160 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Box, Folder, MapPin, Mail, Send } from 'lucide-react';
-import d3Projects from '../data/labProjects';
+import {
+  Wifi,
+  Search,
+  SlidersHorizontal,
+  Volume2,
+  Folder,
+  FileText,
+  Terminal as TerminalIcon,
+  Mail,
+  ExternalLink,
+  X,
+  Check,
+  Globe,
+  Sun,
+  Laptop,
+  Send,
+  Sparkles,
+  ArrowRight,
+  Maximize2,
+  Minimize2,
+  Layers,
+  Code2,
+} from 'lucide-react';
+import { featuredProjects, siteMeta } from '../data/homeData';
 import profile from '../../../data/profile';
-import ProjectModalD3 from './LabProjectModal';
+import ProjectModalD4 from './ProjectModalD4';
 
-/* ─── Pointer Drag Hook for Free Canvas Movement ─── */
-function usePointerDrag() {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+/* ─── Apple Vector SVG Icon ─── */
+function AppleLogoSvg({ size = 15, style = {} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 170 170" fill="currentColor" style={style}>
+      <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.59-7.71-11.66-14.01-6.19-9.56-11.03-20.93-14.52-34.1-3.48-13.17-5.23-25.04-5.23-35.61 0-16.74 4.13-30.73 12.38-41.97 8.25-11.24 18.77-17 31.56-17.29 4.35 0 9.25 1.03 14.71 3.1 5.46 2.07 9.38 3.15 11.76 3.23 2.18-.08 6.1-1.16 11.76-3.23 5.66-2.07 10.39-3.04 14.2-2.92 10.22.44 18.9 3.97 26.04 10.6 7.14 6.63 12.08 14.86 14.82 24.69-9.13 5.54-13.6 13.37-13.41 23.48.19 8.26 3.42 15.22 9.7 20.87 6.28 5.65 13.8 8.92 22.56 9.8-2.61 8.04-5.98 16.52-10.11 25.44zM119.22 31.97c0-7.39 2.66-14.35 7.98-20.87 5.32-6.52 11.85-10.43 19.59-11.73.54 1.74.82 3.48.82 5.22 0 7.39-2.77 14.56-8.31 21.52-5.54 6.96-12.23 10.97-20.08 12.02z" />
+    </svg>
+  );
+}
+
+/* ─── macOS Battery Indicator ─── */
+function MacOSBattery({ percentage = 100 }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600 }}>
+      <span>{percentage}%</span>
+      <div
+        style={{
+          width: 22,
+          height: 11,
+          borderRadius: 3,
+          border: '1px solid rgba(255, 255, 255, 0.75)',
+          padding: 1,
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            width: `${percentage}%`,
+            height: '100%',
+            background: '#22c55e',
+            borderRadius: 1.5,
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            right: -3,
+            top: 2.5,
+            width: 1.5,
+            height: 4,
+            background: 'rgba(255, 255, 255, 0.75)',
+            borderRadius: '0 1px 1px 0',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Sample Creative Shots / Experiments Data ─── */
+const CREATIVE_SHOTS = [
+  {
+    id: 'potato',
+    name: 'Potato.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    title: '3D Procedural Texture & Light Simulation',
+  },
+  {
+    id: 'z08',
+    name: 'Z08.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    title: 'Character Animation & Dynamic Rigidbodies',
+  },
+  {
+    id: 'uber-ride',
+    name: 'UberRide.mp4',
+    type: 'video',
+    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    title: 'Kinetic Typography & Micro-interactions',
+  },
+  {
+    id: 'r02',
+    name: 'R02.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    title: 'Cyberpunk UI HUD & Particle Trails',
+  },
+  {
+    id: 'byte-events',
+    name: 'ByteEvents.gif',
+    type: 'gif',
+    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    title: 'Event-Driven Real-time Animation',
+  },
+  {
+    id: 'purple-cat',
+    name: 'PurpleCat.jpg',
+    type: 'image',
+    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    title: 'Vector Character Concept Art',
+  },
+];
+
+/* ─── Pointer Drag Hook for Windows ─── */
+function useDraggableWindow(initialPos = { x: 0, y: 0 }) {
+  const [pos, setPos] = useState(initialPos);
   const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef({ mouseX: 0, mouseY: 0, startX: 0, startY: 0, hasMoved: false });
+  const dragRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
 
   const onPointerDown = useCallback((e) => {
+    // Only drag from header, ignore buttons
+    if (e.target.closest('button')) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
     dragRef.current = {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      startX: offset.x,
-      startY: offset.y,
-      hasMoved: false,
+      startX: e.clientX,
+      startY: e.clientY,
+      startPosX: pos.x,
+      startPosY: pos.y,
     };
-  }, [offset]);
+  }, [pos]);
 
   const onPointerMove = useCallback((e) => {
     if (!isDragging) return;
-    const dx = e.clientX - dragRef.current.mouseX;
-    const dy = e.clientY - dragRef.current.mouseY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-      dragRef.current.hasMoved = true;
-    }
-    setOffset({
-      x: dragRef.current.startX + dx,
-      y: dragRef.current.startY + dy,
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    setPos({
+      x: dragRef.current.startPosX + dx,
+      y: dragRef.current.startPosY + dy,
     });
   }, [isDragging]);
 
@@ -43,989 +165,1629 @@ function usePointerDrag() {
     setIsDragging(false);
   }, []);
 
-  return { offset, isDragging, onPointerDown, onPointerMove, onPointerUp, dragRef };
+  return { pos, onPointerDown, onPointerMove, onPointerUp, isDragging };
 }
 
-/* ─── Draggable Wrapper Component ─── */
-function DraggableItem({ children, style, onDoubleClick, onClick }) {
-  const { offset, isDragging, onPointerDown, onPointerMove, onPointerUp, dragRef } = usePointerDrag();
-
-  const handleClick = (e) => {
-    if (!dragRef.current.hasMoved && onClick) {
-      onClick(e);
-    }
-  };
-
-  return (
-    <div
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      onClick={handleClick}
-      onDoubleClick={onDoubleClick}
-      style={{
-        position: 'absolute',
-        ...style,
-        transform: `translate(${offset.x}px, ${offset.y}px) ${style?.transform || ''} ${isDragging ? 'scale(1.1)' : 'scale(1)'}`,
-        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        cursor: isDragging ? 'grabbing' : 'grab',
-        touchAction: 'none',
-        userSelect: 'none',
-        zIndex: isDragging ? 100 : (style?.zIndex || 25),
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-/* ─── Animations ─── */
-const pulse = keyframes`
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.8); }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: scale(0.96) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-`;
-
-/* ─── Layout ─── */
+/* ─── Styled Components ─── */
 const Wrapper = styled.div`
   position: relative;
-  width: 100%;
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
   background-image: url('/assets/hero-background.png');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   overflow: hidden;
   user-select: none;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue',
+    sans-serif;
   color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 44px 40px 100px;
-
-  @media (max-width: 768px) {
-    padding: 40px 16px 100px;
-  }
 `;
 
-/* ─── macOS Top Menu Bar ─── */
-const MenuBar = styled.div`
+const MenuBar = styled.header`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 80;
+  z-index: 1000;
+  height: 28px;
+  background: rgba(20, 25, 35, 0.45);
+  backdrop-filter: blur(35px) saturate(200%);
+  -webkit-backdrop-filter: blur(35px) saturate(200%);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.16);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  padding: 0 16px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
-  letter-spacing: 0.01em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 `;
 
 const MenuBarLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 `;
 
 const MenuBarRight = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
 `;
 
-const MenuLink = styled.button`
+const MenuButton = styled.button`
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: ${props => (props.$bold ? '700' : '500')};
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 2px 8px;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: background 0.15s ease;
   font-family: inherit;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.18);
   }
 `;
 
-/* ─── Profile Card (Top Left) ─── */
-const ProfileCard = styled.div`
-  width: ${props => (props.$expanded ? '330px' : '254px')};
-  height: ${props => (props.$expanded ? '210px' : '48px')};
-  border-radius: ${props => (props.$expanded ? '20px' : '100px')};
-  padding: ${props => (props.$expanded ? '18px 20px 16px' : '6px 16px 6px 8px')};
-  background: ${props => (props.$expanded ? 'rgba(255, 255, 255, 0.28)' : 'rgba(255, 255, 255, 0.2)')};
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid ${props => (props.$expanded ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.38)')};
-  box-shadow: ${props => (props.$expanded ? '0 16px 40px rgba(0, 0, 0, 0.25)' : '0 4px 18px rgba(0, 0, 0, 0.12)')};
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 32px;
+  left: ${props => props.$left || '12px'};
+  background: rgba(30, 32, 40, 0.82);
+  backdrop-filter: blur(30px) saturate(220%);
+  -webkit-backdrop-filter: blur(30px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  min-width: 210px;
+  z-index: 1001;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 2px;
 `;
 
-const ProfileTopRow = styled.div`
+const DropdownItem = styled.button`
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: left;
+  padding: 5px 12px;
+  border-radius: 5px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: ${props => (props.$expanded ? '44px' : '36px')};
-`;
-
-const ProfileLeftGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const AvatarImg = styled.img`
-  width: ${props => (props.$expanded ? '42px' : '36px')};
-  height: ${props => (props.$expanded ? '42px' : '36px')};
-  border-radius: 50%;
-  object-fit: cover;
-  border: ${props => (props.$expanded ? '1.5px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.8)')};
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  flex-shrink: 0;
-`;
-
-const BadgeInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  white-space: nowrap;
-`;
-
-const Status = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-
-  &::before {
-    content: '';
-    width: 6.5px;
-    height: 6.5px;
-    border-radius: 50%;
-    background-color: #22c55e;
-    box-shadow: 0 0 8px #22c55e;
-    display: inline-block;
-    animation: ${pulse} 2s infinite ease-in-out;
-  }
-`;
-
-const Name = styled.span`
-  font-size: 12px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-`;
-
-const ExpandedDetails = styled.div`
-  opacity: ${props => (props.$expanded ? 1 : 0)};
-  transform: ${props => (props.$expanded ? 'translateY(0)' : 'translateY(8px)')};
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  transition-delay: ${props => (props.$expanded ? '0.1s' : '0s')};
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 12px;
-`;
-
-const Bio = styled.p`
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95);
-  margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-`;
-
-const LocationText = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-`;
-
-/* ─── Top Right Actions (Eyes + Start Project) ─── */
-const TopRightActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`;
-
-const EyesWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(20px);
-  padding: 6px 12px;
-  border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-`;
-
-const Eye = styled.div`
-  width: 22px;
-  height: 22px;
-  background: #ffffff;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-`;
-
-const Pupil = styled.div`
-  width: 9px;
-  height: 9px;
-  background: #000000;
-  border-radius: 50%;
-  transform: translate(${props => props.$x}px, ${props => props.$y}px);
-  transition: transform 0.05s linear;
-`;
-
-const StartProjectBtn = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: #111827;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 20px;
-  border-radius: 100px;
-  font-size: 13.5px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-  transition: all 0.25s ease;
+  font-family: inherit;
 
   &:hover {
-    background: #000000;
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    background: #007aff;
+    color: #ffffff;
   }
 `;
 
-/* ─── Center Headline ─── */
-const CenterHeadline = styled.div`
-  text-align: center;
-  margin: auto 0;
-  position: relative;
-  z-index: 20;
-  padding: 40px 0;
-  pointer-events: none;
+const DropdownDivider = styled.div`
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 4px 6px;
 `;
 
-const HeadlineText = styled.h1`
-  font-size: clamp(48px, 8.5vw, 118px);
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  color: #ffffff;
-  margin: 0;
-  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
-`;
-
-/* ─── Sticky Pill Notes ─── */
-const PillNote = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 100px;
-  background: ${props => props.$bg || 'rgba(255, 255, 255, 0.3)'};
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  color: ${props => props.$color || '#111827'};
-  font-size: 13.5px;
-  font-weight: 800;
-  white-space: nowrap;
-  pointer-events: none;
-`;
-
-/* ─── Bottom Row ─── */
-const BottomRow = styled.div`
+/* ─── Desktop Area & Icons ─── */
+const DesktopGrid = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 24px;
+  bottom: 90px;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  width: 100%;
-  z-index: 40;
-  position: relative;
+  flex-direction: column;
+  flex-wrap: wrap-reverse;
+  align-content: flex-end;
+  gap: 20px 24px;
+  z-index: 20;
+  pointer-events: auto;
 `;
 
-const MissionText = styled.p`
-  max-width: 320px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  margin: 0;
-  font-weight: 500;
+const DesktopIconItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 84px;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 6px;
+  background: ${props => (props.$selected ? 'rgba(0, 122, 255, 0.45)' : 'transparent')};
+  border: 1px solid ${props => (props.$selected ? 'rgba(0, 122, 255, 0.8)' : 'transparent')};
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+`;
+
+const DesktopIconLabel = styled.span`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
 `;
 
 /* ─── macOS Dock ─── */
-const Dock = styled.div`
+const DockContainer = styled.nav`
   position: fixed;
-  bottom: 24px;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60;
+  z-index: 900;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  align-items: flex-end;
+  gap: 10px;
+  padding: 6px 14px 8px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.2);
 `;
 
-const DockButton = styled.button`
+const DockItem = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:hover {
+    transform: scale(1.22) translateY(-8px);
+  }
+
+  &:hover .dock-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const DockIconImg = styled.img`
   width: 50px;
   height: 50px;
-  border-radius: 14px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  &:hover {
-    transform: translateY(-12px) scale(1.22);
-  }
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+  pointer-events: none;
 `;
 
-/* ─── Project Card Stack ─── */
-const StackContainer = styled.div`
-  position: relative;
-  width: 280px;
-  height: 76px;
-  cursor: pointer;
+const DockDot = styled.div`
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  margin-top: 3px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  opacity: ${props => (props.$active ? 1 : 0)};
 `;
 
-const StackCard = styled.div`
+const DockTooltip = styled.div`
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 74px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  gap: 12px;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &.card-top {
-    z-index: 3;
-    transform: ${props => (props.$expanded ? 'translateY(-160px) scale(1)' : 'translateY(-12px) scale(0.92)')};
-    opacity: ${props => (props.$expanded ? '1' : '0.65')};
-  }
-  &.card-mid {
-    z-index: 4;
-    transform: ${props => (props.$expanded ? 'translateY(-80px) scale(1)' : 'translateY(-6px) scale(0.96)')};
-    opacity: ${props => (props.$expanded ? '1' : '0.82')};
-  }
-  &.card-bot {
-    z-index: 5;
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  &:hover {
-    background: rgba(255, 255, 255, 0.42);
-    border-color: rgba(255, 255, 255, 0.7);
-  }
-  img {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-  }
+  top: -34px;
+  background: rgba(20, 22, 28, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 `;
 
-/* ─── macOS Popup Modal ─── */
-const ModalOverlay = styled.div`
+/* ─── macOS Realistic Window ─── */
+const WindowWrapper = styled.div`
   position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(16px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  animation: ${fadeIn} 0.25s ease-out;
-`;
-
-const MacOSWindow = styled.div`
-  width: 100%;
-  max-width: ${props => props.$width || '700px'};
-  max-height: 85vh;
+  z-index: ${props => props.$zIndex || 100};
+  width: ${props => props.$width || '720px'};
+  max-width: 94vw;
+  max-height: 82vh;
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  color: #111827;
+  border-radius: 12px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  color: #111827;
-  animation: ${fadeIn} 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: des4WindowOpen 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 `;
 
-const WindowHeader = styled.div`
+const WindowTitleBar = styled.div`
+  height: 38px;
+  background: #f1f3f5;
+  border-bottom: 1px solid #e2e5e9;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
-  background: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 0 14px;
+  user-select: none;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 `;
 
 const TrafficDots = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
-  span {
+  width: 60px;
+
+  & span {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     cursor: pointer;
-    &.red { background: #ff5f57; }
-    &.yellow { background: #ffbd2e; }
-    &.green { background: #28ca42; }
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease;
+  }
+
+  & span:hover {
+    transform: scale(1.1);
+  }
+
+  & .red {
+    background: #ff5f57;
+  }
+  & .yellow {
+    background: #febc2e;
+  }
+  & .green {
+    background: #28c840;
   }
 `;
 
-/* ─── Scattered Desktop Files (Natural scattered positions across canvas) ─── */
-const scatteredFiles = [
-  {
-    id: 'potato',
-    name: 'Potato.mp4',
-    type: 'video',
-    src: 'https://framerusercontent.com/images/iDpKtY2oV6OvljhJW4kHNQGjI.jpg',
-    thumb: 'https://framerusercontent.com/images/iDpKtY2oV6OvljhJW4kHNQGjI.jpg',
-    pos: { top: '14%', right: '14%' },
-  },
-  {
-    id: 'render-module',
-    name: 'RenderModule.jpg',
-    type: 'image',
-    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
-    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
-    pos: { top: '15%', right: '5%' },
-  },
-  {
-    id: 'z08',
-    name: 'Z08.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
-    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
-    pos: { top: '32%', right: '13%' },
-  },
-  {
-    id: 'uber-ride',
-    name: 'UberRide.mp4',
-    type: 'video',
-    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
-    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
-    pos: { top: '33%', right: '4%' },
-  },
-  {
-    id: 'r02',
-    name: 'R02.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
-    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
-    pos: { top: '50%', right: '14%' },
-  },
-  {
-    id: 'byte-events',
-    name: 'ByteEvents.gif',
-    type: 'gif',
-    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
-    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
-    pos: { top: '51%', right: '5%' },
-  },
-  {
-    id: 'purple-cat',
-    name: 'PurpleCat.jpg',
-    type: 'image',
-    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
-    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
-    pos: { top: '68%', right: '14%' },
-  },
-  {
-    id: 'panic-crew',
-    name: 'PanicCrew.jpg',
-    type: 'image',
-    src: 'https://framerusercontent.com/images/hUcPxBgIpauMuzlmdEcZWvFiQMU.jpg',
-    thumb: 'https://framerusercontent.com/images/hUcPxBgIpauMuzlmdEcZWvFiQMU.jpg',
-    pos: { top: '69%', right: '5%' },
-  },
-];
-
-/* ─── Scattered Desktop File Icon Component ─── */
-function ScatteredFileItem({ file, onPreview }) {
-  const typeIcon = file.type === 'video' ? '🎬' : file.type === 'gif' ? '✨' : '🖼️';
-  return (
-    <DraggableItem
-      style={{
-        ...file.pos,
-        zIndex: 28,
-      }}
-      onClick={() => onPreview(file)}
-      onDoubleClick={() => onPreview(file)}
-    >
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 5,
-        width: 80,
-        pointerEvents: 'none',
-      }}>
-        <div style={{
-          width: 68,
-          height: 52,
-          borderRadius: 8,
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.45)',
-          boxShadow: '0 8px 22px rgba(0,0,0,0.3)',
-          position: 'relative',
-          background: 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(10px)',
-        }}>
-          <img
-            src={file.thumb}
-            alt={file.name}
-            draggable={false}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-          <span style={{
-            position: 'absolute',
-            bottom: 2,
-            right: 3,
-            fontSize: 10,
-          }}>
-            {typeIcon}
-          </span>
-        </div>
-        <span style={{
-          fontSize: 11,
-          fontWeight: 700,
-          color: '#ffffff',
-          textShadow: '0 1px 4px rgba(0,0,0,0.7)',
-          textAlign: 'center',
-          lineHeight: 1.15,
-          maxWidth: 80,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {file.name}
-        </span>
-      </div>
-    </DraggableItem>
-  );
-}
-
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-/* ─── MAIN COMPONENT ─── */
+/* ─── MAIN DES4 LAB VIEW COMPONENT ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Des4LabView({ onBack }) {
-  const [profileExpanded, setProfileExpanded] = useState(false);
-  const [stackExpanded, setStackExpanded] = useState(false);
-  const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
+  // Active window state
+  const [activeWindow, setActiveWindow] = useState('finder'); // Default opens Finder
+  const [windowZIndex, setWindowZIndex] = useState(150);
+  const [selectedDesktopIcon, setSelectedDesktopIcon] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [activePopup, setActivePopup] = useState(null);
-  const [previewFile, setPreviewFile] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [previewCv, setPreviewCv] = useState(false);
+
+  // Menus & Spotlight
+  const [appleMenuOpen, setAppleMenuOpen] = useState(false);
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
+  const [spotlightQuery, setSpotlightQuery] = useState('');
+  const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [brightness, setBrightness] = useState(100);
+  const [volume, setVolume] = useState(80);
+
+  // Terminal state
+  const [terminalHistory, setTerminalHistory] = useState([
+    'Last login: ' + new Date().toLocaleDateString() + ' on ttys001',
+    'Welcome to Dat Le macOS Portfolio Terminal [v4.2.0]',
+    'Type "help" to view available developer commands.',
+  ]);
+  const [terminalInput, setTerminalInput] = useState('');
+
+  // Live real clock
   const [currentTime, setCurrentTime] = useState('');
-
-  // Clock
   useEffect(() => {
-    const tick = () => {
+    const updateTime = () => {
       const now = new Date();
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const h = now.getHours();
-      const m = now.getMinutes().toString().padStart(2, '0');
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      const h12 = h % 12 || 12;
-      setCurrentTime(`${months[now.getMonth()]} ${now.getDate()}  ${h12}:${m} ${ampm}`);
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const day = days[now.getDay()];
+      const month = months[now.getMonth()];
+      const date = now.getDate();
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      setCurrentTime(`${day} ${month} ${date}  ${hours}:${minutes} ${ampm}`);
     };
-    tick();
-    const id = setInterval(tick, 10000);
-    return () => clearInterval(id);
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Googly eyes
+  // Close menus on outside click
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = ((e.clientX - innerWidth / 2) / (innerWidth / 2)) * 4;
-      const y = ((e.clientY - innerHeight / 2) / (innerHeight / 2)) * 4;
-      setPupilPos({ x, y });
+    const handleGlobalClick = (e) => {
+      if (!e.target.closest('#des4-apple-menu') && !e.target.closest('#des4-apple-btn')) {
+        setAppleMenuOpen(false);
+      }
+      if (!e.target.closest('#des4-control-center') && !e.target.closest('#des4-control-btn')) {
+        setControlCenterOpen(false);
+      }
     };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
   }, []);
 
-  const projects = d3Projects.slice(0, 3);
+  // Global keydown (Esc closes modals, Cmd+K / Cmd+Space opens Spotlight)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSpotlightOpen(false);
+        setAppleMenuOpen(false);
+        setControlCenterOpen(false);
+        setSelectedPhoto(null);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'Space') {
+        e.preventDefault();
+        setSpotlightOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Draggable Window Pos
+  const finderDrag = useDraggableWindow({ x: 0, y: 0 });
+  const notesDrag = useDraggableWindow({ x: 20, y: 20 });
+  const photosDrag = useDraggableWindow({ x: -20, y: 10 });
+  const mailDrag = useDraggableWindow({ x: 10, y: -20 });
+  const terminalDrag = useDraggableWindow({ x: -10, y: -10 });
+  const aboutMacDrag = useDraggableWindow({ x: 0, y: 0 });
+
+  const bringToFront = () => {
+    setWindowZIndex((prev) => prev + 1);
+  };
+
+  const handleTerminalSubmit = (e) => {
+    e.preventDefault();
+    const cmd = terminalInput.trim().toLowerCase();
+    if (!cmd) return;
+
+    let response = '';
+    if (cmd === 'help') {
+      response = 'Available commands: about, skills, projects, contact, clear, whoami, date, exit';
+    } else if (cmd === 'about') {
+      response = `Dat Le (Lê Văn Đạt) - Fullstack Software Engineer & UI Artisan based in Da Nang, VN.`;
+    } else if (cmd === 'skills') {
+      response = 'Core Stack: React 19, TypeScript, Vite, Spring Boot, Java, Node.js, Tailwind, Docker, MySQL, Redis.';
+    } else if (cmd === 'projects') {
+      response = `Total Projects: ${featuredProjects.length}. Featured: Dev Roadmap Tracker, IELTS Writing Practice, AI IoT Lab.`;
+    } else if (cmd === 'contact') {
+      response = `Email: ${siteMeta.email} | GitHub: ${siteMeta.github}`;
+    } else if (cmd === 'whoami') {
+      response = 'datle (admin/architect)';
+    } else if (cmd === 'date') {
+      response = new Date().toString();
+    } else if (cmd === 'clear') {
+      setTerminalHistory([]);
+      setTerminalInput('');
+      return;
+    } else if (cmd === 'exit') {
+      setActiveWindow(null);
+      setTerminalInput('');
+      return;
+    } else {
+      response = `zsh: command not found: ${cmd}. Type "help" for options.`;
+    }
+
+    setTerminalHistory((prev) => [...prev, `datle@macbook-pro ~ % ${terminalInput}`, response]);
+    setTerminalInput('');
+  };
 
   return (
-    <Wrapper>
-
+    <Wrapper style={{ filter: `brightness(${brightness}%)` }}>
       {/* ─── macOS Top Menu Bar ─── */}
       <MenuBar>
         <MenuBarLeft>
-          <span style={{ fontSize: 16, cursor: 'pointer' }} onClick={onBack} title="Back to Home">🍎</span>
-          <MenuLink onClick={onBack} style={{ fontWeight: 800 }}>← Back to Overview</MenuLink>
-          <MenuLink onClick={onBack}>Work</MenuLink>
-          <MenuLink onClick={() => setActivePopup('notes')}>About</MenuLink>
+          {/*  Apple Logo Button */}
+          <MenuButton
+            id="des4-apple-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setAppleMenuOpen(!appleMenuOpen);
+            }}
+            title="Apple Menu"
+            style={{ padding: '2px 6px' }}
+          >
+            <AppleLogoSvg size={14} />
+          </MenuButton>
+
+          {/* Active App Name (Bold) */}
+          <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff', letterSpacing: '-0.01em' }}>
+            {activeWindow === 'finder'
+              ? 'Finder'
+              : activeWindow === 'notes'
+              ? 'Notes'
+              : activeWindow === 'photos'
+              ? 'Photos'
+              : activeWindow === 'mail'
+              ? 'Mail'
+              : activeWindow === 'terminal'
+              ? 'Terminal'
+              : 'Portfolio'}
+          </span>
+
+          {/* Menus */}
+          <MenuButton onClick={() => setActiveWindow('finder')}>File</MenuButton>
+          <MenuButton onClick={() => setActiveWindow('notes')}>Edit</MenuButton>
+          <MenuButton onClick={() => setActiveWindow('photos')}>View</MenuButton>
+          <MenuButton onClick={() => onBack()} title="Return to Overview">
+            Go
+          </MenuButton>
+          <MenuButton onClick={() => setActiveWindow('terminal')}>Window</MenuButton>
+          <MenuButton onClick={() => setActiveWindow('about-mac')}>Help</MenuButton>
         </MenuBarLeft>
+
         <MenuBarRight>
-          <span>🔋</span>
-          <span>📶</span>
-          <span style={{ fontWeight: 600 }}>{currentTime}</span>
+          {/* Quick Exit Pill */}
+          <button
+            type="button"
+            onClick={onBack}
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#ffffff',
+              borderRadius: 100,
+              padding: '2px 10px',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+              transition: 'all 0.2s ease',
+            }}
+            title="Back to standard web view"
+          >
+            <span>← Exit Lab</span>
+          </button>
+
+          {/* Battery Status */}
+          <MacOSBattery percentage={100} />
+
+          {/* Wi-Fi Icon */}
+          <Wifi size={14} style={{ cursor: 'pointer', opacity: 0.9 }} title="Wi-Fi: Connected (Da Nang 5G)" />
+
+          {/* Spotlight Search Icon */}
+          <Search
+            size={13.5}
+            style={{ cursor: 'pointer', opacity: 0.9 }}
+            onClick={() => setSpotlightOpen(!spotlightOpen)}
+            title="Spotlight Search (Cmd+Space)"
+          />
+
+          {/* Control Center Toggle */}
+          <div
+            id="des4-control-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setControlCenterOpen(!controlCenterOpen);
+            }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            title="Control Center"
+          >
+            <SlidersHorizontal size={13.5} style={{ opacity: 0.9 }} />
+          </div>
+
+          {/* Real Live Time */}
+          <span style={{ fontWeight: 600, letterSpacing: '0.01em', cursor: 'default' }}>
+            {currentTime || 'Tue Sep 8  3:20 PM'}
+          </span>
         </MenuBarRight>
       </MenuBar>
 
-      {/* ─── Top Row: Profile + Eyes + Start Project ─── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', zIndex: 50, position: 'relative' }}>
-        {/* Profile Card */}
-        <ProfileCard
-          $expanded={profileExpanded}
-          onClick={() => setProfileExpanded(!profileExpanded)}
+      {/* ─── Apple Dropdown Menu ─── */}
+      {appleMenuOpen && (
+        <DropdownMenu id="des4-apple-menu">
+          <DropdownItem
+            onClick={() => {
+              setActiveWindow('about-mac');
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>About This Portfolio</span>
+          </DropdownItem>
+          <DropdownDivider />
+          <DropdownItem
+            onClick={() => {
+              onBack();
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>Overview (Home)</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘H</span>
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              window.location.href = '/work';
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>Selected Works (/work)</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘W</span>
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              window.location.href = '/blog';
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>Threads Feed (/blog)</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘B</span>
+          </DropdownItem>
+          <DropdownDivider />
+          <DropdownItem
+            onClick={() => {
+              setSpotlightOpen(true);
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>Spotlight Search...</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘Space</span>
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              setActiveWindow('terminal');
+              setAppleMenuOpen(false);
+            }}
+          >
+            <span>Open Terminal</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⌘T</span>
+          </DropdownItem>
+          <DropdownDivider />
+          <DropdownItem
+            onClick={() => {
+              onBack();
+              setAppleMenuOpen(false);
+            }}
+            style={{ color: '#ff453a' }}
+          >
+            <span>Log Out Dat Le...</span>
+            <span style={{ fontSize: 11, opacity: 0.6 }}>⇧⌘Q</span>
+          </DropdownItem>
+        </DropdownMenu>
+      )}
+
+      {/* ─── Control Center Popover ─── */}
+      {controlCenterOpen && (
+        <div
+          id="des4-control-center"
+          style={{
+            position: 'absolute',
+            top: 36,
+            right: 16,
+            width: 320,
+            background: 'rgba(30, 32, 40, 0.78)',
+            backdropFilter: 'blur(35px) saturate(220%)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            borderRadius: 16,
+            padding: 16,
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+            zIndex: 1002,
+            color: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+          }}
         >
-          <ProfileTopRow $expanded={profileExpanded}>
-            <ProfileLeftGroup>
-              <AvatarImg
-                src={profile.avatar}
-                alt={profile.name}
-                $expanded={profileExpanded}
-              />
-              <BadgeInfo>
-                <Status>Available for work</Status>
-                <Name>DATLE - PRODUCT DESIGNER</Name>
-              </BadgeInfo>
-            </ProfileLeftGroup>
-          </ProfileTopRow>
-          <ExpandedDetails $expanded={profileExpanded}>
-            <Bio>{profile.bio[0]}</Bio>
-            <LocationText style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <MapPin size={12} style={{ color: '#0b1dff' }} />
-              <span>{profile.location.name}</span>
-            </LocationText>
-          </ExpandedDetails>
-        </ProfileCard>
+          {/* Quick Switches */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                borderRadius: 12,
+                padding: '10px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: '#007aff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Wifi size={16} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700 }}>Wi-Fi</div>
+                <div style={{ fontSize: 10.5, opacity: 0.7 }}>Da Nang 5G</div>
+              </div>
+            </div>
 
-        {/* Eyes & Start Project */}
-        <TopRightActions>
-          <EyesWrapper>
-            <Eye><Pupil $x={pupilPos.x} $y={pupilPos.y} /></Eye>
-            <Eye><Pupil $x={pupilPos.x} $y={pupilPos.y} /></Eye>
-          </EyesWrapper>
-          <StartProjectBtn onClick={() => setActivePopup('mail')}>
-            <span>Start a Project</span>
-            <Box size={14} />
-          </StartProjectBtn>
-        </TopRightActions>
-      </div>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                borderRadius: 12,
+                padding: '10px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: '#007aff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Sun size={16} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700 }}>Theme</div>
+                <div style={{ fontSize: 10.5, opacity: 0.7 }}>Dark Glass</div>
+              </div>
+            </div>
+          </div>
 
-      {/* ─── Draggable Sticky Notes & Icons ─── */}
+          {/* Sliders */}
+          <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 8, opacity: 0.8 }}>Display Brightness</div>
+            <input
+              type="range"
+              min="50"
+              max="120"
+              value={brightness}
+              onChange={(e) => setBrightness(Number(e.target.value))}
+              style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
+            />
+          </div>
 
-      {/* 1. Purple: "Not Just Visuals." */}
-      <DraggableItem style={{ top: '18%', left: '10%' }}>
-        <PillNote $bg="rgba(192, 132, 252, 0.45)" $color="#ffffff">
-          <span>📎</span><span>Not Just Visuals.</span>
-        </PillNote>
-      </DraggableItem>
+          <div style={{ background: 'rgba(255, 255, 255, 0.12)', borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 8, opacity: 0.8 }}>Sound Volume</div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              style={{ width: '100%', accentColor: '#007aff', cursor: 'pointer' }}
+            />
+          </div>
 
-      {/* 2. Cursor Arrow */}
-      <DraggableItem style={{ top: '26%', left: '9%' }}>
-        <div style={{ fontSize: 32, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))', pointerEvents: 'none' }}>↖️</div>
-      </DraggableItem>
-
-      {/* 3. Cloud */}
-      <DraggableItem style={{ top: '17%', left: '30%' }}>
-        <div style={{ fontSize: 28, opacity: 0.85, pointerEvents: 'none' }}>☁️</div>
-      </DraggableItem>
-
-      {/* 4. Striped Pink Circle */}
-      <DraggableItem style={{ top: '22%', right: '22%' }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: '50%',
-          background: 'repeating-linear-gradient(45deg, #f472b6, #f472b6 4px, #db2777 4px, #db2777 8px)',
-          boxShadow: '0 6px 18px rgba(0,0,0,0.25)', pointerEvents: 'none',
-        }} />
-      </DraggableItem>
-
-      {/* 5. Pink: "I Make Digital Things Look Alive" */}
-      <DraggableItem style={{ top: '38%', right: '18%' }}>
-        <PillNote $bg="rgba(251, 207, 232, 0.55)" $color="#111827">
-          <span>📎</span><span>I Make Digital Things Look Alive</span>
-        </PillNote>
-      </DraggableItem>
-
-      {/* 6. Red flower */}
-      <DraggableItem style={{ top: '48%', right: '24%' }}>
-        <div style={{ fontSize: 32, color: '#ef4444', filter: 'drop-shadow(0 4px 12px rgba(239,68,68,0.4))', pointerEvents: 'none' }}>✹</div>
-      </DraggableItem>
-
-      {/* 7. Pen Tool */}
-      <DraggableItem style={{ bottom: '30%', left: '16%' }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 12,
-          background: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 22, boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
-          border: '1px solid rgba(255,255,255,0.6)', pointerEvents: 'none',
-        }}>✒️</div>
-      </DraggableItem>
-
-      {/* 8. Green: "UI/UX & Brand Systems" */}
-      <DraggableItem style={{ bottom: '25%', left: '22%' }}>
-        <PillNote $bg="rgba(187, 247, 208, 0.55)" $color="#111827">
-          <span>📎</span><span>UI/UX & Brand Systems</span>
-        </PillNote>
-      </DraggableItem>
-
-      {/* 9. Lightbulb & Pencil */}
-      <DraggableItem style={{ bottom: '26%', right: '26%' }}>
-        <div style={{ display: 'flex', gap: 4, fontSize: 28, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))', pointerEvents: 'none' }}>
-          <span>💡</span><span>✏️</span>
+          {/* Now Playing Widget */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: 12,
+              padding: '10px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                background: '#fe3c01',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: 12,
+              }}
+            >
+              DL*
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                Engineering Logic, Crafting Experiences
+              </div>
+              <div style={{ fontSize: 11, opacity: 0.7 }}>Dat Le – Portfolio 2026</div>
+            </div>
+          </div>
         </div>
-      </DraggableItem>
+      )}
 
-      {/* ─── 8 Scattered Desktop File Icons (Right Side Area) ─── */}
-      {scatteredFiles.map((file) => (
-        <ScatteredFileItem
-          key={file.id}
-          file={file}
-          onPreview={setPreviewFile}
-        />
-      ))}
-
-      {/* ─── Center Headline ─── */}
-      <CenterHeadline>
-        <HeadlineText>
-          <div>DESIGN THAT</div>
-          <div>MAKES PEOPLE</div>
-          <div>LOOK TWICE</div>
-        </HeadlineText>
-      </CenterHeadline>
-
-      {/* ─── Bottom Row ─── */}
-      <BottomRow>
-        <MissionText>
-          I design clean websites, apps, and brand systems that help ideas look sharper, feel trusted, and work with purpose.
-        </MissionText>
-
-        {/* Project Card Stack */}
-        <StackContainer
-          onMouseEnter={() => setStackExpanded(true)}
-          onMouseLeave={() => setStackExpanded(false)}
-          onClick={() => setStackExpanded(!stackExpanded)}
+      {/* ─── macOS Spotlight Search Modal ─── */}
+      {spotlightOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingTop: '18vh',
+            background: 'rgba(0, 0, 0, 0.25)',
+          }}
+          onClick={() => setSpotlightOpen(false)}
         >
-          <StackCard className="card-top" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[2]); }}>
-            <img src={projects[2]?.thumbnail || projects[2]?.image} alt={projects[2]?.name} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>FIGMA • 2026</span>
-              <span style={{ fontSize: 13, fontWeight: 800 }}>{projects[2]?.name}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#ffe815' }}>VIEW CASE STUDY →</span>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 580,
+              maxWidth: '90vw',
+              background: 'rgba(30, 32, 42, 0.88)',
+              backdropFilter: 'blur(35px) saturate(200%)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              borderRadius: 16,
+              boxShadow: '0 30px 80px rgba(0, 0, 0, 0.65)',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '14px 20px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <Search size={20} style={{ color: '#007aff' }} />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Spotlight Search (apps, projects, skills, documents)..."
+                value={spotlightQuery}
+                onChange={(e) => setSpotlightQuery(e.target.value)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: 18,
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  width: '100%',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 11,
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  padding: '2px 8px',
+                  borderRadius: 6,
+                  color: '#d1d5db',
+                }}
+              >
+                esc
+              </span>
             </div>
-          </StackCard>
-          <StackCard className="card-mid" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[1]); }}>
-            <img src={projects[1]?.thumbnail || projects[1]?.image} alt={projects[1]?.name} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>BRAND • 2026</span>
-              <span style={{ fontSize: 13, fontWeight: 800 }}>{projects[1]?.name}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#ffe815' }}>VIEW CASE STUDY →</span>
+
+            {/* Quick Results */}
+            <div style={{ padding: '8px 10px', maxHeight: 320, overflowY: 'auto' }}>
+              {[
+                { name: 'Finder – Projects Archive', type: 'Application', action: () => { setActiveWindow('finder'); setSpotlightOpen(false); } },
+                { name: 'Notes – About Dat Le & Architecture', type: 'Notes', action: () => { setActiveWindow('notes'); setSpotlightOpen(false); } },
+                { name: 'Photos – Creative Experiments', type: 'Gallery', action: () => { setActiveWindow('photos'); setSpotlightOpen(false); } },
+                { name: 'Terminal – Command Center', type: 'Utility', action: () => { setActiveWindow('terminal'); setSpotlightOpen(false); } },
+                { name: 'Mail – Contact & Inquiries', type: 'Mail', action: () => { setActiveWindow('mail'); setSpotlightOpen(false); } },
+                { name: 'About This Mac / Portfolio Spec', type: 'System', action: () => { setActiveWindow('about-mac'); setSpotlightOpen(false); } },
+              ]
+                .filter((item) => item.name.toLowerCase().includes(spotlightQuery.toLowerCase()))
+                .map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={item.action}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      fontSize: 13,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#007aff')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <span>{item.name}</span>
+                    <span style={{ fontSize: 11, opacity: 0.6 }}>{item.type}</span>
+                  </div>
+                ))}
             </div>
-          </StackCard>
-          <StackCard className="card-bot" $expanded={stackExpanded} onClick={(e) => { e.stopPropagation(); setSelectedProject(projects[0]); }}>
-            <img src={projects[0]?.thumbnail || projects[0]?.image} alt={projects[0]?.name} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.8 }}>FIGMA • 2026</span>
-              <span style={{ fontSize: 13, fontWeight: 800 }}>{projects[0]?.name}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#ffe815' }}>VIEW CASE STUDY →</span>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Desktop Icons Grid (Right Side) ─── */}
+      <DesktopGrid>
+        <DesktopIconItem
+          $selected={selectedDesktopIcon === 'finder'}
+          onClick={() => setSelectedDesktopIcon('finder')}
+          onDoubleClick={() => setActiveWindow('finder')}
+        >
+          <img
+            src="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png"
+            alt="Projects"
+            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+          />
+          <DesktopIconLabel>Projects</DesktopIconLabel>
+        </DesktopIconItem>
+
+        <DesktopIconItem
+          $selected={selectedDesktopIcon === 'photos'}
+          onClick={() => setSelectedDesktopIcon('photos')}
+          onDoubleClick={() => setActiveWindow('photos')}
+        >
+          <img
+            src="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png"
+            alt="Experiments"
+            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+          />
+          <DesktopIconLabel>Experiments</DesktopIconLabel>
+        </DesktopIconItem>
+
+        <DesktopIconItem
+          $selected={selectedDesktopIcon === 'notes'}
+          onClick={() => setSelectedDesktopIcon('notes')}
+          onDoubleClick={() => setActiveWindow('notes')}
+        >
+          <img
+            src="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png"
+            alt="About DatLe"
+            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+          />
+          <DesktopIconLabel>About_Me.txt</DesktopIconLabel>
+        </DesktopIconItem>
+
+        <DesktopIconItem
+          $selected={selectedDesktopIcon === 'resume'}
+          onClick={() => setSelectedDesktopIcon('resume')}
+          onDoubleClick={() => {
+            window.location.href = '/work';
+          }}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 10,
+              background: '#ffffff',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fe3c01',
+            }}
+          >
+            <FileText size={28} />
+          </div>
+          <DesktopIconLabel>Resume.pdf</DesktopIconLabel>
+        </DesktopIconItem>
+
+        <DesktopIconItem
+          $selected={selectedDesktopIcon === 'terminal'}
+          onClick={() => setSelectedDesktopIcon('terminal')}
+          onDoubleClick={() => setActiveWindow('terminal')}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 10,
+              background: '#18181b',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#22c55e',
+            }}
+          >
+            <TerminalIcon size={26} />
+          </div>
+          <DesktopIconLabel>Terminal.app</DesktopIconLabel>
+        </DesktopIconItem>
+      </DesktopGrid>
+
+      {/* ─── 1. FINDER WINDOW (Projects & Capabilities) ─── */}
+      {activeWindow === 'finder' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="820px"
+          style={{
+            top: '12%',
+            left: 'calc(50% - 410px + ' + finderDrag.pos.x + 'px)',
+            transform: `translateY(${finderDrag.pos.y}px)`,
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar onPointerDown={finderDrag.onPointerDown} onPointerMove={finderDrag.onPointerMove} onPointerUp={finderDrag.onPointerUp}>
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('finder')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+              Finder – Projects & Engineering Lab
+            </span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          {/* Finder Layout: Sidebar + Main Content Grid */}
+          <div style={{ display: 'flex', height: 480, overflow: 'hidden' }}>
+            {/* Sidebar */}
+            <div
+              style={{
+                width: 190,
+                background: '#f6f8fa',
+                borderRight: '1px solid #e2e5e9',
+                padding: '14px 10px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: '#4b5563',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
+                  Favorites
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    background: '#e0e7ff',
+                    color: '#3730a3',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Folder size={14} style={{ color: '#007aff' }} />
+                  <span>Projects ({featuredProjects.length})</span>
+                </div>
+                <div
+                  onClick={() => setActiveWindow('photos')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Sparkles size={14} style={{ color: '#ec4899' }} />
+                  <span>Creative Shots</span>
+                </div>
+                <div
+                  onClick={() => setActiveWindow('notes')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <FileText size={14} style={{ color: '#f59e0b' }} />
+                  <span>Documents</span>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 6, paddingLeft: 8 }}>
+                  Locations
+                </div>
+                <div
+                  onClick={onBack}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Globe size={14} style={{ color: '#10b981' }} />
+                  <span>Web Overview</span>
+                </div>
+              </div>
             </div>
-          </StackCard>
-        </StackContainer>
-      </BottomRow>
+
+            {/* Main File Browser */}
+            <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: '#ffffff' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                  Selected Works ({featuredProjects.length} items)
+                </h3>
+                <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+                {featuredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    onClick={() => setSelectedProject(project)}
+                    style={{
+                      border: '1px solid #e5e7eb',
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      background: '#fafafa',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.08)';
+                      e.currentTarget.style.borderColor = '#007aff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                    }}
+                  >
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      style={{ width: '100%', height: 120, objectFit: 'cover' }}
+                    />
+                    <div style={{ padding: 12 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#fe3c01', textTransform: 'uppercase' }}>
+                        {project.code}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '2px 0 6px' }}>
+                        {project.title}
+                      </div>
+                      <p style={{ fontSize: 11.5, color: '#6b7280', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {project.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </WindowWrapper>
+      )}
+
+      {/* ─── 2. NOTES WINDOW (About Dat Le) ─── */}
+      {activeWindow === 'notes' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="740px"
+          style={{
+            top: '14%',
+            left: 'calc(50% - 370px + ' + notesDrag.pos.x + 'px)',
+            transform: `translateY(${notesDrag.pos.y}px)`,
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar onPointerDown={notesDrag.onPointerDown} onPointerMove={notesDrag.onPointerMove} onPointerUp={notesDrag.onPointerUp}>
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('notes')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+              Notes – About Dat Le & Technical Artisan
+            </span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          <div style={{ display: 'flex', height: 460, overflow: 'hidden' }}>
+            {/* Notes List */}
+            <div
+              style={{
+                width: 220,
+                background: '#f8f9fa',
+                borderRight: '1px solid #e5e7eb',
+                padding: '12px 8px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}
+            >
+              <div
+                style={{
+                  background: '#fffae5',
+                  border: '1px solid #fde047',
+                  borderRadius: 8,
+                  padding: '10px 12px',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#78350f' }}>01. About Dat Le</div>
+                <div style={{ fontSize: 11, color: '#b45309', marginTop: 3 }}>Engineering logic & craftsmanship</div>
+              </div>
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 8,
+                  padding: '10px 12px',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1f2937' }}>02. Core Architecture</div>
+                <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>React 19, Spring Boot, AI</div>
+              </div>
+            </div>
+
+            {/* Note Editor Body */}
+            <div style={{ flex: 1, padding: '24px 30px', overflowY: 'auto', background: '#ffffff', color: '#1f2937' }}>
+              <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, marginBottom: 8 }}>
+                Last edited: Today, 3:15 PM
+              </div>
+              <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 14px 0', color: '#111827' }}>
+                Lê Văn Đạt (Dat Le)
+              </h2>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, marginBottom: 16 }}>
+                <span>📍 Da Nang, Vietnam</span> • <span>✉️ lvd27012004@gmail.com</span>
+              </div>
+              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#374151', marginBottom: 16 }}>
+                Full-stack Developer & Technical Artisan exploring the intersection between robust distributed systems, brutalist aesthetics, and seamless user experiences. Specializing in high-performance web applications, modern React architecture, and clean decoupled services.
+              </p>
+              <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: 14, fontSize: 13 }}>
+                <strong>Technical Stack:</strong> React, TypeScript, Spring Boot, Java, Vite, Tailwind CSS, Docker, PostgreSQL, MySQL, Redis, AI Inference Pipelines.
+              </div>
+            </div>
+          </div>
+        </WindowWrapper>
+      )}
+
+      {/* ─── 3. PHOTOS WINDOW (Creative Experiments) ─── */}
+      {activeWindow === 'photos' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="780px"
+          style={{
+            top: '16%',
+            left: 'calc(50% - 390px + ' + photosDrag.pos.x + 'px)',
+            transform: `translateY(${photosDrag.pos.y}px)`,
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar onPointerDown={photosDrag.onPointerDown} onPointerMove={photosDrag.onPointerMove} onPointerUp={photosDrag.onPointerUp}>
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('photos')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+              Photos – Creative Experiments & Visual R&D
+            </span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          <div style={{ padding: 22, maxHeight: 460, overflowY: 'auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
+              {CREATIVE_SHOTS.map((shot) => (
+                <div
+                  key={shot.id}
+                  onClick={() => setSelectedPhoto(shot)}
+                  style={{
+                    borderRadius: 10,
+                    overflow: 'hidden',
+                    border: '1px solid #e5e7eb',
+                    cursor: 'pointer',
+                    background: '#f9fafb',
+                    transition: 'transform 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                >
+                  <img src={shot.thumb} alt={shot.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
+                  <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#1f2937' }}>
+                    {shot.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </WindowWrapper>
+      )}
+
+      {/* ─── 4. MAIL WINDOW (Contact Form) ─── */}
+      {activeWindow === 'mail' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="640px"
+          style={{
+            top: '15%',
+            left: 'calc(50% - 320px + ' + mailDrag.pos.x + 'px)',
+            transform: `translateY(${mailDrag.pos.y}px)`,
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar onPointerDown={mailDrag.onPointerDown} onPointerMove={mailDrag.onPointerMove} onPointerUp={mailDrag.onPointerUp}>
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('mail')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
+              Mail – Compose: New Message to Dat Le
+            </span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              alert('Thank you for reaching out! Dat Le will reply shortly.');
+              setActiveWindow(null);
+            }}
+            style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>To:</span>
+              <span style={{ fontWeight: 700, color: '#111827' }}>lvd27012004@gmail.com</span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>From:</span>
+              <input
+                type="email"
+                required
+                placeholder="your.email@example.com"
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 8, fontSize: 13 }}>
+              <span style={{ width: 60, color: '#9ca3af', fontWeight: 600 }}>Subject:</span>
+              <input
+                type="text"
+                required
+                placeholder="Project Inquiry / Collaboration"
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}
+              />
+            </div>
+
+            <textarea
+              rows="5"
+              required
+              placeholder="Hi Dat, I came across your portfolio and would like to discuss..."
+              style={{
+                width: '100%',
+                border: '1px solid #e5e7eb',
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 13.5,
+                fontFamily: 'inherit',
+                outline: 'none',
+                resize: 'vertical',
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setActiveWindow(null)}
+                style={{
+                  background: '#f3f4f6',
+                  border: 'none',
+                  color: '#4b5563',
+                  padding: '8px 18px',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{
+                  background: '#007aff',
+                  border: 'none',
+                  color: '#ffffff',
+                  padding: '8px 20px',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Send size={13} />
+                <span>Send Message</span>
+              </button>
+            </div>
+          </form>
+        </WindowWrapper>
+      )}
+
+      {/* ─── 5. TERMINAL WINDOW ─── */}
+      {activeWindow === 'terminal' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="680px"
+          style={{
+            top: '18%',
+            left: 'calc(50% - 340px + ' + terminalDrag.pos.x + 'px)',
+            transform: `translateY(${terminalDrag.pos.y}px)`,
+            background: '#18181b',
+            color: '#f4f4f5',
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar
+            style={{ background: '#27272a', borderBottomColor: '#3f3f46' }}
+            onPointerDown={terminalDrag.onPointerDown}
+            onPointerMove={terminalDrag.onPointerMove}
+            onPointerUp={terminalDrag.onPointerUp}
+          >
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('terminal')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#e4e4e7' }}>
+              datle@macbook-pro: ~ (zsh)
+            </span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          <div
+            style={{
+              padding: 16,
+              height: 380,
+              overflowY: 'auto',
+              fontFamily: 'monospace',
+              fontSize: 13,
+              lineHeight: 1.5,
+              background: '#09090b',
+            }}
+          >
+            {terminalHistory.map((line, idx) => (
+              <div key={idx} style={{ color: line.startsWith('datle@') ? '#38bdf8' : '#e4e4e7' }}>
+                {line}
+              </div>
+            ))}
+            <form onSubmit={handleTerminalSubmit} style={{ display: 'flex', alignItems: 'center', marginTop: 8 }}>
+              <span style={{ color: '#22c55e', marginRight: 8 }}>datle@macbook-pro ~ %</span>
+              <input
+                type="text"
+                autoFocus
+                value={terminalInput}
+                onChange={(e) => setTerminalInput(e.target.value)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontFamily: 'inherit',
+                  fontSize: 13,
+                  outline: 'none',
+                  flex: 1,
+                }}
+              />
+            </form>
+          </div>
+        </WindowWrapper>
+      )}
+
+      {/* ─── 6. ABOUT THIS MAC DIALOG ─── */}
+      {activeWindow === 'about-mac' && (
+        <WindowWrapper
+          $zIndex={windowZIndex}
+          $width="460px"
+          style={{
+            top: '22%',
+            left: 'calc(50% - 230px + ' + aboutMacDrag.pos.x + 'px)',
+            transform: `translateY(${aboutMacDrag.pos.y}px)`,
+            textAlign: 'center',
+          }}
+          onClick={bringToFront}
+        >
+          <WindowTitleBar onPointerDown={aboutMacDrag.onPointerDown} onPointerMove={aboutMacDrag.onPointerMove} onPointerUp={aboutMacDrag.onPointerUp}>
+            <TrafficDots>
+              <span className="red" onClick={() => setActiveWindow(null)} />
+              <span className="yellow" onClick={() => setActiveWindow(null)} />
+              <span className="green" onClick={() => setActiveWindow('about-mac')} />
+            </TrafficDots>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>About This Portfolio</span>
+            <div style={{ width: 60 }} />
+          </WindowTitleBar>
+
+          <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+            <AppleLogoSvg size={54} style={{ color: '#09090b' }} />
+            <div>
+              <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MacBook Pro 16"</h2>
+              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>macOS Sequoia 15.2 (Portfolio Edition)</div>
+            </div>
+
+            <div style={{ width: '100%', background: '#f3f4f6', borderRadius: 10, padding: 14, fontSize: 12.5, textAlign: 'left', lineHeight: 1.6 }}>
+              <div><strong>Chip:</strong> Apple M3 Max (Technical Artisan)</div>
+              <div><strong>Memory:</strong> 32 GB Unified RAM</div>
+              <div><strong>Creator:</strong> Lê Văn Đạt (Dat Le)</div>
+              <div><strong>Status:</strong> Active & Ready for Collaboration</div>
+            </div>
+
+            <button
+              onClick={() => setActiveWindow(null)}
+              style={{
+                background: '#007aff',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '6px 20px',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Done
+            </button>
+          </div>
+        </WindowWrapper>
+      )}
+
+      {/* ─── Photo Lightbox Viewer ─── */}
+      {selectedPhoto && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 2500,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(15px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: 800,
+              width: '100%',
+              background: '#18181b',
+              borderRadius: 16,
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.8)',
+            }}
+          >
+            <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #27272a' }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>{selectedPhoto.name} – {selectedPhoto.title}</span>
+              <button
+                onClick={() => setSelectedPhoto(null)}
+                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <img src={selectedPhoto.src} alt={selectedPhoto.name} style={{ width: '100%', maxHeight: '65vh', objectFit: 'contain', display: 'block', background: '#09090b' }} />
+          </div>
+        </div>
+      )}
+
+      {/* ─── Project Modal D4 ─── */}
+      {selectedProject && (
+        <ProjectModalD4
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
 
       {/* ─── macOS Dock ─── */}
-      <Dock>
-        <DockButton onClick={() => setActivePopup('mail')} title="Mail">
-          <img src="https://framerusercontent.com/images/EVSY45U60gTa9UjvovzPTZx7Hw.png?width=180&height=180" alt="Mail" />
-        </DockButton>
-        <DockButton onClick={() => setActivePopup('notes')} title="Notes">
-          <img src="https://framerusercontent.com/images/ZAH3C8amQUigspCjEG1FJWPjI.png?width=180&height=180" alt="Notes" />
-        </DockButton>
-        <DockButton onClick={() => setActivePopup('photos')} title="Photos">
-          <img src="https://framerusercontent.com/images/VCIQF7ylF9U0o5QZkTgji0mxx28.png?width=180&height=180" alt="Photos" />
-        </DockButton>
-        <DockButton onClick={() => setActivePopup('finder')} title="Finder">
-          <img src="https://framerusercontent.com/images/jC3NYM1gkKdVNzokU0ojtj01asg.png?width=180&height=180" alt="Finder" />
-        </DockButton>
-      </Dock>
+      <DockContainer>
+        {/* 1. Finder */}
+        <DockItem onClick={() => setActiveWindow(activeWindow === 'finder' ? null : 'finder')}>
+          <DockTooltip className="dock-tooltip">Finder</DockTooltip>
+          <DockIconImg src="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png" alt="Finder" />
+          <DockDot $active={activeWindow === 'finder'} />
+        </DockItem>
 
-      {/* ─── Project Case Study Modal ─── */}
-      {selectedProject && (
-        <ProjectModalD3 project={selectedProject} onClose={() => setSelectedProject(null)} />
-      )}
+        {/* 2. Safari (Overview / Home) */}
+        <DockItem onClick={onBack}>
+          <DockTooltip className="dock-tooltip">Safari (Overview)</DockTooltip>
+          <div
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #007aff, #0051ba)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#ffffff',
+              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4)',
+            }}
+          >
+            <Globe size={28} />
+          </div>
+          <DockDot $active={false} />
+        </DockItem>
 
-      {/* ─── File Preview Modal ─── */}
-      {previewFile && (
-        <ModalOverlay onClick={() => setPreviewFile(null)}>
-          <MacOSWindow $width="750px" onClick={(e) => e.stopPropagation()}>
-            <WindowHeader>
-              <TrafficDots>
-                <span className="red" onClick={() => setPreviewFile(null)} />
-                <span className="yellow" onClick={() => setPreviewFile(null)} />
-                <span className="green" />
-              </TrafficDots>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-                Preview – {previewFile.name}
-              </span>
-              <div style={{ width: 40 }} />
-            </WindowHeader>
-            <div style={{ padding: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 380 }}>
-              <img
-                src={previewFile.src}
-                alt={previewFile.name}
-                style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', display: 'block' }}
-              />
-            </div>
-          </MacOSWindow>
-        </ModalOverlay>
-      )}
+        {/* 3. Mail */}
+        <DockItem onClick={() => setActiveWindow(activeWindow === 'mail' ? null : 'mail')}>
+          <DockTooltip className="dock-tooltip">Mail</DockTooltip>
+          <DockIconImg src="/assets/EVSY45U60gTa9UjvovzPTZx7Hw.png" alt="Mail" />
+          <DockDot $active={activeWindow === 'mail'} />
+        </DockItem>
 
-      {/* ─── Dock Popup Modals (Notes / Photos / Finder / Mail) ─── */}
-      {activePopup && (
-        <ModalOverlay onClick={() => setActivePopup(null)}>
-          <MacOSWindow onClick={(e) => e.stopPropagation()}>
-            <WindowHeader>
-              <TrafficDots>
-                <span className="red" onClick={() => setActivePopup(null)} />
-                <span className="yellow" onClick={() => setActivePopup(null)} />
-                <span className="green" />
-              </TrafficDots>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>
-                {activePopup === 'notes' && 'Notes – About Dat Le'}
-                {activePopup === 'photos' && 'Photos – Creative Gallery'}
-                {activePopup === 'finder' && 'Finder – Services & Capabilities'}
-                {activePopup === 'mail' && 'Mail – Get in Touch'}
-              </span>
-              <div style={{ width: 40 }} />
-            </WindowHeader>
-            <div style={{ padding: '28px 32px', overflowY: 'auto', maxHeight: '70vh' }}>
-              {activePopup === 'notes' && (
-                <div>
-                  <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 12px 0' }}>About Dat Le</h3>
-                  <p style={{ lineHeight: 1.7, color: '#4b5563', fontSize: 15 }}>{profile.bio.join(' ')}</p>
-                  <div style={{ marginTop: 20, padding: 16, background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#374151' }}>
-                      <MapPin size={15} style={{ color: '#0b1dff' }} />
-                      <span><strong>Location:</strong> {profile.location.name}</span>
-                    </div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#374151' }}>
-                      <Mail size={15} style={{ color: '#0b1dff' }} />
-                      <span><strong>Email:</strong> {profile.email}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {activePopup === 'photos' && (
-                <div>
-                  <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 16px 0' }}>Featured Experiments & Shots</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-                    {projects.map((p, i) => (
-                      <div key={i} style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', cursor: 'pointer' }} onClick={() => setSelectedProject(p)}>
-                        <img src={p.thumbnail || p.image} alt={p.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
-                        <div style={{ padding: '8px 12px', fontSize: 13, fontWeight: 700 }}>{p.name}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {activePopup === 'finder' && (
-                <div>
-                  <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 16px 0' }}>Services & System Capabilities</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {['01. Brand Strategy & Visual Identity', '02. UI/UX Design & Design Systems', '03. 2D/3D Motion & Interactive Prototyping', '04. End-to-End Creative Direction'].map((s, idx) => (
-                      <div key={idx} style={{ padding: '12px 16px', background: '#f3f4f6', borderRadius: 10, fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Folder size={16} style={{ color: '#0b1dff' }} />
-                        <span>{s}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {activePopup === 'mail' && (
-                <div>
-                  <h3 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px 0' }}>Start a Project</h3>
-                  <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 20 }}>Have an exciting idea? Send a message directly.</p>
-                  <form onSubmit={(e) => { e.preventDefault(); alert('Message sent! Thank you.'); setActivePopup(null); }} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    <input type="text" placeholder="Your Name" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <input type="email" placeholder="Your Email" required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <textarea rows="4" placeholder="Tell me about your project..." required style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <button type="submit" style={{ padding: '12px', background: '#111827', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <Send size={15} />
-                      <span>Send Message</span>
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
-          </MacOSWindow>
-        </ModalOverlay>
-      )}
+        {/* 4. Notes */}
+        <DockItem onClick={() => setActiveWindow(activeWindow === 'notes' ? null : 'notes')}>
+          <DockTooltip className="dock-tooltip">Notes</DockTooltip>
+          <DockIconImg src="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png" alt="Notes" />
+          <DockDot $active={activeWindow === 'notes'} />
+        </DockItem>
+
+        {/* 5. Photos */}
+        <DockItem onClick={() => setActiveWindow(activeWindow === 'photos' ? null : 'photos')}>
+          <DockTooltip className="dock-tooltip">Photos</DockTooltip>
+          <DockIconImg src="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png" alt="Photos" />
+          <DockDot $active={activeWindow === 'photos'} />
+        </DockItem>
+
+        {/* 6. Terminal */}
+        <DockItem onClick={() => setActiveWindow(activeWindow === 'terminal' ? null : 'terminal')}>
+          <DockTooltip className="dock-tooltip">Terminal</DockTooltip>
+          <div
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 12,
+              background: '#18181b',
+              border: '1px solid rgba(255,255,255,0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#22c55e',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+            }}
+          >
+            <TerminalIcon size={26} />
+          </div>
+          <DockDot $active={activeWindow === 'terminal'} />
+        </DockItem>
+      </DockContainer>
+
+      {/* Global CSS Keyframes */}
+      <style>{`
+        @keyframes des4WindowOpen {
+          from {
+            opacity: 0;
+            transform: scale(0.95) translateY(16px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+      `}</style>
     </Wrapper>
   );
 }
