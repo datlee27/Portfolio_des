@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Folder, MapPin, Mail, Send } from 'lucide-react';
+import { Box, Folder, MapPin, Mail, Send } from 'lucide-react';
 import d3Projects from '../data/labProjects';
 import profile from '../../../data/profile';
 import ProjectModalD3 from './LabProjectModal';
@@ -757,7 +757,10 @@ export default function Des4LabView({ onBack }) {
           </ProfileTopRow>
           <ExpandedDetails $expanded={profileExpanded}>
             <Bio>{profile.bio[0]}</Bio>
-            <LocationText>📍 {profile.location.name}</LocationText>
+            <LocationText style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <MapPin size={12} style={{ color: '#0b1dff' }} />
+              <span>{profile.location.name}</span>
+            </LocationText>
           </ExpandedDetails>
         </ProfileCard>
 
@@ -769,7 +772,7 @@ export default function Des4LabView({ onBack }) {
           </EyesWrapper>
           <StartProjectBtn onClick={() => setActivePopup('mail')}>
             <span>Start a Project</span>
-            <FiBox />
+            <Box size={14} />
           </StartProjectBtn>
         </TopRightActions>
       </div>
