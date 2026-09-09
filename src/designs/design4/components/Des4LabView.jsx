@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { featuredProjects, siteMeta } from '../data/homeData';
 import ProjectModalD4 from './ProjectModalD4';
+import NotesModalContent from './NotesModalContent';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* ─── DATA: INTERACTIVE DESKTOP FILES (YANXIN LAB STYLE) ─── */
@@ -201,7 +202,16 @@ function TrafficLightsGroup({ onClose }) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* ─── DOCK ITEM WITH PROPORTIONAL MAGNIFICATION ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function DockItem({ mouseX, icon, label, onClick, isActive, isBouncing }) {
+function DockItem({
+  mouseX,
+  icon,
+  label,
+  onClick,
+  isActive,
+  isBouncing,
+  imgScale = 1,
+  imgStyle = {},
+}) {
   const ref = useRef(null);
 
   // Distance from mouse to icon center
@@ -229,7 +239,15 @@ function DockItem({ mouseX, icon, label, onClick, isActive, isBouncing }) {
         transition={{ type: 'spring', stiffness: 500, damping: 20 }}
       >
         {typeof icon === 'string' ? (
-          <img src={icon} alt={label} draggable={false} />
+          <img
+            src={icon}
+            alt={label}
+            draggable={false}
+            style={{
+              ...(imgScale !== 1 ? { transform: `scale(${imgScale})` } : {}),
+              ...imgStyle,
+            }}
+          />
         ) : (
           icon
         )}
@@ -771,9 +789,9 @@ export default function Des4LabView({ onBack }) {
           <MenuButton
             onClick={onBack}
             title="Exit Lab & Return to Overview"
-            style={{ fontWeight: 600, padding: '2px 8px' }}
+            style={{ fontWeight: 500, padding: '2px 8px' }}
           >
-            ← Exit Lab
+            Exit Lab
           </MenuButton>
 
           {/* Active App Name (Bold) */}
@@ -781,23 +799,23 @@ export default function Des4LabView({ onBack }) {
             {activeWindow === 'finder'
               ? 'Finder'
               : activeWindow === 'notes'
-              ? 'Notes'
-              : activeWindow === 'photos'
-              ? 'Photos'
-              : activeWindow === 'mail'
-              ? 'Mail'
-              : activeWindow === 'terminal'
-              ? 'Terminal'
-              : 'Portfolio'}
+                ? 'Notes'
+                : activeWindow === 'photos'
+                  ? 'Photos'
+                  : activeWindow === 'mail'
+                    ? 'Mail'
+                    : activeWindow === 'terminal'
+                      ? 'Terminal'
+                      : 'Portfolio'}
           </span>
 
           {/* Menus */}
           <MenuButton onClick={() => handleAppLaunch('finder')}>File</MenuButton>
           <MenuButton onClick={() => handleAppLaunch('notes')}>Edit</MenuButton>
           <MenuButton onClick={() => handleAppLaunch('photos')}>View</MenuButton>
-          <MenuButton onClick={() => onBack()} title="Return to Overview">
+          {/* <MenuButton onClick={() => onBack()} title="Return to Overview">
             Go
-          </MenuButton>
+          </MenuButton> */}
           <MenuButton onClick={() => handleAppLaunch('terminal')}>Window</MenuButton>
           <MenuButton onClick={() => handleAppLaunch('about-mac')}>Help</MenuButton>
         </MenuBarLeft>
@@ -878,37 +896,9 @@ export default function Des4LabView({ onBack }) {
 
       {/* ─── Desktop Icons Grid (Right Side) ─── */}
       <DesktopGrid>
-        <DesktopIconItem
-          $selected={selectedDesktopIcon === 'finder'}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedDesktopIcon('finder')}
-          onDoubleClick={() => handleAppLaunch('finder')}
-        >
-          <img
-            src="/assets/finder.png"
-            alt="Projects"
-            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
-            draggable={false}
-          />
-          <DesktopIconLabel>Projects</DesktopIconLabel>
-        </DesktopIconItem>
 
-        <DesktopIconItem
-          $selected={selectedDesktopIcon === 'photos'}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedDesktopIcon('photos')}
-          onDoubleClick={() => handleAppLaunch('photos')}
-        >
-          <img
-            src="/assets/photos.png"
-            alt="Experiments"
-            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
-            draggable={false}
-          />
-          <DesktopIconLabel>Experiments</DesktopIconLabel>
-        </DesktopIconItem>
+
+
 
         <DesktopIconItem
           $selected={selectedDesktopIcon === 'notes'}
@@ -963,7 +953,7 @@ export default function Des4LabView({ onBack }) {
           <img
             src="/assets/terminal.png"
             alt="Terminal"
-            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))', transform: 'scale(1.27)' }}
             draggable={false}
           />
           <DesktopIconLabel>Terminal.app</DesktopIconLabel>
@@ -1150,63 +1140,7 @@ export default function Des4LabView({ onBack }) {
               <div style={{ width: 60 }} />
             </WindowTitleBar>
 
-            <div style={{ display: 'flex', height: 460, overflow: 'hidden' }}>
-              <div
-                style={{
-                  width: 220,
-                  background: '#f8f9fa',
-                  borderRight: '1px solid #e5e7eb',
-                  padding: '12px 8px',
-                  overflowY: 'auto',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 6,
-                }}
-              >
-                <div
-                  style={{
-                    background: '#fffae5',
-                    border: '1px solid #fde047',
-                    borderRadius: 8,
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#78350f' }}>01. About Dat Le</div>
-                  <div style={{ fontSize: 11, color: '#b45309', marginTop: 3 }}>Engineering logic & craftsmanship</div>
-                </div>
-                <div
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 8,
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#1f2937' }}>02. Core Architecture</div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>React 19, Spring Boot, AI</div>
-                </div>
-              </div>
-
-              <div style={{ flex: 1, padding: '24px 30px', overflowY: 'auto', background: '#ffffff', color: '#1f2937' }}>
-                <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, marginBottom: 8 }}>
-                  Last edited: Today, 3:15 PM
-                </div>
-                <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 14px 0', color: '#111827' }}>
-                  Lê Văn Đạt (Dat Le)
-                </h2>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, marginBottom: 16 }}>
-                  <span>📍 Da Nang, Vietnam</span> • <span>✉️ lvd27012004@gmail.com</span>
-                </div>
-                <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#374151', marginBottom: 16 }}>
-                  Full-stack Developer & Technical Artisan exploring the intersection between robust distributed systems, brutalist aesthetics, and seamless user experiences. Specializing in high-performance web applications, modern React architecture, and clean decoupled services.
-                </p>
-                <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: 14, fontSize: 13 }}>
-                  <strong>Technical Stack:</strong> React, TypeScript, Spring Boot, Java, Vite, Tailwind CSS, Docker, PostgreSQL, MySQL, Redis, AI Inference Pipelines.
-                </div>
-              </div>
-            </div>
+            <NotesModalContent />
           </WindowWrapper>
         )}
 
@@ -1909,14 +1843,7 @@ export default function Des4LabView({ onBack }) {
           isActive={activeWindow === 'finder'}
           isBouncing={bouncingApp === 'finder'}
         />
-        <DockItem
-          mouseX={mouseX}
-          icon="/assets/safari.png"
-          label="Safari"
-          onClick={onBack}
-          isActive={false}
-          isBouncing={bouncingApp === 'safari'}
-        />
+
         <DockItem
           mouseX={mouseX}
           icon="/assets/mail.png"
@@ -1948,6 +1875,7 @@ export default function Des4LabView({ onBack }) {
           onClick={() => handleAppLaunch('terminal')}
           isActive={activeWindow === 'terminal'}
           isBouncing={bouncingApp === 'terminal'}
+          imgScale={1.27}
         />
 
         <div className="dock-divider" />
@@ -1959,6 +1887,7 @@ export default function Des4LabView({ onBack }) {
           onClick={() => alert('Trash is clean and empty.')}
           isActive={false}
           isBouncing={false}
+          imgScale={1.16}
         />
       </DockContainer>
 
