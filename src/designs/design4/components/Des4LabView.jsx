@@ -41,8 +41,8 @@ const DESKTOP_ITEMS = [
     id: 'potato',
     name: 'Potato.mp4',
     type: 'video',
-    src: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
-    thumb: 'https://framerusercontent.com/images/X8myVwtMo16ZEsQelWClzF74xPw.jpg',
+    src: '/assets/lab/potato.jpg',
+    thumb: '/assets/lab/potato.jpg',
     title: '3D Procedural Texture & Light Simulation',
     category: 'Motion R&D',
     defaultPos: { x: 50, y: 70 },
@@ -51,8 +51,8 @@ const DESKTOP_ITEMS = [
     id: 'render-module',
     name: 'RenderModule.jpg',
     type: 'image',
-    src: 'https://framerusercontent.com/images/hgNmKfRPeHqlrN0vENw1gw4wXA.jpg',
-    thumb: 'https://framerusercontent.com/images/hgNmKfRPeHqlrN0vENw1gw4wXA.jpg',
+    src: '/assets/lab/render-module.jpg',
+    thumb: '/assets/lab/render-module.jpg',
     title: 'Procedural Terrain & Shading Architecture',
     category: '3D Graphics',
     defaultPos: { x: 210, y: 80 },
@@ -61,8 +61,8 @@ const DESKTOP_ITEMS = [
     id: 'uber-ride',
     name: 'UberRide.mp4',
     type: 'video',
-    src: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
-    thumb: 'https://framerusercontent.com/images/tns9BIsxi9ZPfJlYFmiaiglW50.jpg',
+    src: '/assets/lab/uber-ride.jpg',
+    thumb: '/assets/lab/uber-ride.jpg',
     title: 'Kinetic Typography & Micro-interactions',
     category: 'Interaction',
     defaultPos: { x: 370, y: 65 },
@@ -71,8 +71,8 @@ const DESKTOP_ITEMS = [
     id: 'z08',
     name: 'Z08.gif',
     type: 'gif',
-    src: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
-    thumb: 'https://framerusercontent.com/images/Spt7teMP6KDHT08iHgXYdOgs.png',
+    src: '/assets/lab/z08.png',
+    thumb: '/assets/lab/z08.png',
     title: 'Character Animation & Dynamic Rigidbodies',
     category: 'Animation',
     defaultPos: { x: 70, y: 260 },
@@ -81,8 +81,8 @@ const DESKTOP_ITEMS = [
     id: 'byte-events',
     name: 'ByteEvents.gif',
     type: 'gif',
-    src: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
-    thumb: 'https://framerusercontent.com/images/5mZU8QfD43IH1oX4kuDcGYBDNCM.jpg',
+    src: '/assets/lab/byte-events.jpg',
+    thumb: '/assets/lab/byte-events.jpg',
     title: 'Event-Driven Real-time Animation Stream',
     category: 'Visual R&D',
     defaultPos: { x: 230, y: 275 },
@@ -91,8 +91,8 @@ const DESKTOP_ITEMS = [
     id: 'r02',
     name: 'R02.gif',
     type: 'gif',
-    src: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
-    thumb: 'https://framerusercontent.com/images/9wOFWrQGVxJzMXcPZuQobyXiM.jpg',
+    src: '/assets/lab/r02.jpg',
+    thumb: '/assets/lab/r02.jpg',
     title: 'Cyberpunk UI HUD & Particle Trails',
     category: 'UI Concept',
     defaultPos: { x: 390, y: 260 },
@@ -101,8 +101,8 @@ const DESKTOP_ITEMS = [
     id: 'purple-cat',
     name: 'PurpleCat.jpg',
     type: 'image',
-    src: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
-    thumb: 'https://framerusercontent.com/images/8qIPmYi49ztFkAtaqMoUOA5gZ90.png',
+    src: '/assets/lab/purple-cat.png',
+    thumb: '/assets/lab/purple-cat.png',
     title: 'Vector Character Concept Art',
     category: 'Illustration',
     defaultPos: { x: 130, y: 455 },
@@ -111,8 +111,8 @@ const DESKTOP_ITEMS = [
     id: 'dev-roadmap',
     name: 'DevRoadmap.tsx',
     type: 'project',
-    src: 'https://framerusercontent.com/images/2y9hWY2pBjaONGzPRqdv67woE.png',
-    thumb: 'https://framerusercontent.com/images/2y9hWY2pBjaONGzPRqdv67woE.png',
+    src: '/assets/lab/dev-roadmap.png',
+    thumb: '/assets/lab/dev-roadmap.png',
     title: 'Dev Roadmap Tracking System (React 19 + Spring Boot)',
     category: 'Featured Project',
     defaultPos: { x: 290, y: 465 },
@@ -886,7 +886,7 @@ export default function Des4LabView({ onBack }) {
           onDoubleClick={() => handleAppLaunch('finder')}
         >
           <img
-            src="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png"
+            src="/assets/finder.png"
             alt="Projects"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
             draggable={false}
@@ -902,7 +902,7 @@ export default function Des4LabView({ onBack }) {
           onDoubleClick={() => handleAppLaunch('photos')}
         >
           <img
-            src="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png"
+            src="/assets/photos.png"
             alt="Experiments"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
             draggable={false}
@@ -918,7 +918,7 @@ export default function Des4LabView({ onBack }) {
           onDoubleClick={() => handleAppLaunch('notes')}
         >
           <img
-            src="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png"
+            src="/assets/notes.png"
             alt="About DatLe"
             style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
             draggable={false}
@@ -960,25 +960,12 @@ export default function Des4LabView({ onBack }) {
           onClick={() => setSelectedDesktopIcon('terminal')}
           onDoubleClick={() => handleAppLaunch('terminal')}
         >
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 11,
-              background: 'linear-gradient(135deg, #27272a, #09090b)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 6px 14px rgba(0,0,0,0.35)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#22c55e',
-              fontFamily: 'monospace',
-              fontWeight: 800,
-              fontSize: 18,
-            }}
-          >
-            &gt;_
-          </div>
+          <img
+            src="/assets/terminal.png"
+            alt="Terminal"
+            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
+            draggable={false}
+          />
           <DesktopIconLabel>Terminal.app</DesktopIconLabel>
         </DesktopIconItem>
       </DesktopGrid>
@@ -1916,7 +1903,7 @@ export default function Des4LabView({ onBack }) {
       >
         <DockItem
           mouseX={mouseX}
-          icon="/assets/jC3NYM1gkKdVNzokU0ojtj01asg.png"
+          icon="/assets/finder.png"
           label="Finder"
           onClick={() => handleAppLaunch('finder')}
           isActive={activeWindow === 'finder'}
@@ -1924,36 +1911,7 @@ export default function Des4LabView({ onBack }) {
         />
         <DockItem
           mouseX={mouseX}
-          icon={
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '22%',
-                background: 'linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%)',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
-                boxShadow: '0 6px 16px rgba(14, 165, 233, 0.45)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '42%',
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)',
-                  borderRadius: '22% 22% 0 0',
-                }}
-              />
-              <Compass size={28} color="#ffffff" strokeWidth={2.3} style={{ filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.35))' }} />
-            </div>
-          }
+          icon="/assets/safari.png"
           label="Safari"
           onClick={onBack}
           isActive={false}
@@ -1961,7 +1919,7 @@ export default function Des4LabView({ onBack }) {
         />
         <DockItem
           mouseX={mouseX}
-          icon="/assets/EVSY45U60gTa9UjvovzPTZx7Hw.png"
+          icon="/assets/mail.png"
           label="Mail"
           onClick={() => handleAppLaunch('mail')}
           isActive={activeWindow === 'mail'}
@@ -1969,7 +1927,7 @@ export default function Des4LabView({ onBack }) {
         />
         <DockItem
           mouseX={mouseX}
-          icon="/assets/ZAH3C8amQUigspCjEG1FJWPjI.png"
+          icon="/assets/notes.png"
           label="Notes"
           onClick={() => handleAppLaunch('notes')}
           isActive={activeWindow === 'notes'}
@@ -1977,7 +1935,7 @@ export default function Des4LabView({ onBack }) {
         />
         <DockItem
           mouseX={mouseX}
-          icon="/assets/VCIQF7ylF9U0o5QZkTgji0mxx28.png"
+          icon="/assets/photos.png"
           label="Photos"
           onClick={() => handleAppLaunch('photos')}
           isActive={activeWindow === 'photos'}
@@ -1985,48 +1943,7 @@ export default function Des4LabView({ onBack }) {
         />
         <DockItem
           mouseX={mouseX}
-          icon={
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '22%',
-                background: 'linear-gradient(135deg, #1e293b 0%, #090d16 100%)',
-                border: '1px solid rgba(255, 255, 255, 0.22)',
-                boxShadow: '0 6px 16px rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '35%',
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%)',
-                  borderRadius: '22% 22% 0 0',
-                }}
-              />
-              <span
-                style={{
-                  color: '#4ade80',
-                  fontFamily: 'SF Mono, Menlo, Monaco, Consolas, monospace',
-                  fontSize: 22,
-                  fontWeight: 800,
-                  letterSpacing: -1,
-                  textShadow: '0 0 8px rgba(74, 222, 128, 0.7)',
-                }}
-              >
-                &gt;_
-              </span>
-            </div>
-          }
+          icon="/assets/terminal.png"
           label="Terminal"
           onClick={() => handleAppLaunch('terminal')}
           isActive={activeWindow === 'terminal'}
@@ -2037,7 +1954,7 @@ export default function Des4LabView({ onBack }) {
 
         <DockItem
           mouseX={mouseX}
-          icon="/assets/macos/trash.png"
+          icon="/assets/trash.png"
           label="Trash"
           onClick={() => alert('Trash is clean and empty.')}
           isActive={false}
