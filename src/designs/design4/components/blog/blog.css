@@ -615,24 +615,26 @@
 }
 
 .blog-drawer-close-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
   cursor: pointer;
-  margin-bottom: 32px;
-  transition: transform 0.15s ease;
+  margin-bottom: 28px;
+  padding: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .blog-drawer-close-btn:hover {
-  transform: scale(1.08);
+  transform: scale(1.15);
+  opacity: 0.8;
 }
 
 .blog-drawer-close-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 .blog-drawer-date {

@@ -79,9 +79,9 @@ export default function BlogDrawer({
                 onClick={onClose}
                 aria-label="đóng"
                 className="blog-drawer-close-btn"
-                style={{ border: `1px solid ${theme.border}` }}
+                style={{ color: theme.muted }}
               >
-                <IconClose size={15} />
+                <IconClose size={16} />
               </button>
 
               <p className="blog-drawer-date" style={{ color: theme.muted }}>
