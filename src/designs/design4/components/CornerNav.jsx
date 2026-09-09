@@ -133,63 +133,67 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
       </div>
 
 
-      {/* Bottom Left: about */}
-      <button
-        className="des4-corner-anchor"
-        aria-label="Scroll to about section"
-        onClick={() => scrollTo('d4-intro')}
-        style={{
-          position: 'fixed',
-          bottom: 'clamp(16px, 3.5vw, 32px)',
-          left: 'clamp(16px, 4vw, 36px)',
-          zIndex: 99999,
-          fontFamily: 'var(--font-outfit)',
-          fontSize: 'clamp(14px, 3.5vw, 18px)',
-          fontWeight: 800,
-          letterSpacing: '-0.02em',
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          lineHeight: 1,
-          color: '#ffffff',
-          mixBlendMode: 'difference',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-      >
-        about
-      </button>
+      {/* Bottom Left: about — hidden on blog page */}
+      {activeView !== 'blog' && (
+        <button
+          className="des4-corner-anchor"
+          aria-label="Scroll to about section"
+          onClick={() => scrollTo('d4-intro')}
+          style={{
+            position: 'fixed',
+            bottom: 'clamp(16px, 3.5vw, 32px)',
+            left: 'clamp(16px, 4vw, 36px)',
+            zIndex: 99999,
+            fontFamily: 'var(--font-outfit)',
+            fontSize: 'clamp(14px, 3.5vw, 18px)',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            lineHeight: 1,
+            color: '#ffffff',
+            mixBlendMode: 'difference',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          about
+        </button>
+      )}
 
-      {/* Bottom Right: lab */}
-      <button
-        className="des4-corner-anchor"
-        aria-label="Open experiments lab"
-        onClick={() => {
-          if (onOpenLab) onOpenLab();
-        }}
-        style={{
-          position: 'fixed',
-          bottom: 'clamp(16px, 3.5vw, 32px)',
-          right: 'clamp(16px, 4vw, 36px)',
-          zIndex: 99999,
-          fontFamily: 'var(--font-outfit)',
-          fontSize: 'clamp(14px, 3.5vw, 18px)',
-          fontWeight: 800,
-          letterSpacing: '-0.02em',
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          lineHeight: 1,
-          color: '#ffffff',
-          mixBlendMode: 'difference',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-      >
-        lab
-      </button>
+      {/* Bottom Right: lab — hidden on blog page */}
+      {activeView !== 'blog' && (
+        <button
+          className="des4-corner-anchor"
+          aria-label="Open experiments lab"
+          onClick={() => {
+            if (onOpenLab) onOpenLab();
+          }}
+          style={{
+            position: 'fixed',
+            bottom: 'clamp(16px, 3.5vw, 32px)',
+            right: 'clamp(16px, 4vw, 36px)',
+            zIndex: 99999,
+            fontFamily: 'var(--font-outfit)',
+            fontSize: 'clamp(14px, 3.5vw, 18px)',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            lineHeight: 1,
+            color: '#ffffff',
+            mixBlendMode: 'difference',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          lab
+        </button>
+      )}
     </>
   );
 }

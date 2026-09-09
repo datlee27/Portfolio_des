@@ -10,7 +10,7 @@ import BlogSection from './components/BlogSection';
 import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
 import Des4WorkPage from './components/Des4WorkPage';
-import Des4BlogPage from './components/Des4BlogPage';
+import BlogPageRedesign from './components/blog/BlogPageRedesign';
 
 export default function Design4App() {
   // Determine initial view from URL path
@@ -84,8 +84,8 @@ export default function Design4App() {
         /* Dedicated Work Page (/work) with 6 Projects & Footer */
         <Des4WorkPage onGoHome={() => navigateTo('main', '/')} />
       ) : activeView === 'blog' ? (
-        /* Dedicated Blog Threads Page (/blog) */
-        <Des4BlogPage onGoHome={() => navigateTo('main', '/')} />
+        /* Dedicated Blog Page — "chạng vạng" redesign */
+        <BlogPageRedesign />
       ) : activeView === 'lab' ? (
         /* Lab View (/lab) */
         <Des4LabView onBack={() => navigateTo('main', '/')} />
