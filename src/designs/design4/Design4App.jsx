@@ -11,6 +11,8 @@ import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
 import Des4WorkPage from './components/Des4WorkPage';
 import BlogPageRedesign from './components/blog/BlogPageRedesign';
+import ScrollEase from '../../components/common/ScrollEase';
+import ScrollBlurByAki from '../../components/common/ScrollBlurByAki';
 
 export default function Design4App() {
   // Determine initial view from URL path
@@ -31,7 +33,10 @@ export default function Design4App() {
       const fullPath = targetHash ? `${path}#${targetHash}` : path;
       window.history.pushState({ view }, '', fullPath);
       if (!targetHash) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        if (window.lenis) {
+          window.lenis.scrollTo(0, { immediate: true });
+        }
       }
     }
   };
@@ -44,6 +49,7 @@ export default function Design4App() {
         setActiveView('work');
       } else if (path === '/blog' || path.startsWith('/blog/')) {
         setActiveView('blog');
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       } else if (path === '/lab' || path.startsWith('/lab/')) {
         setActiveView('lab');
       } else {
@@ -58,10 +64,11 @@ export default function Design4App() {
   // Update document title and ensure body scroll is unlocked based on current view
   useEffect(() => {
     document.body.style.overflow = '';
-    if (activeView === 'work') {
-      document.title = 'Work – Dat Le Selected Projects';
-    } else if (activeView === 'blog') {
+    if (activeView === 'blog') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.title = 'Threads / Blog – Dat Le Tech Notes';
+    } else if (activeView === 'work') {
+      document.title = 'Work – Dat Le Selected Projects';
     } else if (activeView === 'lab') {
       document.title = 'Lab – Dat Le Design Experiments';
     } else {
@@ -79,6 +86,42 @@ export default function Design4App() {
         onOpenLab={() => navigateTo('lab', '/lab')}
         onGoHome={() => navigateTo('main', '/')}
       />
+
+      {/* Smooth inertia scroll ONLY on Home and Work pages */}
+      {(activeView === 'main' || activeView === 'work') && <ScrollEase intensity={75} />}
+
+      {/* Progressive edge blur ONLY on Home page (Work and others do not have scrollblur) */}
+      {activeView === 'main' && (
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '80px',
+              zIndex: 90,
+              pointerEvents: 'none',
+            }}
+          >
+            <ScrollBlurByAki direction="top" blur={16} quality="high" />
+          </div>
+
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '80px',
+              zIndex: 90,
+              pointerEvents: 'none',
+            }}
+          >
+            <ScrollBlurByAki direction="bottom" blur={16} quality="high" />
+          </div>
+        </>
+      )}
 
       {activeView === 'work' ? (
         /* Dedicated Work Page (/work) with 6 Projects & Footer */
@@ -107,13 +150,13 @@ export default function Design4App() {
           {/* 6. Interactive WebGL Spiral 3D Gallery (Experience & Visual Archive) */}
           <Spiral3DSlider />
 
-          {/* 7. Articles & Journal / Blog Section */}
-          <BlogSection
+          {/* 7. Articles & Journal / Blog Section (Tạm thời ẩn) */}
+          {/* <BlogSection
             onOpenBlog={(post) => {
               const targetHash = post?.slug || (post?.id ? `post-${post.id}` : '');
               navigateTo('blog', '/blog', targetHash);
             }}
-          />
+          /> */}
 
           {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
           <FooterSection />

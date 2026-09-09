@@ -10,7 +10,9 @@ const GlobalStyles = createGlobalStyle`
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    overflow-x: clip;
+    overflow-y: auto;
   }
 
   body {
@@ -19,6 +21,8 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   #root {

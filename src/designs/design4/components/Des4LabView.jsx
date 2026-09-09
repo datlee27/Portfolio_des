@@ -659,7 +659,7 @@ export default function Des4LabView({ onBack }) {
   const containerRef = useRef(null);
 
   // Active window state
-  const [activeWindow, setActiveWindow] = useState('finder'); // Default opens Finder
+  const [activeWindow, setActiveWindow] = useState(null); // Clean desktop by default (Finder closed)
   const [windowZIndex, setWindowZIndex] = useState(150);
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);

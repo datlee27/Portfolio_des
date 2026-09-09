@@ -1,21 +1,23 @@
 import React from 'react';
 import ClotheslineGallery from './ClotheslineGallery';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function IntroSection() {
   return (
     <section id="d4-intro" className="des4-intro-wrapper">
       <div className="des4-container" style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
-        {/* Editorial Narrative - Centered Single Statement (No Columns) */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            margin: '0 auto 40px auto',
-          }}
-        >
+        {/* Editorial Narrative - Centered Single Statement (Animate on Scroll) */}
+        <ScrollAnimation direction="up" viewport={{ amount: 0.35 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              margin: '0 auto 40px auto',
+            }}
+          >
           <p
             className="des4-intro-narrative"
             style={{
@@ -46,10 +48,13 @@ export default function IntroSection() {
             into cohesive, production-ready digital products.
           </p>
         </div>
-      </div>
+      </ScrollAnimation>
+    </div>
 
       {/* ─── CLOTHESLINE GALLERY (Full Width Screen Wire & Draggable) ─── */}
-      <ClotheslineGallery />
+      <ScrollAnimation direction="up" viewport={{ amount: 0.2 }}>
+        <ClotheslineGallery />
+      </ScrollAnimation>
     </section>
   );
 }

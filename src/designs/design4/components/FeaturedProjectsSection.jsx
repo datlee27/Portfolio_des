@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, ExternalLink, ArrowUpRight } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../data/homeData';
 import ProjectModalD4 from './ProjectModalD4';
 
@@ -61,8 +62,15 @@ export default function FeaturedProjectsSection() {
 
         {/* Project List */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {featuredProjects.map((project) => (
-            <div key={project.id} className="des4-project-row">
+          {featuredProjects.map((project, idx) => (
+            <ScrollAnimation
+              key={project.id}
+              direction={idx % 2 === 0 ? 'left' : 'right'}
+              viewport={{ amount: 0.2, margin: '0px 0px -40px 0px' }}
+              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+              style={{ width: '100%' }}
+            >
+              <div className="des4-project-row">
               {/* Left Media Card */}
               <div
                 style={{
@@ -308,7 +316,8 @@ export default function FeaturedProjectsSection() {
                 </div>
               </div>
             </div>
-          ))}
+          </ScrollAnimation>
+        ))}
         </div>
       </div>
 

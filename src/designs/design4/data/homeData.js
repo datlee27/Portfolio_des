@@ -106,7 +106,7 @@ const defaultProjectImages = [
   'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=1200&q=80',
 ];
 
-const accentColors = ['#fe3c01', '#0b1dff', '#8bc200', '#ff75f6', '#45ff08', '#ff6200'];
+const accentColors = ['#fe3c01', '#2563eb', '#059669', '#9333ea', '#d97706', '#0284c7'];
 
 export const featuredProjects = portfolioData.projects.map((proj, idx) => ({
   id: proj.id,

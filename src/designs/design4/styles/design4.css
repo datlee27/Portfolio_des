@@ -35,7 +35,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   position: relative;
   width: 100%;
   -webkit-font-smoothing: antialiased;
@@ -1321,6 +1322,13 @@
   color: #0f172a;
   margin: 0 0 12px 0;
   line-height: 1.2;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.des4-work-card-title:hover,
+.des4-work-card:hover .des4-work-card-title {
+  color: #fe3c01;
 }
 
 .des4-work-card-desc {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { whatIDoData } from '../data/homeData';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function WhatIDoSection() {
   return (
@@ -13,59 +14,71 @@ export default function WhatIDoSection() {
       }}
     >
       <div className="des4-container">
-        {/* Title */}
-        <h2
-          style={{
-            fontFamily: 'var(--font-outfit)',
-            fontSize: 'clamp(40px, 9vw, 140px)',
-            fontWeight: 900,
-            lineHeight: 0.9,
-            letterSpacing: '-0.04em',
-            color: '#000000',
-            margin: '0 0 20px 0',
-          }}
-        >
-          what i do<span style={{ color: '#000000' }}>*</span>
-        </h2>
+        {/* Title & Subtitle (Animate from Left) */}
+        <ScrollAnimation direction="left" viewport={{ amount: 0.4 }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-outfit)',
+              fontSize: 'clamp(40px, 9vw, 140px)',
+              fontWeight: 900,
+              lineHeight: 0.9,
+              letterSpacing: '-0.04em',
+              color: '#000000',
+              margin: '0 0 20px 0',
+            }}
+          >
+            what i do<span style={{ color: '#000000' }}>*</span>
+          </h2>
 
-        {/* Subtitle */}
-        <p
-          style={{
-            fontFamily: 'var(--font-inter)',
-            fontSize: 14,
-            fontWeight: 500,
-            color: '#000000',
-            maxWidth: 540,
-            marginBottom: 40,
-            lineHeight: 1.6,
-          }}
-        >
-          <span style={{ color: '#000000', fontWeight: 700 }}>* </span>
-          {whatIDoData.subheading}
-        </p>
+          <p
+            style={{
+              fontFamily: 'var(--font-inter)',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#000000',
+              maxWidth: 540,
+              marginBottom: 40,
+              lineHeight: 1.6,
+            }}
+          >
+            <span style={{ color: '#000000', fontWeight: 700 }}>* </span>
+            {whatIDoData.subheading}
+          </p>
+        </ScrollAnimation>
 
         {/* Grid Layout: Left 3D Image + Right Capability Columns */}
         <div className="des4-project-row" style={{ borderTop: 'none', padding: 0 }}>
-          {/* Left: 3D Workspace Screen */}
-          <div
-            style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
-              border: '1px solid rgba(0,0,0,0.15)',
-              background: '#1e1e1e',
-              width: '100%',
-            }}
+          {/* Left: 3D Workspace Screen (Animate from Left) */}
+          <ScrollAnimation
+            direction="left"
+            viewport={{ amount: 0.3, margin: '0px 0px -40px 0px' }}
+            style={{ width: '100%' }}
           >
-            <img
-              src="https://framerusercontent.com/images/nNLGLKBaN3TMBNgUnAFjyxbtQ.jpg?width=696&height=1024"
-              alt="Blender 3D Workspace"
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-          </div>
+            <div
+              style={{
+                borderRadius: 20,
+                overflow: 'hidden',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+                border: '1px solid rgba(0,0,0,0.15)',
+                background: '#1e1e1e',
+                width: '100%',
+              }}
+            >
+              <img
+                src="https://framerusercontent.com/images/nNLGLKBaN3TMBNgUnAFjyxbtQ.jpg?width=696&height=1024"
+                alt="Blender 3D Workspace"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
+          </ScrollAnimation>
 
-          {/* Right: 3 Interactive Capability Blocks */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+          {/* Right: 3 Interactive Capability Blocks (Animate from Right) */}
+          <ScrollAnimation
+            direction="right"
+            viewport={{ amount: 0.3, margin: '0px 0px -40px 0px' }}
+            style={{ width: '100%' }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
             {whatIDoData.columns.map((col, idx) => (
               <div key={idx}>
                 <h3
@@ -130,7 +143,8 @@ export default function WhatIDoSection() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          </ScrollAnimation>
         </div>
       </div>
     </section>

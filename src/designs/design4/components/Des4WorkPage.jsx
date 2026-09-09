@@ -6,13 +6,18 @@ import FooterSection from './FooterSection';
 import PDFViewer from './PDFViewer';
 import SkillsSection from './SkillsSection';
 import ProjectModalD4 from './ProjectModalD4';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function Des4WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
     document.body.style.overflow = '';
   }, []);
 
@@ -184,11 +189,16 @@ export default function Des4WorkPage({ onGoHome }) {
           ) : (
             /* 6 Projects Grid */
             <div className="des4-work-projects-grid">
-              {filteredProjects.map((project) => (
-                <article
+              {filteredProjects.map((project, idx) => (
+                <ScrollAnimation
                   key={project.id}
-                  className="des4-work-card"
+                  direction={idx % 2 === 0 ? 'left' : 'right'}
+                  viewport={{ amount: 0.25, margin: '0px 0px -40px 0px' }}
+                  style={{ width: '100%' }}
                 >
+                  <article
+                    className="des4-work-card"
+                  >
                   {/* Media Container */}
                   <div
                     className="des4-work-card-media"
@@ -233,9 +243,6 @@ export default function Des4WorkPage({ onGoHome }) {
                       <h3
                         className="des4-work-card-title"
                         onClick={() => setSelectedProject(project)}
-                        style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = '#fe3c01')}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = '#ffffff')}
                         title={`View ${project.title} Case Study`}
                       >
                         {project.title}
@@ -304,6 +311,7 @@ export default function Des4WorkPage({ onGoHome }) {
                     </div>
                   </div>
                 </article>
+              </ScrollAnimation>
               ))}
             </div>
           )}
