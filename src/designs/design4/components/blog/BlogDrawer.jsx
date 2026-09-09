@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IconClose } from './BlogIcons';
-import BlogMediaFill from './BlogMediaFill';
+import BlogMediaGallery from './BlogMediaGallery';
+import BlogMediaLightbox from './BlogMediaLightbox';
 import BlogEmojiLikeButton from './BlogEmojiLikeButton';
-import { formatDate, IMAGE_LIMIT, VIDEO_LIMIT } from './blogData';
+import { formatDate } from './blogData';
 
 export default function BlogDrawer({
   post,
@@ -16,6 +17,8 @@ export default function BlogDrawer({
   onSubmitComment,
 }) {
   const isOpen = Boolean(post);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const likeCount = post ? post.likes + (likedPosts[post.id] ? 1 : 0) : 0;
 
@@ -23,61 +26,29 @@ export default function BlogDrawer({
     ? [...(post.comments || []), ...(extraComments[post.id] || [])]
     : [];
 
-  const mediaItems =
-    post && post.media
-      ? post.media.items.slice(
-          0,
-          post.media.type === 'video' ? VIDEO_LIMIT : IMAGE_LIMIT,
-        )
-      : [];
+  const mediaItems = post && post.media ? post.media.items : [];
 
-  const colCount = mediaItems.length >= 3 ? 3 : mediaItems.length;
-
-  function getMediaClassName(isSingle, isVideo) {
-    let cls = 'blog-drawer-media-item';
-    if (isSingle) {
-      cls += ' blog-media-single';
-    } else if (isVideo) {
-      cls += ' blog-media-multi-video';
-    } else {
-      cls += ' blog-media-multi';
-    }
-    return cls;
+  function handleOpenLightbox(index = 0) {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
   }
 
   return (
-    <div className="blog-drawer-overlay" data-open={String(isOpen)}>
-      <div className="blog-drawer-backdrop" onClick={onClose} />
+    <>
+      <div className="blog-drawer-overlay" data-open={String(isOpen)}>
+        <div className="blog-drawer-backdrop" onClick={onClose} />
 
-      <div
-        className="blog-drawer-panel"
-        data-open={String(isOpen)}
-        style={{ backgroundColor: theme.surface, color: theme.text }}
-      >
-        {post && (
-          <>
-            {/* Media Grid */}
-            {post.media && mediaItems.length > 0 && (
-              <div className="blog-drawer-media-grid" data-cols={colCount}>
-                {mediaItems.map((item, i) => (
-                  <BlogMediaFill
-                    key={i}
-                    item={item}
-                    kind={post.media.type}
-                    className={getMediaClassName(
-                      mediaItems.length === 1,
-                      post.media.type === 'video',
-                    )}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Content */}
+        <div
+          className="blog-drawer-panel"
+          data-open={String(isOpen)}
+          style={{ backgroundColor: theme.surface, color: theme.text }}
+        >
+          {post && (
             <div className="blog-drawer-content">
+              {/* Borderless Close Button */}
               <button
                 onClick={onClose}
-                aria-label="đóng"
+                aria-label="đóng bài viết"
                 className="blog-drawer-close-btn"
                 style={{ color: theme.muted }}
               >
@@ -93,6 +64,18 @@ export default function BlogDrawer({
 
               <h2 className="blog-drawer-title">{post.title}</h2>
 
+              {/* Media Gallery (Hero image or carousel slider with expand to lightbox) */}
+              {post.media && mediaItems.length > 0 && (
+                <div className="blog-drawer-media-section">
+                  <BlogMediaGallery
+                    media={post.media}
+                    onOpenLightbox={handleOpenLightbox}
+                    theme={theme}
+                  />
+                </div>
+              )}
+
+              {/* Article Content */}
               <div className="blog-drawer-paragraphs">
                 {post.content.map((para, i) => (
                   <p key={i}>{para}</p>
@@ -153,9 +136,21 @@ export default function BlogDrawer({
                 </div>
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Fullscreen Media Lightbox Viewer */}
+      {post && (
+        <BlogMediaLightbox
+          isOpen={lightboxOpen}
+          items={mediaItems}
+          type={post.media ? post.media.type : 'image'}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          theme={theme}
+        />
+      )}
+    </>
   );
 }

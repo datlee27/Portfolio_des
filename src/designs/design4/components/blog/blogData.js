@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Blog data, constants, themes, and helpers.
  * Uses Vietnamese content matching the "chạng vạng" personal blog style.
  */
@@ -16,7 +16,7 @@ export const VIDEO_LIMIT = 2;
 
 /**
  * Each post can have media: null, or { type: "image"|"video", items: [...] }
- * Each item is either a real URL string, or a 2-color array for a gradient placeholder.
+ * Items are either real URLs or [color1, color2] fallback gradient arrays.
  */
 export const POSTS = [
   {
@@ -53,9 +53,9 @@ export const POSTS = [
     media: {
       type: 'image',
       items: [
-        ['#2E3A5C', '#D98A4A'],
-        ['#354168', '#D19352'],
-        ['#22304C', '#9C6B3E'],
+        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80',
       ],
     },
     likes: 15,
@@ -93,7 +93,9 @@ export const POSTS = [
     tag: 'công nghệ',
     media: {
       type: 'image',
-      items: [['#26314A', '#8B5E3C']],
+      items: [
+        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',
+      ],
     },
     likes: 31,
     comments: [
@@ -116,12 +118,12 @@ export const POSTS = [
     media: {
       type: 'image',
       items: [
-        ['#1F2B47', '#C9973A'],
-        ['#33405E', '#B87A4E'],
-        ['#28344E', '#A8763F'],
-        ['#3A4A70', '#E0A34F'],
-        ['#404E72', '#C68A42'],
-        ['#24304E', '#8F6238'],
+        'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1531875456634-3f5418280d20?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1493106819501-66d381c466f1?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1590402494682-cd3fb53b1f70?auto=format&fit=crop&w=1200&q=80',
       ],
     },
     likes: 12,
@@ -143,7 +145,9 @@ export const POSTS = [
     tag: 'suy ngẫm',
     media: {
       type: 'video',
-      items: [['#2C3958', '#B67D45']],
+      items: [
+        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      ],
     },
     likes: 18,
     comments: [],
@@ -161,10 +165,10 @@ export const POSTS = [
     date: '2026-05-28',
     tag: 'thiết kế',
     media: {
-      type: 'video',
+      type: 'image',
       items: [
-        ['#1B2540', '#7A5230'],
-        ['#354168', '#D19352'],
+        'https://images.unsplash.com/photo-1590212151175-e58edd96185b?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1519217651866-847339e674d4?auto=format&fit=crop&w=1200&q=80',
       ],
     },
     likes: 7,
