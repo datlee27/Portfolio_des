@@ -105,6 +105,26 @@ export const api = {
     });
   },
 
+  async createSkill(skillData) {
+    return request('/index.php?endpoint=portfolio&type=skill', {
+      method: 'POST',
+      body: JSON.stringify(skillData),
+    });
+  },
+
+  async updateSkill(id, skillData) {
+    return request(`/index.php?endpoint=portfolio&type=skill&id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(skillData),
+    });
+  },
+
+  async deleteSkill(id) {
+    return request(`/index.php?endpoint=portfolio&type=skill&id=${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   async setupPortfolioDatabase() {
     return request('/index.php?endpoint=setup-portfolio');
   },

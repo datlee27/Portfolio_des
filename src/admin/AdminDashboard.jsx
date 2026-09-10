@@ -4,6 +4,7 @@ import {
   FolderKanban,
   FileText,
   User,
+  Layers,
   LogOut,
   ExternalLink,
   RefreshCw,
@@ -17,6 +18,7 @@ import OverviewTab from './tabs/OverviewTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import BlogTab from './tabs/BlogTab';
 import ProfileTab from './tabs/ProfileTab';
+import SkillsTab from './tabs/SkillsTab';
 
 export default function AdminDashboard({ onLogout, onGoHome, user }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -41,7 +43,16 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         api.getPosts().catch((e) => ({ success: false, error: e })),
       ]);
 
-      if (pRes && pRes.success) {
+      if (pRes && pRes.success && pRes.data) {
+        try {
+          const raw = localStorage.getItem('portfolio_skills_override');
+          if (raw) {
+            const savedSkills = JSON.parse(raw);
+            if (Array.isArray(savedSkills) && savedSkills.length > 0) {
+              pRes.data.skills = savedSkills;
+            }
+          }
+        } catch {}
         setPortfolioData(pRes.data);
       }
       if (bRes && bRes.success) {
@@ -74,6 +85,12 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
       label: 'Dự Án Portfolio',
       icon: FolderKanban,
       count: portfolioData?.projects?.length || 0,
+    },
+    {
+      id: 'skills',
+      label: 'Kỹ Năng & Stack',
+      icon: Layers,
+      count: portfolioData?.skills?.length || 0,
     },
     {
       id: 'blog',
@@ -243,6 +260,14 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           {activeTab === 'projects' && (
             <ProjectsTab
               projects={portfolioData?.projects || []}
+              onRefresh={fetchData}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'skills' && (
+            <SkillsTab
+              skills={portfolioData?.skills || []}
               onRefresh={fetchData}
               showToast={showToast}
             />

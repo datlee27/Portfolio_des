@@ -212,11 +212,61 @@ const logos2 = [
 // Combine all for category filtering
 const allSkillsList = [...logos1, ...logos2];
 
+const PRESET_ICONS = {
+  react: { color: '#61dafb', component: <ReactLogo /> },
+  typescript: { color: '#3178c6', component: <TSLogo /> },
+  ts: { color: '#3178c6', component: <TSLogo /> },
+  javascript: { color: '#f7df1e', component: <JSLogo /> },
+  js: { color: '#f7df1e', component: <JSLogo /> },
+  tailwind: { color: '#38bdf8', component: <TailwindLogo /> },
+  'tailwind css': { color: '#38bdf8', component: <TailwindLogo /> },
+  vite: { color: '#bd34fe', component: <ViteLogo /> },
+  html: { color: '#e34f26', component: <HTML5Logo /> },
+  html5: { color: '#e34f26', component: <HTML5Logo /> },
+  css: { color: '#1572b6', component: <CSS3Logo /> },
+  css3: { color: '#1572b6', component: <CSS3Logo /> },
+  figma: { color: '#f24e1e', component: <FigmaLogo /> },
+  bootstrap: { color: '#7952b3', component: <BootstrapLogo /> },
+  java: { color: '#f89820', component: <JavaLogo /> },
+  spring: { color: '#6db33f', component: <SpringLogo /> },
+  'spring boot': { color: '#6db33f', component: <SpringLogo /> },
+  sql: { color: '#00758f', component: <MySQLLogo /> },
+  mysql: { color: '#00758f', component: <MySQLLogo /> },
+  'c#': { color: '#9b4993', component: <CSharpLogo /> },
+  csharp: { color: '#9b4993', component: <CSharpLogo /> },
+  restful: { color: '#25ff8d', component: <RestApiLogo /> },
+  'restful api': { color: '#25ff8d', component: <RestApiLogo /> },
+  swagger: { color: '#85ea2d', component: <SwaggerLogo /> },
+  git: { color: '#f05032', component: <GitLogo /> },
+  arduino: { color: '#00979d', component: <ArduinoLogo /> },
+  'lm studio': { color: '#a259ff', component: <AILogo /> },
+  ai: { color: '#a259ff', component: <AILogo /> },
+  sensors: { color: '#25ff8d', component: <SensorsLogo /> },
+  motors: { color: '#fe3c01', component: <SensorsLogo /> },
+};
+
+const GenericSkillLogo = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+
+const getCategoryColor = (cat = '') => {
+  const c = cat.toUpperCase();
+  if (c.includes('WEB')) return '#61dafb';
+  if (c.includes('DATA') || c.includes('API')) return '#00758f';
+  if (c.includes('AI') || c.includes('DESIGN')) return '#a259ff';
+  if (c.includes('HARDWARE') || c.includes('IOT')) return '#00979d';
+  if (c.includes('TOOL')) return '#bd34fe';
+  return '#fe3c01';
+};
+
 /**
  * Logomarquee component with dual-track infinite marquee
  * Matching the exact card shape, aspect ratio (1 / 1.2), mask gradient, and forward/reverse speeds.
  */
-function Logomarquee({ activeCategory = 'ALL', onLogoHover = () => {} }) {
+function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover = () => {} }) {
   // Inject mathematical keyframes for smooth, infinite, subpixel-precise loop
   useEffect(() => {
     const styleSheet = document.createElement('style');
@@ -251,28 +301,51 @@ function Logomarquee({ activeCategory = 'ALL', onLogoHover = () => {} }) {
     };
   }, []);
 
+  // Dynamically resolve skills dataset from currentSkills or fallback
+  const dynamicSkillsList = useMemo(() => {
+    if (!currentSkills || !Array.isArray(currentSkills) || currentSkills.length === 0) {
+      return allSkillsList;
+    }
+    const list = [];
+    let idCounter = 100;
+    currentSkills.forEach((catObj) => {
+      const catName = catObj.category || 'GENERAL';
+      const items = Array.isArray(catObj.items) ? catObj.items : [];
+      items.forEach((item) => {
+        const name = String(item).trim();
+        if (!name) return;
+        const key = name.toLowerCase();
+        const preset = PRESET_ICONS[key] || PRESET_ICONS[key.replace(/\s+/g, '')];
+        list.push({
+          id: idCounter++,
+          name,
+          category: catName,
+          color: preset ? preset.color : getCategoryColor(catName),
+          component: preset ? preset.component : <GenericSkillLogo />,
+        });
+      });
+    });
+    return list.length > 0 ? list : allSkillsList;
+  }, [currentSkills]);
+
   // Filter skills by selected category if user clicked a filter pill
   const { filteredRow1, filteredRow2 } = useMemo(() => {
-    if (!activeCategory || activeCategory === 'ALL') {
-      return { filteredRow1: logos1, filteredRow2: logos2 };
+    const listToFilter = dynamicSkillsList;
+    let matches = listToFilter;
+
+    if (activeCategory && activeCategory !== 'ALL') {
+      matches = listToFilter.filter(
+        (s) => s.category.trim().toUpperCase() === activeCategory.trim().toUpperCase()
+      );
     }
 
-    // Filter matching skills
-    const matches = allSkillsList.filter((s) => {
-      if (activeCategory === 'WEB DEV') return s.category === 'WEB DEV';
-      if (activeCategory === 'DATA & API') return s.category === 'DATA & API';
-      if (activeCategory === 'AI & DESIGN') return s.category === 'AI & DESIGN';
-      if (activeCategory === 'HARDWARE (IOT)') return s.category === 'HARDWARE (IOT)';
-      if (activeCategory === 'TOOLS') return s.category === 'TOOLS';
-      return true;
-    });
-
     if (matches.length === 0) {
-      return { filteredRow1: logos1, filteredRow2: logos2 };
+      matches = listToFilter;
     }
 
     // Ensure we have enough items to maintain continuous marquee without gaps
     const ensureCount = (arr, min = 6) => {
+      if (!arr || arr.length === 0) return listToFilter;
       let res = [...arr];
       while (res.length < min) {
         res = [...res, ...arr];
@@ -288,7 +361,7 @@ function Logomarquee({ activeCategory = 'ALL', onLogoHover = () => {} }) {
       filteredRow1: ensureCount(r1),
       filteredRow2: ensureCount(r2),
     };
-  }, [activeCategory]);
+  }, [activeCategory, dynamicSkillsList]);
 
   const Marquee = ({ logos, direction = 'forwards' }) => {
     const numItems = logos.length;

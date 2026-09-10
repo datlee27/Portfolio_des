@@ -1,12 +1,16 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { featuredProjects as defaultProjects, siteMeta as defaultSiteMeta } from '../designs/design4/data/homeData';
 import { POSTS as defaultPosts } from '../designs/design4/components/blog/blogData';
+import staticPortfolioData from '../../portfolioData.json';
 import api from '../services/api';
+
+const defaultSkills = staticPortfolioData?.skills || [];
 
 const PortfolioContext = createContext({
   projects: defaultProjects,
   personal: defaultSiteMeta,
   posts: defaultPosts,
+  skills: defaultSkills,
   loading: false,
   reloadPortfolio: () => {},
 });
@@ -64,7 +68,21 @@ export function PortfolioProvider({ children }) {
   const [projects, setProjects] = useState(defaultProjects);
   const [personal, setPersonal] = useState(defaultSiteMeta);
   const [posts, setPosts] = useState(defaultPosts);
+  const [skills, setSkills] = useState(() => {
+    try {
+      const saved = localStorage.getItem('portfolio_skills_override');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return defaultSkills;
+  });
   const [loading, setLoading] = useState(false);
+
+  const updateSkills = useCallback((newSkills) => {
+    setSkills(newSkills);
+    try {
+      localStorage.setItem('portfolio_skills_override', JSON.stringify(newSkills));
+    } catch {}
+  }, []);
 
   const fetchLivePortfolio = useCallback(async () => {
     setLoading(true);
@@ -77,6 +95,18 @@ export function PortfolioProvider({ children }) {
       if (portRes && portRes.success && portRes.data) {
         if (Array.isArray(portRes.data.projects) && portRes.data.projects.length > 0) {
           setProjects(portRes.data.projects.map(mapApiProject));
+        }
+
+        let savedOverride = null;
+        try {
+          const raw = localStorage.getItem('portfolio_skills_override');
+          if (raw) savedOverride = JSON.parse(raw);
+        } catch {}
+
+        if (savedOverride && Array.isArray(savedOverride) && savedOverride.length > 0) {
+          setSkills(savedOverride);
+        } else if (Array.isArray(portRes.data.skills) && portRes.data.skills.length > 0) {
+          setSkills(portRes.data.skills);
         }
 
         if (portRes.data.personal) {
@@ -115,6 +145,9 @@ export function PortfolioProvider({ children }) {
         projects,
         personal,
         posts,
+        skills,
+        setSkills,
+        updateSkills,
         loading,
         reloadPortfolio: fetchLivePortfolio,
       }}

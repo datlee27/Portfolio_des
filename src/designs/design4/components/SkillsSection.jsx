@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import portfolioData from '../../../../portfolioData.json';
+import { usePortfolio } from '../../../context/PortfolioContext';
 import Logomarquee from './Logomarquee';
 import SkillTrailEffect from './SkillTrailEffect';
 
@@ -7,11 +8,16 @@ export default function SkillsSection() {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [hoveredSkill, setHoveredSkill] = useState({ color: '#fe3c01', name: '' });
 
-  // Extract categories from portfolioData.json
+  const { skills: liveSkills } = usePortfolio();
+  const currentSkills = useMemo(() => {
+    return liveSkills && liveSkills.length > 0 ? liveSkills : portfolioData?.skills || [];
+  }, [liveSkills]);
+
+  // Extract categories from dynamic skills
   const categories = useMemo(() => {
-    const rawCats = portfolioData?.skills?.map((s) => s.category) || [];
+    const rawCats = currentSkills.map((s) => s.category) || [];
     return ['ALL', ...rawCats];
-  }, []);
+  }, [currentSkills]);
 
   return (
     <section
@@ -137,6 +143,7 @@ export default function SkillsSection() {
       <div style={{ width: '100%', position: 'relative', zIndex: 5 }}>
         <Logomarquee
           activeCategory={activeCategory}
+          currentSkills={currentSkills}
           onLogoHover={(logo) => setHoveredSkill({ color: logo.color, name: logo.name })}
         />
       </div>
