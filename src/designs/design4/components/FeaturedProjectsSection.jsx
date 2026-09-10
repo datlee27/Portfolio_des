@@ -4,10 +4,13 @@ import { SiGithub } from 'react-icons/si';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../data/homeData';
+import { usePortfolio } from '@/context/PortfolioContext';
 import ProjectModalD4 from './ProjectModalD4';
 
 export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
+  const { projects } = usePortfolio();
+  const displayProjects = projects && projects.length > 0 ? projects : featuredProjects;
   return (
     <section
       id="d4-work"
@@ -62,7 +65,7 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
 
         {/* Project List */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {featuredProjects.map((project, idx) => (
+          {displayProjects.map((project, idx) => (
             <ScrollAnimation
               key={project.id}
               direction={idx % 2 === 0 ? 'left' : 'right'}

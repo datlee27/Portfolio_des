@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { featuredProjects } from '../data/homeData';
+import { usePortfolio } from '@/context/PortfolioContext';
 import FooterSection from './FooterSection';
 import PDFViewer from './PDFViewer';
 import SkillsSection from './SkillsSection';
@@ -11,6 +12,8 @@ import { ScrollAnimation } from '@/components/ui/scroll-animation';
 export default function Des4WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedProject, setSelectedProject] = useState(null);
+  const { projects } = usePortfolio();
+  const allProjects = projects && projects.length > 0 ? projects : featuredProjects;
 
   useEffect(() => {
     if (window.lenis) {
@@ -22,25 +25,25 @@ export default function Des4WorkPage({ onGoHome }) {
   }, []);
 
   const categories = [
-    { key: 'ALL', label: 'All Projects', count: featuredProjects.length },
+    { key: 'ALL', label: 'All Projects', count: allProjects.length },
     {
       key: 'FULLSTACK',
       label: 'FullStack',
-      count: featuredProjects.filter((p) =>
+      count: allProjects.filter((p) =>
         p.tags.some((t) => ['FullStack', 'Spring Boot', 'Java', 'MySQL'].includes(t))
       ).length,
     },
     {
       key: 'FRONTEND',
       label: 'React & UI',
-      count: featuredProjects.filter((p) =>
+      count: allProjects.filter((p) =>
         p.tags.some((t) => ['React', 'TypeScript', 'Vite', 'Tailwind CSS'].includes(t))
       ).length,
     },
     {
       key: 'AI_IOT',
       label: 'AI & Hardware',
-      count: featuredProjects.filter((p) =>
+      count: allProjects.filter((p) =>
         p.tags.some((t) => ['AI', 'Arduino', 'IoT', 'Sensors'].includes(t))
       ).length,
     },
@@ -60,7 +63,7 @@ export default function Des4WorkPage({ onGoHome }) {
     },
   ];
 
-  const filteredProjects = featuredProjects.filter((project) => {
+  const filteredProjects = allProjects.filter((project) => {
     if (selectedCategory === 'ALL') return true;
     if (selectedCategory === 'FULLSTACK') {
       return project.tags.some((t) => ['FullStack', 'Spring Boot', 'Java', 'MySQL'].includes(t));

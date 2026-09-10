@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './blog.css';
 
 import { SITE, TAGS, POSTS, THEMES } from './blogData';
+import { usePortfolio } from '@/context/PortfolioContext';
 import BlogHeader from './BlogHeader';
 import BlogTagFilter from './BlogTagFilter';
 import BlogPostList from './BlogPostList';
@@ -15,6 +16,8 @@ import BlogFooter from './BlogFooter';
  * Light mode (white bg) is the default.
  */
 export default function BlogPageRedesign() {
+  const { posts } = usePortfolio();
+  const allPosts = posts && posts.length > 0 ? posts : POSTS;
   const [isDark, setIsDark] = useState(false);
   const [activeTag, setActiveTag] = useState('tất cả');
   const [query, setQuery] = useState('');
@@ -61,7 +64,7 @@ export default function BlogPageRedesign() {
 
   /* ── Filtering ──────────────────────────────────────────────────── */
   const q = query.trim().toLowerCase();
-  const filteredPosts = POSTS.filter((p) => {
+  const filteredPosts = allPosts.filter((p) => {
     const matchesTag = activeTag === 'tất cả' || p.tag === activeTag;
     const matchesQuery =
       q === '' ||
