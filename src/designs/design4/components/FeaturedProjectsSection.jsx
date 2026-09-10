@@ -6,7 +6,7 @@ import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../data/homeData';
 import ProjectModalD4 from './ProjectModalD4';
 
-export default function FeaturedProjectsSection() {
+export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
   return (
     <section
@@ -319,6 +319,45 @@ export default function FeaturedProjectsSection() {
           </ScrollAnimation>
         ))}
         </div>
+
+        {/* View All Selected Works Button */}
+        {onOpenWork && (
+          <div style={{ marginTop: 52, display: 'flex', justifyContent: 'center' }}>
+            <button
+              onClick={onOpenWork}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '16px 36px',
+                borderRadius: 100,
+                background: '#07080b',
+                color: '#ffffff',
+                border: '1.5px solid rgba(0, 0, 0, 0.1)',
+                fontFamily: 'var(--font-outfit)',
+                fontSize: 15,
+                fontWeight: 800,
+                letterSpacing: '0.02em',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fe3c01';
+                e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                e.currentTarget.style.boxShadow = '0 18px 40px rgba(254, 60, 1, 0.35)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#07080b';
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15)';
+              }}
+            >
+              <span>Explore All Selected Works & Case Studies</span>
+              <ArrowUpRight size={18} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* macOS TitleBar Project Details Modal */}
