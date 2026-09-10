@@ -80,12 +80,11 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
                 }
                 alt="Avatar Preview"
                 style={{
-                  width: 84,
-                  height: 84,
+                  width: 80,
+                  height: 80,
                   borderRadius: '50%',
                   objectFit: 'cover',
-                  border: '3px solid #fe3c01',
-                  boxShadow: '0 0 24px rgba(254, 60, 1, 0.35)',
+                  border: '2px solid var(--admin-card-border)',
                 }}
               />
             </div>

@@ -177,7 +177,7 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
           </div>
 
           {/* Add Post Button */}
-          <button onClick={handleOpenAdd} className="admin-btn admin-btn-primary">
+          <button id="btn-add-post" onClick={handleOpenAdd} className="admin-btn admin-btn-primary">
             <Plus size={16} />
             <span>Viết Bài Mới</span>
           </button>
@@ -214,11 +214,11 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
                       <div
                         style={{
                           width: 60,
-                          height: 42,
-                          borderRadius: 6,
+                          height: 40,
+                          borderRadius: 4,
                           overflow: 'hidden',
-                          background: '#1a1d28',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          background: '#f1f5f9',
+                          border: '1px solid var(--admin-card-border)',
                         }}
                       >
                         {p.image_url || p.image ? (
@@ -228,8 +228,8 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                         ) : (
-                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555' }}>
-                            <ImageIcon size={16} />
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-text-muted)' }}>
+                            <ImageIcon size={15} />
                           </div>
                         )}
                       </div>
@@ -237,7 +237,7 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
 
                     {/* Title & Slug */}
                     <td>
-                      <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 14 }}>
+                      <div style={{ fontWeight: 600, color: 'var(--admin-text)', fontSize: 13.5 }}>
                         {p.title}
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--admin-accent)', marginTop: 2, fontFamily: 'monospace' }}>
@@ -264,7 +264,7 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
 
                     {/* Author & Date */}
                     <td>
-                      <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.85)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontSize: 12, color: 'var(--admin-text)', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <User size={11} style={{ color: 'var(--admin-text-muted)' }} />
                         <span>{p.author || 'Lê Văn Đạt'}</span>
                       </div>
@@ -413,10 +413,10 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
                       <img
                         src={formData.image_url}
                         alt="Preview"
-                        style={{ width: 100, height: 60, borderRadius: 6, objectFit: 'cover', border: '1px solid rgba(254, 60, 1, 0.4)' }}
+                        style={{ width: 100, height: 60, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
                         onError={(e) => (e.currentTarget.style.display = 'none')}
                       />
-                      <span style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>Xem trước ảnh bìa</span>
+                      <span style={{ fontSize: 11.5, color: 'var(--admin-text-muted)' }}>Xem trước ảnh bìa</span>
                     </div>
                   )}
                 </div>

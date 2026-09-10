@@ -19,11 +19,9 @@ export default function BlogMediaGallery({ media, onOpenLightbox, theme }) {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  if (!media || !media.items || media.items.length === 0) return null;
-
-  const items = media.items;
+  const items = media?.items || [];
   const isSingle = items.length === 1;
-  const isVideo = media.type === 'video';
+  const isVideo = media?.type === 'video';
 
   const nextSlide = useCallback(
     (e) => {
@@ -40,6 +38,8 @@ export default function BlogMediaGallery({ media, onOpenLightbox, theme }) {
     },
     [items.length]
   );
+
+  if (!media || !media.items || media.items.length === 0) return null;
 
   function handleTouchStart(e) {
     touchStartX.current = e.touches[0].clientX;

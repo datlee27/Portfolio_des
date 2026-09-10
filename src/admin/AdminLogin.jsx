@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert, Sparkles } from 'lucide-react';
+import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert } from 'lucide-react';
 import api from '../services/api';
 
 export default function AdminLogin({ onLoginSuccess, onGoHome }) {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,10 +25,10 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
           onLoginSuccess(res.data || { username });
         }
       } else {
-        setError(res?.message || 'Đăng nhập không thành công. Kiểm tra lại thông tin.');
+        setError(res?.message || 'Tài khoản hoặc mật khẩu không chính xác.');
       }
     } catch (err) {
-      setError(err.message || 'Lỗi kết nối máy chủ API.');
+      setError(err.message || 'Không thể kết nối đến máy chủ API.');
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
     <div className="admin-login-wrapper">
       <div className="admin-login-box">
         {/* Top Back Link */}
-        <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button
             type="button"
             onClick={onGoHome}
@@ -48,24 +48,24 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
             <ArrowLeft size={13} />
             <span>Về Portfolio</span>
           </button>
-          <span className="admin-brand-badge">API V1.0</span>
+          <span className="admin-brand-badge">PORTAL</span>
         </div>
 
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div
             style={{
-              fontFamily: 'var(--font-outfit)',
-              fontSize: 42,
-              fontWeight: 900,
+              fontFamily: 'var(--font-outfit, sans-serif)',
+              fontSize: 36,
+              fontWeight: 800,
               letterSpacing: '-0.04em',
-              color: '#ffffff',
+              color: 'var(--admin-text)',
               lineHeight: 1,
               marginBottom: 8,
             }}
           >
-            dl<span style={{ color: '#fe3c01' }}>*</span>
-            <span style={{ fontSize: 18, color: '#fe3c01', marginLeft: 8, fontWeight: 700, letterSpacing: '0.05em' }}>
+            dl<span style={{ color: 'var(--admin-accent)' }}>*</span>
+            <span style={{ fontSize: 16, color: 'var(--admin-accent)', marginLeft: 8, fontWeight: 700, letterSpacing: '0.05em' }}>
               ADMIN
             </span>
           </div>
@@ -80,9 +80,9 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
             style={{
               padding: '10px 14px',
               borderRadius: 8,
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#f87171',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
               fontSize: 13,
               marginBottom: 20,
               display: 'flex',
@@ -99,7 +99,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
         <form onSubmit={handleSubmit}>
           <div className="admin-form-group">
             <label className="admin-form-label" htmlFor="username">
-              Tài khoản Admin
+              Tài khoản
             </label>
             <div style={{ position: 'relative' }}>
               <input
@@ -108,7 +108,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
                 className="admin-input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Nhập tên tài khoản"
                 style={{ paddingLeft: 38 }}
                 autoComplete="username"
                 required
@@ -126,7 +126,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
             </div>
           </div>
 
-          <div className="admin-form-group">
+          <div className="admin-form-group" style={{ marginBottom: 24 }}>
             <label className="admin-form-label" htmlFor="password">
               Mật khẩu
             </label>
@@ -155,57 +155,19 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
             </div>
           </div>
 
-          {/* Quick Credential Helper Pill */}
-          <div
-            style={{
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: 6,
-              fontSize: 12,
-              color: 'var(--admin-text-muted)',
-              marginBottom: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Sparkles size={13} style={{ color: '#fe3c01' }} />
-              <span>Mặc định: <strong>admin</strong> / <strong>admin123</strong></span>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setUsername('admin');
-                setPassword('admin123');
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#fe3c01',
-                cursor: 'pointer',
-                fontSize: 11,
-                fontWeight: 700,
-                padding: 0,
-              }}
-            >
-              Điền nhanh
-            </button>
-          </div>
-
           {/* Submit Button */}
           <button
             type="submit"
             className="admin-btn admin-btn-primary"
             disabled={loading}
-            style={{ width: '100%', padding: '12px 20px', fontSize: 14 }}
+            style={{ width: '100%', padding: '11px 20px', fontSize: 14 }}
           >
             {loading ? (
-              <span>Đang kết nối API...</span>
+              <span>Đang xác thực...</span>
             ) : (
               <>
-                <span>Đăng Nhập Quản Trị</span>
-                <ArrowRight size={16} />
+                <span>Đăng Nhập</span>
+                <ArrowRight size={15} />
               </>
             )}
           </button>

@@ -120,6 +120,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             return (
               <button
                 key={item.id}
+                id={`nav-tab-${item.id}`}
                 onClick={() => {
                   setActiveTab(item.id);
                   setSidebarOpen(false);
@@ -132,10 +133,11 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
                   <span
                     style={{
                       fontSize: 11,
-                      padding: '1px 6px',
+                      padding: '1px 7px',
                       borderRadius: 10,
-                      background: isActive ? 'var(--admin-accent)' : 'rgba(255, 255, 255, 0.08)',
-                      color: '#ffffff',
+                      background: isActive ? '#ffffff' : '#f1f5f9',
+                      color: isActive ? 'var(--admin-primary)' : 'var(--admin-text-secondary)',
+                      fontWeight: 600,
                     }}
                   >
                     {item.count}
@@ -151,7 +153,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           <button
             onClick={onGoHome}
             className="admin-btn admin-btn-secondary"
-            style={{ width: '100%', justifyContent: 'flex-start', fontSize: 12 }}
+            style={{ width: '100%', justifyContent: 'flex-start', fontSize: 12.5 }}
           >
             <ExternalLink size={14} />
             <span>Xem Live Portfolio</span>
@@ -160,7 +162,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           <button
             onClick={handleLogout}
             className="admin-btn admin-btn-secondary"
-            style={{ width: '100%', justifyContent: 'flex-start', fontSize: 12, color: '#ef4444' }}
+            style={{ width: '100%', justifyContent: 'flex-start', fontSize: 12.5, color: '#dc2626' }}
           >
             <LogOut size={14} />
             <span>Đăng Xuất</span>
@@ -192,7 +194,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
               disabled={loading}
               className="admin-btn admin-btn-secondary"
               title="Làm mới dữ liệu từ API"
-              style={{ padding: '7px 12px', fontSize: 12 }}
+              style={{ padding: '6px 12px', fontSize: 12.5 }}
             >
               <RefreshCw size={13} className={loading ? 'spin' : ''} />
               <span>{loading ? 'Đang nạp...' : 'Đồng Bộ API'}</span>
@@ -204,12 +206,13 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '6px 14px',
+                padding: '5px 12px',
                 borderRadius: 100,
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: '#ffffff',
                 border: '1px solid var(--admin-card-border)',
                 fontSize: 12,
                 fontWeight: 600,
+                color: 'var(--admin-text)',
               }}
             >
               <span
@@ -218,7 +221,6 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
                   height: 7,
                   borderRadius: '50%',
                   background: '#10b981',
-                  boxShadow: '0 0 6px #10b981',
                 }}
               />
               <span>{user?.username || 'admin'}</span>
