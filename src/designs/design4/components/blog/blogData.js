@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Blog data, constants, themes, and helpers.
  * Uses Vietnamese content matching the "chạng vạng" personal blog style.
  */
@@ -198,6 +198,9 @@ export const THEMES = {
 };
 
 export function formatDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
+  if (!dateStr) return '';
+  const cleanStr = String(dateStr).split(' ')[0];
+  const d = new Date(cleanStr.includes('T') ? cleanStr : cleanStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return cleanStr;
   return `${d.getDate()} thg ${d.getMonth() + 1}`;
 }

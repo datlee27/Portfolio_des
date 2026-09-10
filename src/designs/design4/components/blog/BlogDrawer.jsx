@@ -77,9 +77,15 @@ export default function BlogDrawer({
 
               {/* Article Content */}
               <div className="blog-drawer-paragraphs">
-                {post.content.map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
+                {Array.isArray(post.content) ? (
+                  post.content.map((para, i) => <p key={i}>{para}</p>)
+                ) : typeof post.content === 'string' && post.content.includes('<') ? (
+                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                ) : (
+                  (post.content || '').split('\n').filter(Boolean).map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))
+                )}
               </div>
 
               {/* Like Button — Framer Emoji-Buttons effect */}

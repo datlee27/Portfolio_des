@@ -35,17 +35,28 @@ function mapApiProject(p, idx) {
 
 // Map API post object to frontend post object
 function mapApiPost(p, idx) {
+  const matchedDefault = defaultPosts.find(
+    (dp) =>
+      dp.slug === p.slug ||
+      dp.title?.toLowerCase().trim() === p.title?.toLowerCase().trim() ||
+      dp.id === Number(p.id)
+  );
+
   return {
     id: p.id || p.post_id || idx + 1,
     post_id: p.post_id || `post-${p.id || idx + 1}`,
     slug: p.slug || `post-${p.id || idx + 1}`,
     title: p.title,
-    excerpt: p.excerpt || '',
-    content: p.content || '',
+    excerpt: p.excerpt || matchedDefault?.excerpt || '',
+    content: p.content || matchedDefault?.content || '',
     author: p.author || 'Lê Văn Đạt',
-    date: p.published_date || p.date || 'Gần đây',
+    date: p.published_date || p.date || matchedDefault?.date || '2026-08-12',
     readTime: p.read_time ? `${p.read_time} min read` : '5 min read',
-    image: p.image_url || p.image || '',
+    image: p.image_url || p.image || matchedDefault?.media?.items?.[0] || '',
+    tag: p.tag || matchedDefault?.tag || 'suy ngẫm',
+    likes: parseInt(p.total_likes, 10) || matchedDefault?.likes || 12,
+    comments: matchedDefault?.comments || [],
+    media: matchedDefault?.media || (p.image_url ? { type: 'image', items: [p.image_url] } : null),
   };
 }
 
