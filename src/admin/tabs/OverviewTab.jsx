@@ -12,6 +12,11 @@ import {
 export default function OverviewTab({
   portfolioData,
   postsData,
+  onRefresh,
+  loading = false,
+  isConnected = false,
+  onResetToDefaults,
+  showToast,
   onNavigateTab,
 }) {
   const personal = portfolioData?.personal || {};

@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Bỏ qua và giữ nguyên toàn bộ request gọi vào Backend API
+  RewriteRule ^api/ - [L]
+
+  # 2. Nếu request là file hoặc thư mục thật đang tồn tại thì mở trực tiếp
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 3. Mọi đường dẫn ảo khác của Frontend (như /admin, /posts,...) chuyển về index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Bật nén Gzip tăng tốc độ tải trang
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
