@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert, WifiOff } from 'lucide-react';
 import api from '../services/api';
 
 export default function AdminLogin({ onLoginSuccess, onGoHome }) {
@@ -7,6 +7,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [allowOfflineLogin, setAllowOfflineLogin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,6 +18,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
 
     setLoading(true);
     setError(null);
+    setAllowOfflineLogin(false);
 
     try {
       const res = await api.login(username, password);
@@ -28,9 +30,23 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
         setError(res?.message || 'Tài khoản hoặc mật khẩu không chính xác.');
       }
     } catch (err) {
-      setError(err.message || 'Không thể kết nối đến máy chủ API.');
+      setError(
+        'Không thể kết nối đến máy chủ API (Mạng ngoại tuyến hoặc máy chủ chưa sẵn sàng).'
+      );
+      // Offer offline login option
+      setAllowOfflineLogin(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOfflineLogin = () => {
+    if (onLoginSuccess) {
+      onLoginSuccess({
+        username: username || 'admin',
+        role: 'offline_admin',
+        isOfflineMode: true,
+      });
     }
   };
 
@@ -86,12 +102,39 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
               fontSize: 13,
               marginBottom: 20,
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: 'column',
               gap: 8,
             }}
           >
-            <ShieldAlert size={16} />
-            <span>{error}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ShieldAlert size={16} />
+              <span>{error}</span>
+            </div>
+
+            {allowOfflineLogin && (
+              <button
+                type="button"
+                onClick={handleOfflineLogin}
+                style={{
+                  marginTop: 6,
+                  padding: '7px 12px',
+                  borderRadius: 6,
+                  background: '#b91c1c',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <WifiOff size={14} />
+                <span>Vào Chế Độ Quản Trị Cục Bộ (Offline Mode)</span>
+              </button>
+            )}
           </div>
         )}
 

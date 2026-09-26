@@ -5,8 +5,23 @@ import AdminDashboard from './AdminDashboard';
 import api from '../services/api';
 
 export default function AdminApp({ onGoHome }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      return Boolean(localStorage.getItem('admin_session'));
+    } catch {
+      return false;
+    }
+  });
+
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('admin_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   // Check existing session on mount
@@ -17,12 +32,33 @@ export default function AdminApp({ onGoHome }) {
         if (res && res.success && (res.data?.logged_in || res.data?.username)) {
           setIsAuthenticated(true);
           setUser(res.data);
+          try {
+            localStorage.setItem('admin_session', JSON.stringify(res.data));
+          } catch {}
         } else {
-          setIsAuthenticated(false);
-          setUser(null);
+          // If server explicitly says not logged in, check local session fallback
+          const localSession = localStorage.getItem('admin_session');
+          if (localSession) {
+            setIsAuthenticated(true);
+            setUser(JSON.parse(localSession));
+          } else {
+            setIsAuthenticated(false);
+            setUser(null);
+          }
         }
       } catch {
-        setIsAuthenticated(false);
+        // Network error / offline fallback: keep local session if present
+        const localSession = localStorage.getItem('admin_session');
+        if (localSession) {
+          try {
+            setIsAuthenticated(true);
+            setUser(JSON.parse(localSession));
+          } catch {
+            setIsAuthenticated(false);
+          }
+        } else {
+          setIsAuthenticated(false);
+        }
       } finally {
         setCheckingAuth(false);
       }
@@ -33,11 +69,17 @@ export default function AdminApp({ onGoHome }) {
   const handleLoginSuccess = (userData) => {
     setIsAuthenticated(true);
     setUser(userData);
+    try {
+      localStorage.setItem('admin_session', JSON.stringify(userData));
+    } catch {}
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    try {
+      localStorage.removeItem('admin_session');
+    } catch {}
   };
 
   if (checkingAuth) {

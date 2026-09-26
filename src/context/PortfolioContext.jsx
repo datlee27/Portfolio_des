@@ -12,33 +12,42 @@ const PortfolioContext = createContext({
   posts: defaultPosts,
   skills: defaultSkills,
   loading: false,
+  isOffline: false,
+  isApiConnected: false,
+  lastSynced: null,
   reloadPortfolio: () => {},
+  updateProjects: () => {},
+  updatePersonal: () => {},
+  updatePosts: () => {},
+  updateSkills: () => {},
+  resetToDefaults: () => {},
 });
 
 const accentColors = ['#fe3c01', '#2563eb', '#059669', '#9333ea', '#d97706', '#0284c7'];
 
 // Map API project object to frontend project object
-function mapApiProject(p, idx) {
+export function mapApiProject(p, idx) {
   const tags = Array.isArray(p.tags) ? p.tags : (p.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
   return {
     id: p.id || String(idx + 1),
-    code: p.project_code ? `(${p.project_code.padStart(2, '0')})` : `(0${idx + 1})`,
+    project_code: p.project_code || `0${idx + 1}`,
+    code: p.project_code ? `(${String(p.project_code).padStart(2, '0')})` : `(0${idx + 1})`,
     title: p.title,
     description: p.description || '',
     client: tags.slice(0, 2).join(' / ') || 'Production App',
     clientCode: `(PR0${idx + 1})`,
     tags,
-    github: p.github_url || '',
-    deploy: p.deploy_url || '',
+    github: p.github_url || p.github || '',
+    deploy: p.deploy_url || p.deploy || '',
     status: p.status || 'Latest',
-    image: p.image_url || defaultProjects[idx % defaultProjects.length]?.image || '',
+    image: p.image_url || p.image || defaultProjects[idx % defaultProjects.length]?.image || '',
     accentColor: accentColors[idx % accentColors.length],
-    hasCaseStudy: Boolean(p.deploy_url || p.github_url),
+    hasCaseStudy: Boolean(p.deploy_url || p.deploy || p.github_url || p.github),
   };
 }
 
 // Map API post object to frontend post object
-function mapApiPost(p, idx) {
+export function mapApiPost(p, idx) {
   const matchedDefault = defaultPosts.find(
     (dp) =>
       dp.slug === p.slug ||
@@ -65,25 +74,130 @@ function mapApiPost(p, idx) {
 }
 
 export function PortfolioProvider({ children }) {
-  const [projects, setProjects] = useState(defaultProjects);
-  const [personal, setPersonal] = useState(defaultSiteMeta);
-  const [posts, setPosts] = useState(defaultPosts);
+  // 1. Projects: check localStorage override -> fallback to defaultProjects
+  const [projects, setProjects] = useState(() => {
+    try {
+      const saved = localStorage.getItem('portfolio_projects_override');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return defaultProjects;
+  });
+
+  // 2. Personal info: check localStorage override -> fallback to defaultSiteMeta
+  const [personal, setPersonal] = useState(() => {
+    try {
+      const saved = localStorage.getItem('portfolio_personal_override');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          return { ...defaultSiteMeta, ...parsed };
+        }
+      }
+    } catch {}
+    return defaultSiteMeta;
+  });
+
+  // 3. Posts: check localStorage override -> fallback to defaultPosts
+  const [posts, setPosts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('portfolio_posts_override');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return defaultPosts;
+  });
+
+  // 4. Skills: check localStorage override -> fallback to defaultSkills
   const [skills, setSkills] = useState(() => {
     try {
       const saved = localStorage.getItem('portfolio_skills_override');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch {}
     return defaultSkills;
   });
+
   const [loading, setLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(() =>
+    typeof navigator !== 'undefined' ? !navigator.onLine : false
+  );
+  const [isApiConnected, setIsApiConnected] = useState(false);
+  const [lastSynced, setLastSynced] = useState(null);
+
+  // Monitor online / offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Setters with persistent offline storage
+  const updateProjects = useCallback((newProjects) => {
+    setProjects(newProjects);
+    try {
+      localStorage.setItem('portfolio_projects_override', JSON.stringify(newProjects));
+    } catch (e) {
+      console.warn('Failed to cache projects in localStorage:', e);
+    }
+  }, []);
+
+  const updatePersonal = useCallback((newPersonal) => {
+    setPersonal((prev) => {
+      const merged = { ...prev, ...newPersonal };
+      try {
+        localStorage.setItem('portfolio_personal_override', JSON.stringify(merged));
+      } catch (e) {
+        console.warn('Failed to cache personal in localStorage:', e);
+      }
+      return merged;
+    });
+  }, []);
+
+  const updatePosts = useCallback((newPosts) => {
+    setPosts(newPosts);
+    try {
+      localStorage.setItem('portfolio_posts_override', JSON.stringify(newPosts));
+    } catch (e) {
+      console.warn('Failed to cache posts in localStorage:', e);
+    }
+  }, []);
 
   const updateSkills = useCallback((newSkills) => {
     setSkills(newSkills);
     try {
       localStorage.setItem('portfolio_skills_override', JSON.stringify(newSkills));
-    } catch {}
+    } catch (e) {
+      console.warn('Failed to cache skills in localStorage:', e);
+    }
   }, []);
 
+  // Revert back to original hardcoded files
+  const resetToDefaults = useCallback(() => {
+    try {
+      localStorage.removeItem('portfolio_projects_override');
+      localStorage.removeItem('portfolio_personal_override');
+      localStorage.removeItem('portfolio_posts_override');
+      localStorage.removeItem('portfolio_skills_override');
+    } catch {}
+    setProjects(defaultProjects);
+    setPersonal(defaultSiteMeta);
+    setPosts(defaultPosts);
+    setSkills(defaultSkills);
+  }, []);
+
+  // Fetch live API data with graceful offline/hardcoded fallback
   const fetchLivePortfolio = useCallback(async () => {
     setLoading(true);
     try {
@@ -92,24 +206,25 @@ export function PortfolioProvider({ children }) {
         api.getPosts().catch(() => null),
       ]);
 
+      let apiSuccess = false;
+
+      // Handle portfolio API response
       if (portRes && portRes.success && portRes.data) {
-        if (Array.isArray(portRes.data.projects) && portRes.data.projects.length > 0) {
+        apiSuccess = true;
+
+        // Check if user has explicit local override
+        const hasProjectOverride = Boolean(localStorage.getItem('portfolio_projects_override'));
+        if (!hasProjectOverride && Array.isArray(portRes.data.projects) && portRes.data.projects.length > 0) {
           setProjects(portRes.data.projects.map(mapApiProject));
         }
 
-        let savedOverride = null;
-        try {
-          const raw = localStorage.getItem('portfolio_skills_override');
-          if (raw) savedOverride = JSON.parse(raw);
-        } catch {}
-
-        if (savedOverride && Array.isArray(savedOverride) && savedOverride.length > 0) {
-          setSkills(savedOverride);
-        } else if (Array.isArray(portRes.data.skills) && portRes.data.skills.length > 0) {
+        const hasSkillOverride = Boolean(localStorage.getItem('portfolio_skills_override'));
+        if (!hasSkillOverride && Array.isArray(portRes.data.skills) && portRes.data.skills.length > 0) {
           setSkills(portRes.data.skills);
         }
 
-        if (portRes.data.personal) {
+        const hasPersonalOverride = Boolean(localStorage.getItem('portfolio_personal_override'));
+        if (!hasPersonalOverride && portRes.data.personal) {
           setPersonal((prev) => ({
             ...prev,
             ...portRes.data.personal,
@@ -125,11 +240,22 @@ export function PortfolioProvider({ children }) {
         }
       }
 
+      // Handle blog posts API response
       if (postsRes && postsRes.success && Array.isArray(postsRes.data) && postsRes.data.length > 0) {
-        setPosts(postsRes.data.map(mapApiPost));
+        apiSuccess = true;
+        const hasPostOverride = Boolean(localStorage.getItem('portfolio_posts_override'));
+        if (!hasPostOverride) {
+          setPosts(postsRes.data.map(mapApiPost));
+        }
+      }
+
+      setIsApiConnected(apiSuccess);
+      if (apiSuccess) {
+        setLastSynced(new Date().toISOString());
       }
     } catch (err) {
-      console.warn('[PortfolioContext] Failed to sync live API data, using static fallback:', err);
+      console.warn('[PortfolioContext] Live API sync failed, continuing with cached/static fallback:', err);
+      setIsApiConnected(false);
     } finally {
       setLoading(false);
     }
@@ -146,9 +272,16 @@ export function PortfolioProvider({ children }) {
         personal,
         posts,
         skills,
+        loading,
+        isOffline,
+        isApiConnected,
+        lastSynced,
         setSkills,
         updateSkills,
-        loading,
+        updateProjects,
+        updatePersonal,
+        updatePosts,
+        resetToDefaults,
         reloadPortfolio: fetchLivePortfolio,
       }}
     >

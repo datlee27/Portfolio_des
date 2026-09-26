@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 
+import { usePortfolio } from '../../context/PortfolioContext';
+
 // Helper to generate SEO-friendly slug
 function generateSlug(text) {
   return text
@@ -27,7 +29,22 @@ function generateSlug(text) {
     .trim();
 }
 
-export default function BlogTab({ posts, onRefresh, showToast }) {
+export default function BlogTab({ posts = [], onRefresh, showToast }) {
+  const { updatePosts: contextUpdatePosts, posts: ctxPosts } = usePortfolio();
+
+  const [localPosts, setLocalPosts] = useState(() => {
+    if (posts && posts.length > 0) return posts;
+    return ctxPosts || [];
+  });
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      setLocalPosts(posts);
+    } else if (ctxPosts && ctxPosts.length > 0) {
+      setLocalPosts(ctxPosts);
+    }
+  }, [posts, ctxPosts]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,7 +70,7 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
   const [formData, setFormData] = useState(initialFormState);
 
   // Filtered posts
-  const filteredPosts = posts.filter((p) => {
+  const filteredPosts = localPosts.filter((p) => {
     const term = searchTerm.toLowerCase();
     const title = (p.title || '').toLowerCase();
     const excerpt = (p.excerpt || '').toLowerCase();
@@ -108,15 +125,45 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
     try {
       const payload = {
         ...formData,
+        id: isEditing ? currentId : String(Date.now()),
+        post_id: isEditing ? currentId : `post-${Date.now()}`,
         read_time: Number(formData.read_time) || 5,
+        readTime: `${Number(formData.read_time) || 5} min read`,
+        image: formData.image_url,
+        date: formData.published_date,
+        media: formData.image_url ? { type: 'image', items: [formData.image_url] } : null,
       };
 
+      let updatedList;
       if (isEditing) {
-        await api.updatePost(currentId, payload);
-        showToast('Cập nhật bài viết thành công!', 'success');
+        updatedList = localPosts.map((p) =>
+          (p.id === currentId || p.post_id === currentId) ? { ...p, ...payload } : p
+        );
       } else {
-        await api.createPost(payload);
-        showToast('Đăng bài viết mới thành công!', 'success');
+        updatedList = [payload, ...localPosts];
+      }
+
+      setLocalPosts(updatedList);
+      if (contextUpdatePosts) {
+        contextUpdatePosts(updatedList);
+      }
+
+      try {
+        if (isEditing) {
+          await api.updatePost(currentId, payload);
+          showToast('Cập nhật bài viết thành công (Đồng bộ máy chủ)!', 'success');
+        } else {
+          await api.createPost(payload);
+          showToast('Đăng bài viết mới thành công (Đồng bộ máy chủ)!', 'success');
+        }
+      } catch (apiErr) {
+        console.warn('API sync deferred/offline:', apiErr);
+        showToast(
+          isEditing
+            ? 'Đã lưu chỉnh sửa bài viết vào bộ nhớ máy (Chế độ Ngoại tuyến)!'
+            : 'Đã tạo bài viết mới vào bộ nhớ máy (Chế độ Ngoại tuyến)!',
+          'success'
+        );
       }
 
       setModalOpen(false);
@@ -131,8 +178,20 @@ export default function BlogTab({ posts, onRefresh, showToast }) {
   const handleDelete = async (id) => {
     setDeleting(true);
     try {
-      await api.deletePost(id);
-      showToast('Đã xóa bài viết thành công!', 'success');
+      const updatedList = localPosts.filter((p) => p.id !== id && p.post_id !== id);
+      setLocalPosts(updatedList);
+      if (contextUpdatePosts) {
+        contextUpdatePosts(updatedList);
+      }
+
+      try {
+        await api.deletePost(id);
+        showToast('Đã xóa bài viết thành công!', 'success');
+      } catch (apiErr) {
+        console.warn('API delete deferred/offline:', apiErr);
+        showToast('Đã xóa bài viết khỏi bộ nhớ cục bộ!', 'success');
+      }
+
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
     } catch (err) {

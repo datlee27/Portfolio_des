@@ -70,13 +70,27 @@ export default function OverviewTab({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <div className="admin-stat-label">Trạng Thái API</div>
-              <div className="admin-stat-value" style={{ fontSize: 24, color: '#10b981', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CheckCircle2 size={24} />
-                <span>ONLINE</span>
+              <div
+                className="admin-stat-value"
+                style={{
+                  fontSize: 20,
+                  color: isConnected ? '#10b981' : '#f59e0b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <CheckCircle2 size={20} />
+                <span>{isConnected ? 'ONLINE' : 'LOCAL / OFFLINE'}</span>
               </div>
-              <div className="admin-stat-sub">datdoc.id.vn • REST 200 OK</div>
+              <div className="admin-stat-sub">
+                {isConnected ? 'datdoc.id.vn • REST 200 OK' : 'Đang dùng bộ nhớ cục bộ dự phòng'}
+              </div>
             </div>
-            <div className="admin-badge admin-badge-green" style={{ padding: 8 }}>
+            <div
+              className={`admin-badge ${isConnected ? 'admin-badge-green' : 'admin-badge-orange'}`}
+              style={{ padding: 8 }}
+            >
               <Activity size={20} />
             </div>
           </div>
@@ -95,7 +109,7 @@ export default function OverviewTab({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <img
-              src={personal.avatar_url || 'https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg'}
+              src={personal.avatar_url || personal.avatarUrl || 'https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg'}
               alt={personal.name || 'Avatar'}
               style={{
                 width: 64,
@@ -111,26 +125,45 @@ export default function OverviewTab({
                   {personal.name || 'Lê Văn Đạt'}
                 </h3>
                 <span className="admin-badge admin-badge-orange">
-                  {personal.short_name || 'DAT LEE'}
+                  {personal.short_name || personal.shortName || 'DAT LEE'}
                 </span>
               </div>
               <p style={{ fontSize: 13, color: 'var(--admin-text-muted)', margin: '4px 0 0 0' }}>
                 {personal.title || 'Technical Artisan & Fullstack Developer'} • {personal.coordinates || 'Da Nang, Vietnam'}
               </p>
               <div style={{ fontSize: 12.5, color: 'var(--admin-text-secondary)', marginTop: 6, fontStyle: 'italic' }}>
-                "{personal.identity_statement || personal.bio || 'Creating bold, functional digital experiences.'}"
+                "{personal.identity_statement || personal.identityStatement || personal.bio || 'Creating bold, functional digital experiences.'}"
               </div>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button
+              type="button"
               onClick={() => onNavigateTab('profile')}
               className="admin-btn admin-btn-secondary"
             >
               <UserCheck size={14} />
               <span>Sửa Thông Tin Cá Nhân</span>
             </button>
+
+            {onResetToDefaults && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Bạn có chắc muốn khôi phục toàn bộ dữ liệu về mã nguồn tĩnh ban đầu không? (Mọi chỉnh sửa lưu tạm sẽ được đặt lại)')) {
+                    onResetToDefaults();
+                    if (showToast) showToast('Đã khôi phục dữ liệu gốc từ mã nguồn!', 'success');
+                    if (onRefresh) onRefresh();
+                  }
+                }}
+                className="admin-btn admin-btn-secondary"
+                title="Khôi phục lại dữ liệu static mặc định ban đầu"
+              >
+                <span>Khôi Phục Dữ Liệu Gốc</span>
+              </button>
+            )}
+
             <a
               href="https://datdoc.id.vn/api/docs.php#/"
               target="_blank"

@@ -12,8 +12,11 @@ import {
   X,
   CheckCircle,
   AlertCircle,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import api from '../services/api';
+import { usePortfolio } from '../context/PortfolioContext';
 import OverviewTab from './tabs/OverviewTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import BlogTab from './tabs/BlogTab';
@@ -21,12 +24,27 @@ import ProfileTab from './tabs/ProfileTab';
 import SkillsTab from './tabs/SkillsTab';
 
 export default function AdminDashboard({ onLogout, onGoHome, user }) {
+  const {
+    projects: contextProjects,
+    skills: contextSkills,
+    personal: contextPersonal,
+    posts: contextPosts,
+    isOffline,
+    isApiConnected: contextApiConnected,
+    resetToDefaults,
+  } = usePortfolio();
+
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [portfolioData, setPortfolioData] = useState(null);
-  const [postsData, setPostsData] = useState([]);
+  const [portfolioData, setPortfolioData] = useState(() => ({
+    projects: contextProjects,
+    skills: contextSkills,
+    personal: contextPersonal,
+  }));
+  const [postsData, setPostsData] = useState(() => contextPosts || []);
   const [toast, setToast] = useState(null);
+  const [isServerReachable, setIsServerReachable] = useState(true);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -43,7 +61,10 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         api.getPosts().catch((e) => ({ success: false, error: e })),
       ]);
 
+      let gotServerData = false;
+
       if (pRes && pRes.success && pRes.data) {
+        gotServerData = true;
         try {
           const raw = localStorage.getItem('portfolio_skills_override');
           if (raw) {
@@ -54,16 +75,42 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           }
         } catch {}
         setPortfolioData(pRes.data);
+      } else {
+        // Fallback to local context data
+        setPortfolioData({
+          projects: contextProjects,
+          skills: contextSkills,
+          personal: contextPersonal,
+        });
       }
-      if (bRes && bRes.success) {
-        setPostsData(bRes.data || []);
+
+      if (bRes && bRes.success && Array.isArray(bRes.data)) {
+        gotServerData = true;
+        setPostsData(bRes.data);
+      } else {
+        // Fallback to local posts data
+        setPostsData(contextPosts);
+      }
+
+      setIsServerReachable(gotServerData);
+      if (gotServerData) {
+        showToast('Đã đồng bộ dữ liệu mới nhất từ máy chủ API!', 'success');
+      } else {
+        showToast('Máy chủ API đang ngoại tuyến. Hệ thống tự động chuyển sang chế độ Cục Bộ.', 'error');
       }
     } catch {
-      showToast('Lỗi khi tải dữ liệu từ máy chủ API.', 'error');
+      setIsServerReachable(false);
+      setPortfolioData({
+        projects: contextProjects,
+        skills: contextSkills,
+        personal: contextPersonal,
+      });
+      setPostsData(contextPosts);
+      showToast('Đang hoạt động trên bộ nhớ đệm cục bộ (Chế độ Ngoại tuyến).', 'error');
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [contextProjects, contextSkills, contextPersonal, contextPosts, showToast]);
 
   useEffect(() => {
     fetchData();
@@ -100,6 +147,8 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     },
     { id: 'profile', label: 'Thông Tin & Hero', icon: User },
   ];
+
+  const isConnected = isServerReachable && !isOffline;
 
   return (
     <div className="admin-root">
@@ -195,7 +244,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="admin-btn-icon"
-              style={{ display: 'none' }} /* Visible on mobile via CSS */
+              style={{ display: 'none' }}
             >
               {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -205,6 +254,26 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           </div>
 
           <div className="admin-topbar-right">
+            {/* Online / Offline Status Badge */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 20,
+                fontSize: 11.5,
+                fontWeight: 600,
+                background: isConnected ? '#ecfdf5' : '#fff1f2',
+                border: isConnected ? '1px solid #a7f3d0' : '1px solid #fecdd3',
+                color: isConnected ? '#059669' : '#e11d48',
+              }}
+              title={isConnected ? 'Kết nối máy chủ API ổn định' : 'Đang chạy ngoại tuyến hoặc API chưa khả dụng'}
+            >
+              {isConnected ? <Wifi size={13} /> : <WifiOff size={13} />}
+              <span>{isConnected ? 'API Sẵn Sàng' : 'Chế Độ Cục Bộ (Offline)'}</span>
+            </div>
+
             {/* Live Refresh Button */}
             <button
               onClick={fetchData}
@@ -237,7 +306,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
                   width: 7,
                   height: 7,
                   borderRadius: '50%',
-                  background: '#10b981',
+                  background: isConnected ? '#10b981' : '#f59e0b',
                 }}
               />
               <span>{user?.username || 'admin'}</span>
@@ -253,6 +322,9 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
               postsData={postsData}
               onRefresh={fetchData}
               loading={loading}
+              isConnected={isConnected}
+              onResetToDefaults={resetToDefaults}
+              showToast={showToast}
               onNavigateTab={(tab) => setActiveTab(tab)}
             />
           )}

@@ -88,7 +88,6 @@ export default function LogoLoop({
           return (
             <div
               key={`${item.title || index}-${index}`}
-              onMouseEnter={() => onLogoHover(item)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -103,6 +102,7 @@ export default function LogoLoop({
                 transform: scaleOnHover ? 'scale(1)' : 'none',
               }}
               onMouseEnter={(e) => {
+                if (onLogoHover) onLogoHover(item);
                 if (scaleOnHover) {
                   e.currentTarget.style.transform = 'scale(1.15) translateY(-4px)';
                   e.currentTarget.style.borderColor = itemColor;

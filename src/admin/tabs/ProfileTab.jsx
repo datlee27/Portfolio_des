@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Save } from 'lucide-react';
 import api from '../../services/api';
+import { usePortfolio } from '../../context/PortfolioContext';
 
 export default function ProfileTab({ personalData, onRefresh, showToast }) {
+  const { updatePersonal: contextUpdatePersonal, personal: ctxPersonal } = usePortfolio();
+
   const [formData, setFormData] = useState({
     name: '',
     short_name: '',
@@ -18,28 +21,53 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (personalData) {
+    const source = personalData || ctxPersonal;
+    if (source) {
       setFormData({
-        name: personalData.name || '',
-        short_name: personalData.short_name || '',
-        title: personalData.title || '',
-        role: personalData.role || '',
-        bio: personalData.bio || '',
-        identity_statement: personalData.identity_statement || '',
-        hero_subtext: personalData.hero_subtext || '',
-        status: personalData.status || '',
-        coordinates: personalData.coordinates || '',
-        avatar_url: personalData.avatar_url || '',
+        name: source.name || '',
+        short_name: source.short_name || source.shortName || '',
+        title: source.title || '',
+        role: source.role || '',
+        bio: source.bio || '',
+        identity_statement: source.identity_statement || source.identityStatement || '',
+        hero_subtext: source.hero_subtext || source.tagline || '',
+        status: source.status || '',
+        coordinates: source.coordinates || '',
+        avatar_url: source.avatar_url || source.avatarUrl || '',
       });
     }
-  }, [personalData]);
+  }, [personalData, ctxPersonal]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.updatePersonal(formData);
-      showToast('Cập nhật thông tin cá nhân thành công!', 'success');
+      // Immediate local context & localStorage update
+      if (contextUpdatePersonal) {
+        contextUpdatePersonal({
+          name: formData.name,
+          shortName: formData.short_name,
+          title: formData.title,
+          role: formData.role,
+          bio: formData.bio,
+          identityStatement: formData.identity_statement,
+          tagline: formData.hero_subtext,
+          status: formData.status,
+          coordinates: formData.coordinates,
+          avatarUrl: formData.avatar_url,
+          ...formData,
+        });
+      }
+
+      // Background API sync
+      try {
+        await api.updatePersonal(formData);
+        showToast('Cập nhật thông tin cá nhân thành công (Đồng bộ máy chủ)!', 'success');
+      } catch (apiErr) {
+        console.warn('API sync deferred/offline:', apiErr);
+        showToast('Đã lưu thông tin cá nhân vào bộ nhớ máy (Chế độ Ngoại tuyến)!', 'success');
+      }
+
       if (onRefresh) onRefresh();
     } catch (err) {
       showToast(err.message || 'Lỗi khi cập nhật thông tin.', 'error');

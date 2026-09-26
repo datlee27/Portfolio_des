@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   Pencil,
@@ -11,8 +11,24 @@ import {
 } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import api from '../../services/api';
+import { usePortfolio } from '../../context/PortfolioContext';
 
-export default function ProjectsTab({ projects, onRefresh, showToast }) {
+export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
+  const { updateProjects: contextUpdateProjects, projects: ctxProjects } = usePortfolio();
+
+  const [localProjects, setLocalProjects] = useState(() => {
+    if (projects && projects.length > 0) return projects;
+    return ctxProjects || [];
+  });
+
+  useEffect(() => {
+    if (projects && projects.length > 0) {
+      setLocalProjects(projects);
+    } else if (ctxProjects && ctxProjects.length > 0) {
+      setLocalProjects(ctxProjects);
+    }
+  }, [projects, ctxProjects]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -37,7 +53,7 @@ export default function ProjectsTab({ projects, onRefresh, showToast }) {
   const [formData, setFormData] = useState(initialFormState);
 
   // Filtered projects
-  const filteredProjects = projects.filter((p) => {
+  const filteredProjects = localProjects.filter((p) => {
     const term = searchTerm.toLowerCase();
     const title = (p.title || '').toLowerCase();
     const desc = (p.description || '').toLowerCase();
@@ -48,7 +64,7 @@ export default function ProjectsTab({ projects, onRefresh, showToast }) {
   const handleOpenAdd = () => {
     setIsEditing(false);
     setCurrentId(null);
-    const nextCode = String(projects.length + 1).padStart(2, '0');
+    const nextCode = String(localProjects.length + 1).padStart(2, '0');
     setFormData({ ...initialFormState, project_code: nextCode });
     setModalOpen(true);
   };
@@ -57,13 +73,13 @@ export default function ProjectsTab({ projects, onRefresh, showToast }) {
     setIsEditing(true);
     setCurrentId(project.id);
     setFormData({
-      project_code: project.project_code || '',
+      project_code: project.project_code || project.code?.replace(/[()]/g, '') || '',
       title: project.title || '',
       description: project.description || '',
-      image_url: project.image_url || '',
+      image_url: project.image_url || project.image || '',
       tags: Array.isArray(project.tags) ? project.tags.join(', ') : project.tags || '',
-      github_url: project.github_url || '',
-      deploy_url: project.deploy_url || '',
+      github_url: project.github_url || project.github || '',
+      deploy_url: project.deploy_url || project.deploy || '',
       status: project.status || 'Latest',
     });
     setModalOpen(true);
@@ -84,17 +100,47 @@ export default function ProjectsTab({ projects, onRefresh, showToast }) {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const payload = {
+      const normalizedProject = {
         ...formData,
+        id: isEditing ? currentId : String(Date.now()),
         tags: tagsArray,
+        image: formData.image_url,
+        github: formData.github_url,
+        deploy: formData.deploy_url,
+        code: `(${String(formData.project_code || '01').padStart(2, '0')})`,
+        client: tagsArray.slice(0, 2).join(' / ') || 'Production App',
+        hasCaseStudy: Boolean(formData.deploy_url || formData.github_url),
       };
 
+      let updatedList;
       if (isEditing) {
-        await api.updateProject(currentId, payload);
-        showToast('Cập nhật dự án thành công!', 'success');
+        updatedList = localProjects.map((p) => (p.id === currentId ? { ...p, ...normalizedProject } : p));
       } else {
-        await api.createProject(payload);
-        showToast('Tạo dự án mới thành công!', 'success');
+        updatedList = [...localProjects, normalizedProject];
+      }
+
+      setLocalProjects(updatedList);
+      if (contextUpdateProjects) {
+        contextUpdateProjects(updatedList);
+      }
+
+      // Sync with API in background
+      try {
+        if (isEditing) {
+          await api.updateProject(currentId, normalizedProject);
+          showToast('Cập nhật dự án thành công (Đồng bộ máy chủ)!', 'success');
+        } else {
+          await api.createProject(normalizedProject);
+          showToast('Tạo dự án mới thành công (Đồng bộ máy chủ)!', 'success');
+        }
+      } catch (apiErr) {
+        console.warn('API sync deferred/offline:', apiErr);
+        showToast(
+          isEditing
+            ? 'Đã lưu thay đổi dự án vào bộ nhớ máy (Chế độ Ngoại tuyến)!'
+            : 'Đã thêm dự án mới vào bộ nhớ máy (Chế độ Ngoại tuyến)!',
+          'success'
+        );
       }
 
       setModalOpen(false);
@@ -109,8 +155,20 @@ export default function ProjectsTab({ projects, onRefresh, showToast }) {
   const handleDelete = async (id) => {
     setDeleting(true);
     try {
-      await api.deleteProject(id);
-      showToast('Đã xóa dự án thành công!', 'success');
+      const updatedList = localProjects.filter((p) => p.id !== id);
+      setLocalProjects(updatedList);
+      if (contextUpdateProjects) {
+        contextUpdateProjects(updatedList);
+      }
+
+      try {
+        await api.deleteProject(id);
+        showToast('Đã xóa dự án thành công!', 'success');
+      } catch (apiErr) {
+        console.warn('API delete deferred/offline:', apiErr);
+        showToast('Đã xóa dự án khỏi bộ nhớ cục bộ!', 'success');
+      }
+
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
     } catch (err) {
