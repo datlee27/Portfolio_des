@@ -268,16 +268,15 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
             return (
               <div
                 key={`${logo.name || logo.id}-${index}`}
-                className="d4-marquee-card-item flex-shrink-0 flex flex-col justify-center items-center bg-white/10 border border-black rounded-2xl text-white"
+                className="d4-marquee-card-item flex-shrink-0 flex flex-col justify-center items-center rounded-2xl"
                 style={{
                   width: 'var(--item-width)',
                   aspectRatio: '1 / 1.2',
                   marginRight: 'var(--item-gap)',
-                  borderRadius: '18px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
+                  borderRadius: '16px',
+                  background: '#ffffff',
+                  border: '1px solid rgba(17, 17, 17, 0.1)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
                   cursor: 'pointer',
                   padding: '16px 12px 14px',
                   position: 'relative',
@@ -288,36 +287,24 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
                   justifyContent: 'center',
                   flexShrink: 0,
                   boxSizing: 'border-box',
+                  transition: 'all 0.25s ease',
                 }}
                 onMouseEnter={(e) => {
                   onLogoHover(logo);
-                  e.currentTarget.style.borderColor = cardColor;
-                  e.currentTarget.style.boxShadow = `0 10px 28px ${cardColor}33`;
+                  e.currentTarget.style.borderColor = '#fe3c01';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(254, 60, 1, 0.12)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.04)';
                 }}
               >
-                {/* Subtle radial glow in brand color */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '-15%',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '70%',
-                    height: '70%',
-                    background: `radial-gradient(circle, ${cardColor}28 0%, transparent 70%)`,
-                    filter: 'blur(10px)',
-                    pointerEvents: 'none',
-                  }}
-                />
-
                 {/* Icon Image */}
                 <div
                   style={{
-                    width: '56%',
+                    width: '52%',
                     height: 'auto',
                     aspectRatio: '1 / 1',
                     display: 'flex',
@@ -325,7 +312,6 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
                     justifyContent: 'center',
                     position: 'relative',
                     zIndex: 2,
-                    filter: `drop-shadow(0 2px 8px ${cardColor}50)`,
                   }}
                 >
                   {logo.icon ? (
@@ -342,7 +328,7 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
                     />
                   ) : (
                     /* Fallback generic code icon */
-                    <svg viewBox="0 0 24 24" fill="none" stroke={cardColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
                       <polyline points="16 18 22 12 16 6" />
                       <polyline points="8 6 2 12 8 18" />
                     </svg>
@@ -364,10 +350,10 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
                 >
                   <span
                     style={{
-                      fontFamily: 'var(--font-outfit)',
+                      fontFamily: 'var(--font-sans, "Inter", sans-serif)',
                       fontSize: 12,
-                      fontWeight: 800,
-                      color: '#ffffff',
+                      fontWeight: 600,
+                      color: '#111111',
                       letterSpacing: '-0.01em',
                       lineHeight: 1.1,
                       whiteSpace: 'nowrap',
@@ -377,13 +363,12 @@ function Logomarquee({ activeCategory = 'ALL', currentSkills = null, onLogoHover
                   </span>
                   <span
                     style={{
-                      fontFamily: 'var(--font-inter)',
-                      fontSize: 8.5,
-                      fontWeight: 600,
-                      color: cardColor,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase',
-                      opacity: 0.9,
+                      fontFamily: 'var(--font-mono, monospace)',
+                      fontSize: 9,
+                      fontWeight: 500,
+                      color: 'rgba(17, 17, 17, 0.5)',
+                      letterSpacing: '0.04em',
+                      textTransform: 'lowercase',
                     }}
                   >
                     {logo.category}

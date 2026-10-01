@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import portfolioData from '../../../../portfolioData.json';
 import { usePortfolio } from '../../../context/PortfolioContext';
 import Logomarquee from './Logomarquee';
-import SkillTrailEffect from './SkillTrailEffect';
 
 export default function SkillsSection() {
   const [activeCategory, setActiveCategory] = useState('ALL');
@@ -24,66 +23,62 @@ export default function SkillsSection() {
       id="d4-skills"
       style={{
         position: 'relative',
-        background: '#090a0f',
-        color: '#ffffff',
-        padding: '90px 0',
+        background: '#FFFFFF',
+        color: '#111111',
+        padding: '96px 0 80px',
         overflow: 'hidden',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(17, 17, 17, 0.12)',
         userSelect: 'none',
       }}
     >
-      {/* Interactive Cursor Trail Canvas in background */}
-      <SkillTrailEffect activeColor={hoveredSkill.color} activeSkillText={hoveredSkill.name} />
-
       <div className="des4-container" style={{ position: 'relative', zIndex: 5 }}>
         {/* Section Header */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 16,
-            marginBottom: 36,
+            gap: 14,
+            marginBottom: 40,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span
               style={{
                 display: 'inline-block',
-                width: 10,
-                height: 10,
+                width: 8,
+                height: 8,
                 borderRadius: '50%',
-                background: '#25ff8d',
-                boxShadow: '0 0 12px #25ff8d',
-                animation: 'pulseGlow 1.5s infinite',
+                background: '#059669',
+                boxShadow: '0 0 0 2px rgba(5, 150, 105, 0.2)',
               }}
             />
             <span
               style={{
-                fontFamily: 'var(--font-inter)',
-                fontSize: 13,
-                fontWeight: 700,
-                letterSpacing: '0.15em',
-                color: '#25ff8d',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: '0.08em',
+                color: 'rgba(17, 17, 17, 0.55)',
                 textTransform: 'uppercase',
               }}
             >
-              TECHNICAL CAPABILITIES &amp; STACK
+              technical capabilities &amp; stack
             </span>
           </div>
 
           <h2
             style={{
-              fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(36px, 7vw, 100px)',
-              fontWeight: 900,
-              lineHeight: 0.95,
+              fontFamily: 'var(--font-sans, "Inter", sans-serif)',
+              fontSize: 'clamp(36px, 7vw, 92px)',
+              fontWeight: 500,
+              lineHeight: 1,
               letterSpacing: '-0.04em',
               margin: 0,
-              color: '#ffffff',
+              color: '#111111',
+              textTransform: 'lowercase',
             }}
           >
-            skills &amp; tech stack<span style={{ color: '#fe3c01' }}>*</span>
+            skills &amp; stack<span style={{ color: '#fe3c01' }}>*</span>
           </h2>
         </div>
 
@@ -92,9 +87,9 @@ export default function SkillsSection() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
+            gap: 8,
             flexWrap: 'wrap',
-            marginBottom: 44,
+            marginBottom: 48,
           }}
         >
           {categories.map((cat) => {
@@ -104,31 +99,33 @@ export default function SkillsSection() {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 style={{
-                  background: isActive ? '#fe3c01' : 'rgba(255, 255, 255, 0.05)',
-                  color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
+                  background: isActive ? '#111111' : '#ece8de',
+                  color: isActive ? '#ffffff' : 'rgba(17, 17, 17, 0.75)',
                   border: isActive
-                    ? '1.5px solid #fe3c01'
-                    : '1.5px solid rgba(255, 255, 255, 0.12)',
-                  padding: '8px 18px',
+                    ? '1px solid #111111'
+                    : '1px solid rgba(17, 17, 17, 0.15)',
+                  padding: '7px 16px',
                   borderRadius: 100,
                   fontSize: 12,
-                  fontWeight: 700,
-                  fontFamily: 'var(--font-inter)',
-                  letterSpacing: '0.04em',
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-mono, monospace)',
+                  letterSpacing: '0.02em',
                   cursor: 'pointer',
-                  transition: 'all 0.25s ease',
-                  boxShadow: isActive ? '0 8px 24px rgba(254,60,1,0.35)' : 'none',
+                  transition: 'all 0.2s ease',
+                  textTransform: 'lowercase',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+                    e.currentTarget.style.background = '#111111';
                     e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.borderColor = '#111111';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
+                    e.currentTarget.style.background = '#ece8de';
+                    e.currentTarget.style.color = 'rgba(17, 17, 17, 0.75)';
+                    e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.15)';
                   }
                 }}
               >
@@ -139,32 +136,13 @@ export default function SkillsSection() {
         </div>
       </div>
 
-      {/* Dual-Track Infinite Marquee with User's Card Style & Exact Tech Stack */}
+      {/* Dual-Track Infinite Marquee with Clean White Card Style */}
       <div style={{ width: '100%', position: 'relative', zIndex: 5 }}>
         <Logomarquee
           activeCategory={activeCategory}
           currentSkills={currentSkills}
           onLogoHover={(logo) => setHoveredSkill({ color: logo.color, name: logo.name })}
         />
-      </div>
-
-      {/* Subtle Counter / Indicator Info */}
-      <div
-        className="des4-container"
-        style={{
-          marginTop: 36,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 12,
-          color: 'rgba(255, 255, 255, 0.4)',
-          fontFamily: 'var(--font-inter)',
-          position: 'relative',
-          zIndex: 5,
-        }}
-      >
-        <span>Dual-track continuous hardware-accelerated marquee</span>
-        <span>Hover to inspect technical profile &amp; pulse effect</span>
       </div>
     </section>
   );

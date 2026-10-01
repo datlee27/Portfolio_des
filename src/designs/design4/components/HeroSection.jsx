@@ -192,11 +192,11 @@ export default function HeroSection() {
           </div>
           <span
             style={{
-              fontSize: 10,
+              fontSize: 10.5,
               fontWeight: 500,
-              color: '#6b7280',
-              fontFamily: 'monospace',
-              letterSpacing: '0.02em',
+              color: 'rgba(17, 17, 17, 0.55)',
+              fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+              letterSpacing: '0.04em',
             }}
           >
             Da Nang • 16.0544° N, 108.2022° E
@@ -276,7 +276,7 @@ export default function HeroSection() {
                 fontFamily: 'var(--font-inter)',
                 fontSize: 10.5,
                 fontWeight: 600,
-                color: '#6366f1',
+                color: 'rgba(17, 17, 17, 0.6)',
                 letterSpacing: '0.02em',
               }}
             >
@@ -440,7 +440,7 @@ export default function HeroSection() {
         >
           <span
             style={{
-              color: '#0b1dff',
+              color: '#111111',
               display: 'inline-block',
               transition: 'transform 0.25s ease',
             }}
@@ -461,7 +461,7 @@ export default function HeroSection() {
             ,
           </span>
 
-          {/* Vertical "DAT LE" Gradient Typography */}
+          {/* Vertical "DAT LE" Signature Brand Mark */}
           <div
             onPointerDown={(e) => handlePointerDown('datLePillar', e)}
             onPointerMove={(e) => handlePointerMove('datLePillar', e)}
@@ -477,10 +477,9 @@ export default function HeroSection() {
               lineHeight: 1,
               padding: '4px 6px',
               borderRadius: 6,
-              background: 'linear-gradient(180deg, #9333ea 0%, #ec4899 50%, #fe3c01 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 2px 6px rgba(236, 72, 153, 0.35))',
+              color: '#111111',
+              border: '1px solid rgba(17, 17, 17, 0.2)',
+              background: '#ece8de',
               cursor: isCreativeMode ? 'grab' : 'pointer',
               touchAction: 'none',
               transition: dragTargetRef.current?.key === 'datLePillar' ? 'none' : 'transform 0.3s ease',
@@ -488,7 +487,7 @@ export default function HeroSection() {
               userSelect: 'none',
             }}
             onMouseEnter={(e) => {
-              if (!isCreativeMode) e.currentTarget.style.transform = 'rotate(180deg) scale(1.22)';
+              if (!isCreativeMode) e.currentTarget.style.transform = 'rotate(180deg) scale(1.15)';
             }}
             onMouseLeave={(e) => {
               if (!isCreativeMode) e.currentTarget.style.transform = 'rotate(180deg) scale(1)';
@@ -500,7 +499,7 @@ export default function HeroSection() {
 
           <span
             style={{
-              color: '#000000',
+              color: '#111111',
               display: 'inline-block',
               transition: 'transform 0.25s ease',
             }}
@@ -521,7 +520,7 @@ export default function HeroSection() {
         >
           <span
             style={{
-              color: '#000000',
+              color: '#111111',
               display: 'inline-block',
               transition: 'transform 0.25s ease',
             }}
@@ -533,7 +532,7 @@ export default function HeroSection() {
 
           <span
             style={{
-              color: '#0b1dff',
+              color: '#111111',
               display: 'inline-block',
               transition: 'transform 0.25s ease',
             }}

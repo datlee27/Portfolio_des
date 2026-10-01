@@ -2,20 +2,29 @@
    Design 4 — 100% Responsive & Faithful Recreation of YanXin Zhang (yanxinzhang.com)
    ═══════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@1,600;1,700&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Framer Tokens */
-  --token-black: #000000;
-  --token-white: #ffffff;
+  /* Core Typographic Hierarchy */
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-outfit: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Framer Tokens & Editorial Paper Theme */
+  --token-black: #111111;
+  --token-white: #F6F4EF;
+  --paper: #F6F4EF;
+  --ink: #111111;
   --token-gray-text: #ababab;
-  --token-gray-border: #e0e0e0;
+  --token-gray-border: rgba(17, 17, 17, 0.12);
   --token-red-orange: #fe3c01;
   --token-yellow: #ffe815;
   --token-blue: #0b1dff;
   --token-pink: #ff75f6;
   --token-green: #45ff08;
-  --token-surface: #fafafa;
+  --token-surface: #F6F4EF;
   --token-orange: #ff6200;
   --token-lime: #8bc200;
   --token-hotpink: #ff30b3;
@@ -467,7 +476,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 .des4-intro-wrapper {
   padding: 40px 0 70px;
-  background: #ffffff;
+  background: #F6F4EF;
   position: relative;
   z-index: 2;
 }
@@ -476,22 +485,22 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-inter);
+  font-family: var(--font-mono);
   font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: rgba(17, 17, 17, 0.55);
   margin-bottom: 20px;
 }
 
 .des4-intro-narrative {
-  font-family: var(--font-outfit);
+  font-family: var(--font-sans);
   font-size: clamp(22px, 3.2vw, 36px);
-  font-weight: 600;
+  font-weight: 450;
   line-height: 1.44;
   letter-spacing: -0.02em;
-  color: #0d1117;
+  color: #111111;
   margin: 0 0 36px 0;
   max-width: 980px;
 }
@@ -501,27 +510,28 @@
   align-items: center;
   padding: 2px 10px;
   margin: 0 4px;
-  border-radius: 8px;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  color: #111827;
-  font-size: 0.9em;
-  font-weight: 700;
+  border-radius: 999px;
+  background: #ece8de;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  color: #111111;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 500;
   vertical-align: baseline;
   transition: all 0.2s ease;
 }
 
 .des4-intro-tag:hover {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background: #111111;
+  color: #F6F4EF;
+  border-color: #111111;
   transform: translateY(-2px);
 }
 
 .des4-intro-serif {
-  font-family: var(--font-garamond);
+  font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.01em;
 }
 
@@ -1094,15 +1104,15 @@
    ========================================================================== */
 .des4-work-page-wrapper {
   min-height: 100vh;
-  background: #ffffff;
-  color: #0f172a;
+  background: #F6F4EF;
+  color: #111111;
   padding-top: 40px;
 }
 
 .des4-work-header-section {
   padding: 40px 0 36px;
-  background: #ffffff;
-  border-bottom: 1px solid #f1f5f9;
+  background: #F6F4EF;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
 }
 
 .des4-work-back-btn {
@@ -1112,9 +1122,9 @@
   font-family: var(--font-inter);
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  color: #111111;
+  background: #ece8de;
+  border: 1px solid rgba(17, 17, 17, 0.15);
   padding: 8px 18px;
   border-radius: 100px;
   cursor: pointer;
@@ -1137,28 +1147,28 @@
 }
 
 .des4-work-main-title {
-  font-family: var(--font-outfit);
+  font-family: var(--font-sans);
   font-size: clamp(38px, 7vw, 92px);
-  font-weight: 900;
+  font-weight: 500;
   letter-spacing: -0.04em;
   margin: 0;
   line-height: 1;
-  color: #000000;
-  text-transform: uppercase;
+  color: #111111;
+  text-transform: lowercase;
 }
 
 .des4-work-count-badge {
-  font-family: monospace;
-  font-size: 14px;
-  font-weight: 800;
-  color: #fe3c01;
-  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.55);
+  letter-spacing: 0.04em;
 }
 
 .des4-work-sub-description {
-  font-family: var(--font-inter);
-  font-size: 15.5px;
-  color: #64748b;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: rgba(17, 17, 17, 0.65);
   max-width: 680px;
   line-height: 1.65;
   margin: 0 0 32px 0;
@@ -1180,9 +1190,9 @@
   font-weight: 700;
   padding: 8px 18px;
   border-radius: 100px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #334155;
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  background: #F6F4EF;
+  color: #111111;
   cursor: pointer;
   transition: all 0.2s ease;
 }

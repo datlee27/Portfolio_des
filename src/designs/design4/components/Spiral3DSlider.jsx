@@ -389,25 +389,27 @@ export default function Spiral3DSlider({
       className={`des4-spiral-section ${className}`}
       style={{
         position: 'relative',
-        background: '#000000',
+        background: '#0E0F12',
         color: '#ffffff',
-        padding: isMobileScreen ? '50px 0 40px' : '80px 0 60px',
+        padding: isMobileScreen ? '60px 0 50px' : '96px 0 80px',
         overflow: 'hidden',
         userSelect: 'none',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
       <div className="des4-container" style={{ position: 'relative', zIndex: 10, pointerEvents: 'none' }}>
         {/* Section Header */}
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 32 }}>
           <h2
             style={{
-              fontFamily: 'var(--font-outfit)',
-              fontSize: 'clamp(34px, 8vw, 120px)',
-              fontWeight: 900,
-              lineHeight: 0.92,
+              fontFamily: 'var(--font-sans, "Inter", sans-serif)',
+              fontSize: 'clamp(34px, 8vw, 110px)',
+              fontWeight: 500,
+              lineHeight: 0.95,
               letterSpacing: '-0.04em',
               color: '#ffffff',
-              margin: '0 0 14px 0',
+              margin: '0 0 16px 0',
               textTransform: 'lowercase',
             }}
           >
@@ -415,17 +417,17 @@ export default function Spiral3DSlider({
           </h2>
           <p
             style={{
-              fontFamily: 'var(--font-inter)',
-              fontSize: isMobileScreen ? 13.5 : 14.5,
-              fontWeight: 500,
-              color: '#94a3b8',
-              maxWidth: 520,
+              fontFamily: 'var(--font-sans, "Inter", sans-serif)',
+              fontSize: isMobileScreen ? 13.5 : 14,
+              fontWeight: 400,
+              color: 'rgba(255, 255, 255, 0.65)',
+              maxWidth: 500,
               lineHeight: 1.6,
               margin: 0,
             }}
           >
             <span style={{ color: '#fe3c01', fontWeight: 700 }}>* </span>
-            A 3D spiral study of physical prototypes, hardware logic, tactile materials, and creative digital experiences.
+            tactile prototypes, interactive experiments, and creative visual archive.
           </p>
         </div>
       </div>

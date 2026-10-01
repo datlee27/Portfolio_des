@@ -10,6 +10,7 @@ import FooterSection from './components/FooterSection';
 import Des4LabView from './components/Des4LabView';
 import Des4WorkPage from './components/Des4WorkPage';
 import BlogPageRedesign from './components/blog/BlogPageRedesign';
+import Des4AboutPage from './components/Des4AboutPage';
 import ScrollEase from '../../components/common/ScrollEase';
 import ScrollBlurByAki from '../../components/common/ScrollBlurByAki';
 import PageTransition from './components/PageTransition';
@@ -21,6 +22,7 @@ export default function Design4App() {
       const path = window.location.pathname;
       if (path === '/work' || path.startsWith('/work/')) return 'work';
       if (path === '/blog' || path.startsWith('/blog/')) return 'blog';
+      if (path === '/about' || path.startsWith('/about/')) return 'about';
       if (path === '/lab' || path.startsWith('/lab/')) return 'lab';
     }
     return 'main';
@@ -91,6 +93,8 @@ export default function Design4App() {
       } else if (path === '/blog' || path.startsWith('/blog/')) {
         setActiveView('blog');
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } else if (path === '/about' || path.startsWith('/about/')) {
+        setActiveView('about');
       } else if (path === '/lab' || path.startsWith('/lab/')) {
         setActiveView('lab');
       } else {
@@ -110,6 +114,8 @@ export default function Design4App() {
       document.title = 'Blog – Tech Notes';
     } else if (activeView === 'work') {
       document.title = 'Work – Projects';
+    } else if (activeView === 'about') {
+      document.title = 'About – Dat Lee';
     } else if (activeView === 'lab') {
       document.title = 'Lab – Design Experiments';
     } else {
@@ -132,12 +138,13 @@ export default function Design4App() {
         activeView={activeView}
         onOpenWork={() => navigateWithTransition('work', '/work')}
         onOpenBlog={() => navigateWithTransition('blog', '/blog')}
+        onOpenAbout={() => navigateWithTransition('about', '/about')}
         onOpenLab={() => navigateWithTransition('lab', '/lab')}
         onGoHome={() => navigateWithTransition('main', '/')}
       />
 
       {/* Smooth inertia scroll ONLY on Home and Work pages */}
-      {(activeView === 'main' || activeView === 'work') && <ScrollEase intensity={75} />}
+      {(activeView === 'main' || activeView === 'work' || activeView === 'about') && <ScrollEase intensity={75} />}
 
       {/* Progressive edge blur ONLY on Home page (Work and others do not have scrollblur) */}
       {activeView === 'main' && (
@@ -178,6 +185,9 @@ export default function Design4App() {
       ) : activeView === 'blog' ? (
         /* Dedicated Blog Page — "chạng vạng" redesign */
         <BlogPageRedesign />
+      ) : activeView === 'about' ? (
+        /* Dedicated About Page (/about) */
+        <Des4AboutPage onGoHome={() => navigateWithTransition('main', '/')} />
       ) : activeView === 'lab' ? (
         /* Lab View (/lab) */
         <Des4LabView onBack={() => navigateWithTransition('main', '/')} />

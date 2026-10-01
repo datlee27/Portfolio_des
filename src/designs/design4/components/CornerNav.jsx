@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork, onOpenBlog }) {
+export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork, onOpenBlog, onOpenAbout }) {
   const scrollTo = (id) => {
-    if (activeView === 'lab' || activeView === 'work' || activeView === 'blog') {
+    if (activeView === 'lab' || activeView === 'work' || activeView === 'blog' || activeView === 'about') {
       if (onGoHome) onGoHome();
       setTimeout(() => {
         const el = document.getElementById(id);
@@ -26,7 +26,7 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
         className="des4-corner-anchor"
         onClick={(e) => {
           e.preventDefault();
-          if (activeView === 'work' || activeView === 'blog') {
+          if (activeView === 'work' || activeView === 'blog' || activeView === 'about') {
             if (onGoHome) onGoHome();
           } else {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -137,8 +137,16 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
       {activeView !== 'blog' && (
         <button
           className="des4-corner-anchor"
-          aria-label="Scroll to about section"
-          onClick={() => scrollTo('d4-intro')}
+          aria-label="Open about page"
+          onClick={() => {
+            if (activeView === 'about') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (onOpenAbout) {
+              onOpenAbout();
+            } else {
+              scrollTo('d4-intro');
+            }
+          }}
           style={{
             position: 'fixed',
             bottom: 'clamp(16px, 3.5vw, 32px)',
@@ -155,11 +163,13 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
             color: '#ffffff',
             mixBlendMode: 'difference',
             cursor: 'pointer',
+            borderBottom: activeView === 'about' ? '2px solid #fe3c01' : 'none',
+            paddingBottom: activeView === 'about' ? 2 : 0,
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          about
+          about{activeView === 'about' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
         </button>
       )}
 

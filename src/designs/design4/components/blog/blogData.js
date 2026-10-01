@@ -180,12 +180,12 @@ export const POSTS = [
 
 export const THEMES = {
   light: {
-    bg: '#FFFFFF',
-    surface: '#FAFAFA',
-    text: '#141B2A',
-    muted: '#5B6478',
-    accent: '#A8650F',
-    border: '#E4E4E7',
+    bg: '#F6F4EF',
+    surface: '#FFFFFF',
+    text: '#111111',
+    muted: 'rgba(17, 17, 17, 0.58)',
+    accent: '#fe3c01',
+    border: 'rgba(17, 17, 17, 0.12)',
   },
   dark: {
     bg: '#121A2B',

@@ -11,9 +11,9 @@ export default function IntroSection() {
   ];
 
   const pillarColors = [
-    '#fe3c01', // Clean Architectures (Orange)
-    '#0b1dff', // Scalable Backends (Blue)
-    '#059669', // Tactile UI (Emerald Green)
+    '#111111',
+    '#111111',
+    '#111111',
   ];
 
   return (

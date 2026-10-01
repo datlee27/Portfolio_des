@@ -33,12 +33,12 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
           baseVelocity={-0.6}
           clasname="font-bold tracking-[-0.04em] leading-none"
           style={{
-            fontFamily: 'var(--font-outfit)',
+            fontFamily: 'var(--font-sans, "Inter", sans-serif)',
             fontSize: 'clamp(40px, 9vw, 130px)',
-            fontWeight: 800,
+            fontWeight: 600,
             lineHeight: 1,
             letterSpacing: '-0.04em',
-            color: '#000000',
+            color: '#111111',
             textTransform: 'lowercase',
           }}
         >
@@ -135,24 +135,24 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
               >
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: project.accentColor, fontFamily: 'var(--font-inter)' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: project.accentColor, fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)' }}>
                       {project.code}
                     </span>
                     <h3
                       onClick={() => setSelectedProject(project)}
                       title={`View ${project.title} Case Study`}
                       style={{
-                        fontFamily: 'var(--font-outfit)',
+                        fontFamily: 'var(--font-sans, "Inter", sans-serif)',
                         fontSize: 'clamp(20px, 2.2vw, 32px)',
-                        fontWeight: 700,
+                        fontWeight: 600,
                         letterSpacing: '-0.02em',
-                        color: '#000000',
+                        color: '#111111',
                         margin: 0,
                         cursor: 'pointer',
                         transition: 'color 0.2s ease',
                       }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = '#fe3c01')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#000000')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = '#111111')}
                     >
                       {project.title}
                     </h3>
@@ -185,14 +185,14 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
                       <span
                         key={idx}
                         style={{
-                          fontFamily: 'var(--font-inter)',
+                          fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                           fontSize: 11,
-                          fontWeight: 600,
+                          fontWeight: 500,
                           padding: '4px 10px',
                           borderRadius: 20,
-                          background: '#f4f4f5',
-                          color: '#333333',
-                          border: '1px solid #e4e4e7',
+                          background: '#ece8de',
+                          color: 'rgba(17, 17, 17, 0.7)',
+                          border: '1px solid rgba(17, 17, 17, 0.12)',
                         }}
                       >
                         {tag}

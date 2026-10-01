@@ -11,13 +11,24 @@ export default function ProjectModalD4({ project, onClose }) {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Prevent body scrolling ONLY when modal is actively open
-    const originalOverflow = document.body.style.overflow;
+    // Stop Lenis smooth scroll so it cannot hijack wheel events or scroll the background page
+    if (window.lenis) {
+      window.lenis.stop();
+    }
+
+    // Prevent body and html scrolling ONLY when modal is actively open
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = originalOverflow || '';
+      document.body.style.overflow = originalBodyOverflow || '';
+      document.documentElement.style.overflow = originalHtmlOverflow || '';
+      if (window.lenis) {
+        window.lenis.start();
+      }
     };
   }, [project, onClose]);
 
@@ -39,6 +50,7 @@ export default function ProjectModalD4({ project, onClose }) {
   return (
     <div
       className="des4-project-modal-overlay"
+      data-lenis-prevent="true"
       style={{
         position: 'fixed',
         inset: 0,
@@ -50,12 +62,14 @@ export default function ProjectModalD4({ project, onClose }) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '24px 16px',
+        overscrollBehavior: 'contain',
         animation: 'des4ModalFadeIn 0.25s ease-out forwards',
       }}
       onClick={onClose}
     >
       <div
         className="des4-project-modal-window"
+        data-lenis-prevent="true"
         role="dialog"
         aria-modal="true"
         aria-labelledby="des4-project-modal-title"
@@ -71,6 +85,7 @@ export default function ProjectModalD4({ project, onClose }) {
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
+          overscrollBehavior: 'contain',
           animation: 'des4ModalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -85,6 +100,7 @@ export default function ProjectModalD4({ project, onClose }) {
             background: '#f4f4f5',
             borderBottom: '1px solid #e4e4e7',
             userSelect: 'none',
+            flexShrink: 0,
           }}
         >
           {/* macOS 3 Traffic Light Buttons */}
@@ -166,8 +182,12 @@ export default function ProjectModalD4({ project, onClose }) {
         {/* Modal Scrollable Body */}
         <div
           className="des4-project-modal-body"
+          data-lenis-prevent="true"
           style={{
+            flex: '1 1 auto',
+            minHeight: 0,
             overflowY: 'auto',
+            overscrollBehavior: 'contain',
             padding: '36px 40px',
             WebkitOverflowScrolling: 'touch',
           }}
@@ -483,16 +503,34 @@ export default function ProjectModalD4({ project, onClose }) {
             transform: scale(1) translateY(0);
           }
         }
-        @media (max-width: 640px) {
           .des4-project-modal-body {
-            padding: 24px 18px !important;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
           }
-          .des4-project-modal-window {
-            max-height: 94vh !important;
-            border-radius: 14px !important;
+          .des4-project-modal-body::-webkit-scrollbar {
+            width: 7px;
           }
-        }
-      `}</style>
+          .des4-project-modal-body::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .des4-project-modal-body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+          }
+          .des4-project-modal-body::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+          }
+          @media (max-width: 640px) {
+            .des4-project-modal-body {
+              padding: 24px 18px !important;
+            }
+            .des4-project-modal-window {
+              max-height: 94vh !important;
+              border-radius: 14px !important;
+            }
+          }
+        `}</style>
     </div>
   );
 }

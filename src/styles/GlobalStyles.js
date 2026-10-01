@@ -13,11 +13,14 @@ const GlobalStyles = createGlobalStyle`
     scroll-behavior: auto;
     overflow-x: clip;
     overflow-y: auto;
+    background-color: #F6F4EF;
   }
 
   body {
     margin: 0;
     padding: 0;
+    background-color: #F6F4EF;
+    color: #111111;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

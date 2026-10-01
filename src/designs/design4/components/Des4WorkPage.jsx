@@ -99,24 +99,24 @@ export default function Des4WorkPage({ onGoHome }) {
             <h1 className="des4-work-main-title">
               {selectedCategory === 'CV' ? (
                 <>
-                  Curriculum Vitae<span style={{ color: '#fe3c01' }}>*</span>
+                  curriculum vitae<span style={{ color: '#fe3c01' }}>*</span>
                 </>
               ) : (
                 <>
-                  Selected Works<span style={{ color: '#fe3c01' }}>*</span>
+                  selected work<span style={{ color: '#fe3c01' }}>*</span>
                 </>
               )}
             </h1>
             <span className="des4-work-count-badge">
-              {selectedCategory === 'CV' ? '(CV / RESUME PREVIEW)' : '(06 PROJECTS)'}
+              {selectedCategory === 'CV' ? '(cv / resume)' : '(06 projects)'}
             </span>
           </div>
 
           {/* Editorial Subtitle */}
           <p className="des4-work-sub-description">
             {selectedCategory === 'CV'
-              ? 'Preview and download the complete curriculum vitae, professional background, technical competencies, and architectural experience of Dat Le.'
-              : 'A comprehensive archive of production web applications, decoupled enterprise backends, AI integration pipelines, and IoT embedded systems crafted by Dat Le.'}
+              ? 'curriculum vitae, background, and verified technical competencies.'
+              : 'selected engineering projects, web platforms, and open-source systems.'}
           </p>
 
           {/* Filter / Navigation Pills */}

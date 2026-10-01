@@ -13,6 +13,7 @@ function getRouteFromPath(pathname) {
   if (
     cleanPath === '/' ||
     cleanPath === '' ||
+    cleanPath === '/about' || cleanPath.startsWith('/about/') ||
     cleanPath === '/work' || cleanPath.startsWith('/work/') ||
     cleanPath === '/blog' || cleanPath.startsWith('/blog/') ||
     cleanPath === '/lab' || cleanPath.startsWith('/lab/')
