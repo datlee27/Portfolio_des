@@ -165,9 +165,11 @@ export default function ProjectModalD4({ project, onClose }) {
 
         {/* Modal Scrollable Body */}
         <div
+          className="des4-project-modal-body"
           style={{
             overflowY: 'auto',
             padding: '36px 40px',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
           {/* Subtitle Badge */}
@@ -479,6 +481,15 @@ export default function ProjectModalD4({ project, onClose }) {
           to {
             opacity: 1;
             transform: scale(1) translateY(0);
+          }
+        }
+        @media (max-width: 640px) {
+          .des4-project-modal-body {
+            padding: 24px 18px !important;
+          }
+          .des4-project-modal-window {
+            max-height: 94vh !important;
+            border-radius: 14px !important;
           }
         }
       `}</style>

@@ -1,0 +1,15 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="motor-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fe3c01"/>
+      <stop offset="100%" stop-color="#ff6200"/>
+    </linearGradient>
+  </defs>
+  <!-- Gear outer -->
+  <path d="M64 16 L72 28 L88 24 L88 40 L104 40 L100 56 L112 64 L100 72 L104 88 L88 88 L88 104 L72 100 L64 112 L56 100 L40 104 L40 88 L24 88 L28 72 L16 64 L28 56 L24 40 L40 40 L40 24 L56 28 Z" fill="url(#motor-grad)"/>
+  <!-- Inner circle -->
+  <circle cx="64" cy="64" r="24" fill="#090a0f"/>
+  <!-- Center bolt -->
+  <circle cx="64" cy="64" r="10" fill="url(#motor-grad)"/>
+  <circle cx="64" cy="64" r="4" fill="#090a0f"/>
+</svg>

@@ -12,8 +12,8 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import api from '../../services/api';
-
 import { usePortfolio } from '../../context/PortfolioContext';
+import AdminMacModal from '../components/AdminMacModal';
 
 // Helper to generate SEO-friendly slug
 function generateSlug(text) {
@@ -206,25 +206,22 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
       {/* ─── Header & Controls ─── */}
       <div className="admin-section-header">
         <div>
-          <h2 className="admin-section-title">Quản Lý Blog & Threads (Ghi Chép)</h2>
-          <p className="admin-section-desc">
-            Toàn bộ bài viết hiển thị trên trang Blog Chạng Vạng ({posts.length} bài viết)
-          </p>
+          <h2 className="admin-section-title">Bài Viết & Ghi Chép</h2>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div className="admin-section-controls">
           {/* Search Box */}
-          <div style={{ position: 'relative', width: 240 }}>
+          <div className="admin-search-wrapper" style={{ position: 'relative', width: 220 }}>
             <input
               type="text"
               className="admin-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm bài viết..."
-              style={{ paddingLeft: 34, height: 38, fontSize: 13 }}
+              style={{ paddingLeft: 34, height: 36, fontSize: 13 }}
             />
             <Search
-              size={15}
+              size={14}
               style={{
                 position: 'absolute',
                 left: 11,
@@ -236,8 +233,8 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
           </div>
 
           {/* Add Post Button */}
-          <button id="btn-add-post" onClick={handleOpenAdd} className="admin-btn admin-btn-primary">
-            <Plus size={16} />
+          <button id="btn-add-post" onClick={handleOpenAdd} className="admin-btn admin-btn-primary" style={{ height: 36, padding: '0 14px' }}>
+            <Plus size={15} />
             <span>Viết Bài Mới</span>
           </button>
         </div>
@@ -369,192 +366,181 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
         </table>
       </div>
 
-      {/* ─── Add / Edit Modal ─── */}
-      {modalOpen && (
-        <div className="admin-modal-backdrop" onClick={() => setModalOpen(false)}>
-          <div className="admin-modal" style={{ maxWidth: 740 }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title">
-                {isEditing ? 'Chỉnh Sửa Bài Viết' : 'Tạo Bài Viết Mới'}
-              </h3>
-              <button onClick={() => setModalOpen(false)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
+      {/* ─── Add / Edit macOS Modal ─── */}
+      <AdminMacModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={isEditing ? 'Chỉnh Sửa Bài Viết' : 'Tạo Bài Viết Mới'}
+        prefix="Editor — "
+        maxWidth={740}
+      >
+        <form onSubmit={handleSubmit} className="admin-modal-form">
+          <div className="admin-modal-body">
+            {/* Title */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Tiêu đề</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={formData.title}
+                onChange={handleTitleChange}
+                placeholder="Nhập tiêu đề bài viết..."
+                required
+              />
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className="admin-modal-body">
-                {/* Title */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Tiêu đề bài viết (Title)</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.title}
-                    onChange={handleTitleChange}
-                    placeholder="VD: Sử dụng AI một cách hợp lý trong lập trình"
-                    required
-                  />
-                </div>
+            {/* Slug */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Đường dẫn (Slug)</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="duong-dan-bai-viet"
+                required
+              />
+            </div>
 
-                {/* Slug */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">URL Slug (Đường dẫn thân thiện)</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    placeholder="su-dung-ai-hop-ly"
-                    required
-                  />
-                </div>
+            {/* Excerpt */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Tóm tắt</label>
+              <textarea
+                className="admin-textarea"
+                value={formData.excerpt}
+                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                placeholder="Tóm tắt ngắn gọn nội dung..."
+                rows={2}
+              />
+            </div>
 
-                {/* Excerpt */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Tóm tắt ngắn (Excerpt)</label>
-                  <textarea
-                    className="admin-textarea"
-                    value={formData.excerpt}
-                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                    placeholder="1-2 câu tóm tắt nội dung chính của bài viết..."
-                    rows={2}
-                  />
-                </div>
-
-                {/* Row: Author, Date, Read Time */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Tác giả</label>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      value={formData.author}
-                      onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                      placeholder="Lê Văn Đạt"
-                    />
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Ngày đăng</label>
-                    <input
-                      type="date"
-                      className="admin-input"
-                      value={formData.published_date}
-                      onChange={(e) => setFormData({ ...formData, published_date: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Thời gian đọc (phút)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="admin-input"
-                      value={formData.read_time}
-                      onChange={(e) => setFormData({ ...formData, read_time: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Image URL */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Ảnh bìa bài viết (Cover Image URL)</label>
-                  <input
-                    type="url"
-                    className="admin-input"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                  />
-                  {formData.image_url && (
-                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <img
-                        src={formData.image_url}
-                        alt="Preview"
-                        style={{ width: 100, height: 60, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
-                        onError={(e) => (e.currentTarget.style.display = 'none')}
-                      />
-                      <span style={{ fontSize: 11.5, color: 'var(--admin-text-muted)' }}>Xem trước ảnh bìa</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Nội dung chi tiết (HTML hoặc Text)</label>
-                  <textarea
-                    className="admin-textarea"
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="<p>Đoạn văn mở đầu...</p><h3>Tiêu đề phụ</h3><p>Nội dung chi tiết...</p>"
-                    rows={8}
-                    style={{ fontFamily: 'monospace', fontSize: 13 }}
-                  />
-                </div>
+            {/* Row: Author, Date, Read Time */}
+            <div className="admin-form-grid-3">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Tác giả</label>
+                <input
+                  type="text"
+                  className="admin-input"
+                  value={formData.author}
+                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                  placeholder="Lê Văn Đạt"
+                />
               </div>
 
-              <div className="admin-modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="admin-btn admin-btn-secondary"
-                >
-                  Hủy Bỏ
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="admin-btn admin-btn-primary"
-                >
-                  {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Đăng Bài Viết'}
-                </button>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Ngày đăng</label>
+                <input
+                  type="date"
+                  className="admin-input"
+                  value={formData.published_date}
+                  onChange={(e) => setFormData({ ...formData, published_date: e.target.value })}
+                />
               </div>
-            </form>
+
+              <div className="admin-form-group">
+                <label className="admin-form-label">Thời gian đọc (phút)</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="admin-input"
+                  value={formData.read_time}
+                  onChange={(e) => setFormData({ ...formData, read_time: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Image URL */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Ảnh bìa (URL)</label>
+              <input
+                type="url"
+                className="admin-input"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                placeholder="https://..."
+              />
+              {formData.image_url && (
+                <div style={{ marginTop: 8 }}>
+                  <img
+                    src={formData.image_url}
+                    alt="Preview"
+                    style={{ width: 80, height: 48, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Nội dung bài viết</label>
+              <textarea
+                className="admin-textarea"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Nội dung bài viết (hỗ trợ HTML và Markdown)..."
+                rows={8}
+                style={{ fontFamily: 'monospace', fontSize: 13 }}
+              />
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* ─── Delete Confirmation Dialog ─── */}
-      {deleteConfirmId && (
-        <div className="admin-modal-backdrop" onClick={() => setDeleteConfirmId(null)}>
-          <div className="admin-modal" style={{ maxWidth: 440 }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title" style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={18} />
-                <span>Xác Nhận Xóa Bài Viết</span>
-              </h3>
-              <button onClick={() => setDeleteConfirmId(null)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="admin-modal-body">
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--admin-text)' }}>
-                Bạn có chắc chắn muốn xóa bài viết này khỏi hệ thống? Thao tác này không thể hoàn tác.
-              </p>
-            </div>
-
-            <div className="admin-modal-footer">
+          <div className="admin-modal-footer">
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
               <button
                 type="button"
-                onClick={() => setDeleteConfirmId(null)}
+                onClick={() => setModalOpen(false)}
                 className="admin-btn admin-btn-secondary"
               >
-                Hủy
+                Hủy Bỏ
               </button>
               <button
-                type="button"
-                disabled={deleting}
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="admin-btn admin-btn-danger"
+                type="submit"
+                disabled={saving}
+                className="admin-btn admin-btn-primary"
               >
-                {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+                {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Đăng Bài Viết'}
               </button>
             </div>
           </div>
+        </form>
+      </AdminMacModal>
+
+      {/* ─── Delete Confirmation macOS Dialog ─── */}
+      <AdminMacModal
+        isOpen={Boolean(deleteConfirmId)}
+        onClose={() => setDeleteConfirmId(null)}
+        title="Xác Nhận Xóa Bài Viết"
+        prefix="Cảnh Báo — "
+        maxWidth={440}
+        danger
+      >
+        <div className="admin-modal-body">
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--admin-text)' }}>
+            Bạn có chắc chắn muốn xóa bài viết này khỏi hệ thống? Thao tác này không thể hoàn tác.
+          </p>
         </div>
-      )}
+
+        <div className="admin-modal-footer">
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmId(null)}
+              className="admin-btn admin-btn-secondary"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => handleDelete(deleteConfirmId)}
+              className="admin-btn admin-btn-danger"
+            >
+              {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+            </button>
+          </div>
+        </div>
+      </AdminMacModal>
     </div>
   );
 }

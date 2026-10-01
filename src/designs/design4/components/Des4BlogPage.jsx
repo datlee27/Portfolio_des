@@ -83,10 +83,10 @@ export default function Des4BlogPage({ onGoHome }) {
         idx === 0
           ? ['#Minimalism', '#WebDev', '#CleanDesign']
           : idx === 1
-          ? ['#Career', '#DevJourney', '#Growth']
-          : idx === 2
-          ? ['#React', '#Frontend', '#Architecture']
-          : ['#DevLife', '#Balance', '#Productivity'],
+            ? ['#Career', '#DevJourney', '#Growth']
+            : idx === 2
+              ? ['#React', '#Frontend', '#Architecture']
+              : ['#DevLife', '#Balance', '#Productivity'],
       likes: 120 + idx * 37,
       isLiked: false,
       reposts: 8 + idx * 5,
@@ -1094,7 +1094,7 @@ export default function Des4BlogPage({ onGoHome }) {
           }}
         >
           <div style={{ marginBottom: 6, fontWeight: 700, color: '#a1a1aa' }}>
-            Dat Le • Engineering Logic, Crafting Digital Experiences
+            Dat Le
           </div>
           <div>© {new Date().getFullYear()} Dat Le. Designed with Threads aesthetics & dl*</div>
         </footer>

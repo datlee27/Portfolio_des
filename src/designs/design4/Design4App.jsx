@@ -107,13 +107,13 @@ export default function Design4App() {
     document.body.style.overflow = '';
     if (activeView === 'blog') {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      document.title = 'Threads / Blog – Dat Le Tech Notes';
+      document.title = 'Blog – Tech Notes';
     } else if (activeView === 'work') {
-      document.title = 'Work – Dat Le Selected Projects';
+      document.title = 'Work – Projects';
     } else if (activeView === 'lab') {
-      document.title = 'Lab – Dat Le Design Experiments';
+      document.title = 'Lab – Design Experiments';
     } else {
-      document.title = 'Dat Le – Engineering Logic, Crafting Digital Experiences';
+      document.title = 'DatLee | Portfolio';
     }
   }, [activeView]);
 

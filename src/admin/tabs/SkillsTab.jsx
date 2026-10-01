@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { usePortfolio } from '../../context/PortfolioContext';
+import AdminMacModal from '../components/AdminMacModal';
 
 export default function SkillsTab({ skills = [], onRefresh, showToast }) {
   const { updateSkills: contextUpdateSkills } = usePortfolio();
@@ -240,25 +241,22 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       {/* ─── Header & Controls ─── */}
       <div className="admin-section-header">
         <div>
-          <h2 className="admin-section-title">Quản Lý Kỹ Năng (Skills & Tech Stack)</h2>
-          <p className="admin-section-desc">
-            Danh mục công nghệ, ngôn ngữ và công cụ hiển thị trên trang chủ ({localSkills.length} danh mục)
-          </p>
+          <h2 className="admin-section-title">Kỹ Năng & Công Nghệ</h2>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div className="admin-section-controls">
           {/* Search Box */}
-          <div style={{ position: 'relative', width: 240 }}>
+          <div className="admin-search-wrapper" style={{ position: 'relative', width: 220 }}>
             <input
               type="text"
               className="admin-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm kỹ năng..."
-              style={{ paddingLeft: 34, height: 38, fontSize: 13 }}
+              style={{ paddingLeft: 34, height: 36, fontSize: 13 }}
             />
             <Search
-              size={15}
+              size={14}
               style={{
                 position: 'absolute',
                 left: 11,
@@ -274,9 +272,10 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
             id="btn-add-skill-category"
             onClick={handleOpenAdd}
             className="admin-btn admin-btn-primary"
+            style={{ height: 36, padding: '0 14px' }}
           >
-            <Plus size={16} />
-            <span>Thêm Danh Mục Mới</span>
+            <Plus size={15} />
+            <span>Thêm Danh Mục</span>
           </button>
         </div>
       </div>
@@ -285,7 +284,7 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: 20,
         }}
       >
@@ -457,116 +456,100 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
         )}
       </div>
 
-      {/* ─── Add / Edit Modal ─── */}
-      {modalOpen && (
-        <div className="admin-modal-backdrop" onClick={() => setModalOpen(false)}>
-          <div className="admin-modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title">
-                {isEditing ? 'Chỉnh Sửa Danh Mục Kỹ Năng' : 'Thêm Danh Mục Kỹ Năng Mới'}
-              </h3>
-              <button onClick={() => setModalOpen(false)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
+      {/* ─── Add / Edit macOS Modal ─── */}
+      <AdminMacModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={isEditing ? 'Chỉnh Sửa Nhóm Kỹ Năng' : 'Thêm Nhóm Kỹ Năng Mới'}
+        prefix="Editor — "
+        maxWidth={520}
+      >
+        <form onSubmit={handleSubmit} className="admin-modal-form">
+          <div className="admin-modal-body">
+            {/* Category Name */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Tên danh mục</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                placeholder="VD: FRONTEND, BACKEND, CLOUD..."
+                required
+              />
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className="admin-modal-body">
-                {/* Category Name */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Tên Danh Mục (Category)</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="VD: MOBILE DEV, DEVOPS, CLOUD SERVICES..."
-                    required
-                  />
-                  <span style={{ fontSize: 11, color: 'var(--admin-text-muted)', marginTop: 2 }}>
-                    Tên phân hệ kỹ năng hiển thị trên thanh filter trang chủ.
-                  </span>
-                </div>
-
-                {/* Items */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">
-                    Danh Sách Kỹ Năng (Items - phân tách bằng dấu phẩy)
-                  </label>
-                  <textarea
-                    className="admin-textarea"
-                    value={formData.items}
-                    onChange={(e) => setFormData({ ...formData, items: e.target.value })}
-                    placeholder="React, TypeScript, Java, Spring Boot, Docker, AWS"
-                    rows={4}
-                  />
-                  <span style={{ fontSize: 11, color: 'var(--admin-text-muted)', marginTop: 2 }}>
-                    Nhập các công nghệ cách nhau bằng dấu phẩy. Hệ thống sẽ tự động chuẩn hóa chữ hoa.
-                  </span>
-                </div>
-              </div>
-
-              <div className="admin-modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="admin-btn admin-btn-secondary"
-                >
-                  Hủy Bỏ
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="admin-btn admin-btn-primary"
-                >
-                  {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Tạo Danh Mục'}
-                </button>
-              </div>
-            </form>
+            {/* Items */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">
+                Danh sách kỹ năng (cách nhau bằng dấu phẩy)
+              </label>
+              <textarea
+                className="admin-textarea"
+                value={formData.items}
+                onChange={(e) => setFormData({ ...formData, items: e.target.value })}
+                placeholder="React, TypeScript, Java, Spring Boot, Docker, AWS"
+                rows={4}
+              />
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* ─── Delete Confirmation Dialog ─── */}
-      {deleteConfirmId && (
-        <div className="admin-modal-backdrop" onClick={() => setDeleteConfirmId(null)}>
-          <div className="admin-modal" style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title" style={{ color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={18} />
-                <span>Xác Nhận Xóa Danh Mục</span>
-              </h3>
-              <button onClick={() => setDeleteConfirmId(null)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="admin-modal-body">
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--admin-text)' }}>
-                Bạn có chắc chắn muốn xóa danh mục kỹ năng này? Tất cả các kỹ năng trong nhóm sẽ bị gỡ bỏ khỏi trang chủ.
-              </p>
-            </div>
-
-            <div className="admin-modal-footer">
+          <div className="admin-modal-footer">
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
               <button
                 type="button"
-                onClick={() => setDeleteConfirmId(null)}
+                onClick={() => setModalOpen(false)}
                 className="admin-btn admin-btn-secondary"
               >
-                Hủy
+                Hủy Bỏ
               </button>
               <button
-                type="button"
-                disabled={deleting}
-                onClick={() => handleDeleteCategory(deleteConfirmId)}
-                className="admin-btn admin-btn-danger"
+                type="submit"
+                disabled={saving}
+                className="admin-btn admin-btn-primary"
               >
-                {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+                {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Tạo Danh Mục'}
               </button>
             </div>
           </div>
+        </form>
+      </AdminMacModal>
+
+      {/* ─── Delete Confirmation macOS Dialog ─── */}
+      <AdminMacModal
+        isOpen={Boolean(deleteConfirmId)}
+        onClose={() => setDeleteConfirmId(null)}
+        title="Xác Nhận Xóa Nhóm Kỹ Năng"
+        prefix="Cảnh Báo — "
+        maxWidth={420}
+        danger
+      >
+        <div className="admin-modal-body">
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--admin-text)' }}>
+            Bạn có chắc chắn muốn xóa danh mục kỹ năng này không?
+          </p>
         </div>
-      )}
+
+        <div className="admin-modal-footer">
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmId(null)}
+              className="admin-btn admin-btn-secondary"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => handleDeleteCategory(deleteConfirmId)}
+              className="admin-btn admin-btn-danger"
+            >
+              {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+            </button>
+          </div>
+        </div>
+      </AdminMacModal>
     </div>
   );
 }

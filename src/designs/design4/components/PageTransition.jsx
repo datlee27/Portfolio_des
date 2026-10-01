@@ -32,13 +32,6 @@ const stripColors = [
   '#0d1117',
 ];
 
-const VIEW_LABELS = {
-  main: 'PORTFOLIO OVERVIEW',
-  work: 'SELECTED WORKS',
-  blog: 'THREADS & ESSAYS',
-  lab: 'EXPERIMENTS LAB',
-};
-
 export default function PageTransition({
   isActive,
   targetView = 'main',
@@ -72,8 +65,6 @@ export default function PageTransition({
   }, [onComplete]);
 
   if (!isActive && phase === 'idle') return null;
-
-  const targetLabel = VIEW_LABELS[targetView] || targetView?.toUpperCase() || 'DAT LE STUDIO';
 
   return (
     <AnimatePresence>
@@ -181,6 +172,8 @@ export default function PageTransition({
                 {/* dl* Brand Logo */}
                 <span
                   style={{
+                    display: 'inline-flex',
+                    alignItems: 'flex-start',
                     fontFamily: 'var(--font-outfit)',
                     fontSize: 'clamp(54px, 12vw, 100px)',
                     fontWeight: 900,
@@ -191,35 +184,41 @@ export default function PageTransition({
                     textShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
                   }}
                 >
-                  dl<span style={{ color: '#fe3c01' }}>*</span>
-                </span>
-
-                {/* Target page label */}
-                {targetLabel && (
+                  dl
                   <motion.span
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      transition: { delay: 0.08, duration: 0.2 },
-                    }}
                     style={{
-                      fontFamily: 'var(--font-inter)',
-                      fontSize: 'clamp(11px, 2.5vw, 14px)',
-                      fontWeight: 700,
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      color: 'rgba(255, 255, 255, 0.8)',
-                      marginTop: 14,
-                      textAlign: 'center',
-                      padding: '0 16px',
-                      maxWidth: '90vw',
-                      textShadow: '0 4px 16px rgba(0, 0, 0, 0.7)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '0.42em',
+                      height: '0.42em',
+                      marginTop: '0.04em',
+                      marginLeft: '0.02em',
+                      flexShrink: 0,
+                      transformOrigin: 'center center',
+                    }}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2.2,
+                      ease: 'linear',
                     }}
                   >
-                    {targetLabel}
+                    <svg
+                      viewBox="0 0 100 100"
+                      width="100%"
+                      height="100%"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g stroke="#fe3c01" strokeWidth="18" strokeLinecap="round">
+                        <line x1="50" y1="14" x2="50" y2="86" />
+                        <line x1="18.8" y1="32" x2="81.2" y2="68" />
+                        <line x1="18.8" y1="68" x2="81.2" y2="32" />
+                      </g>
+                    </svg>
                   </motion.span>
-                )}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>

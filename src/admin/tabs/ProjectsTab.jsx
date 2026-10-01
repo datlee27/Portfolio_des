@@ -12,6 +12,7 @@ import {
 import { SiGithub } from 'react-icons/si';
 import api from '../../services/api';
 import { usePortfolio } from '../../context/PortfolioContext';
+import AdminMacModal from '../components/AdminMacModal';
 
 export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   const { updateProjects: contextUpdateProjects, projects: ctxProjects } = usePortfolio();
@@ -183,25 +184,22 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       {/* ─── Header & Controls ─── */}
       <div className="admin-section-header">
         <div>
-          <h2 className="admin-section-title">Quản Lý Dự Án (Selected Works)</h2>
-          <p className="admin-section-desc">
-            Toàn bộ dự án hiển thị trên trang chủ và trang /work ({projects.length} dự án)
-          </p>
+          <h2 className="admin-section-title">Dự Án Portfolio</h2>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div className="admin-section-controls">
           {/* Search Box */}
-          <div style={{ position: 'relative', width: 240 }}>
+          <div className="admin-search-wrapper" style={{ position: 'relative', width: 220 }}>
             <input
               type="text"
               className="admin-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm dự án..."
-              style={{ paddingLeft: 34, height: 38, fontSize: 13 }}
+              style={{ paddingLeft: 34, height: 36, fontSize: 13 }}
             />
             <Search
-              size={15}
+              size={14}
               style={{
                 position: 'absolute',
                 left: 11,
@@ -213,9 +211,9 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
           </div>
 
           {/* Add Project Button */}
-          <button id="btn-add-project" onClick={handleOpenAdd} className="admin-btn admin-btn-primary">
-            <Plus size={16} />
-            <span>Thêm Dự Án Mới</span>
+          <button id="btn-add-project" onClick={handleOpenAdd} className="admin-btn admin-btn-primary" style={{ height: 36, padding: '0 14px' }}>
+            <Plus size={15} />
+            <span>Thêm Dự Án</span>
           </button>
         </div>
       </div>
@@ -372,197 +370,186 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         </table>
       </div>
 
-      {/* ─── Add / Edit Modal ─── */}
-      {modalOpen && (
-        <div className="admin-modal-backdrop" onClick={() => setModalOpen(false)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title">
-                {isEditing ? 'Chỉnh Sửa Dự Án' : 'Thêm Dự Án Mới'}
-              </h3>
-              <button onClick={() => setModalOpen(false)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
+      {/* ─── Add / Edit macOS Modal ─── */}
+      <AdminMacModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={isEditing ? 'Chỉnh Sửa Dự Án' : 'Thêm Dự Án Mới'}
+        prefix="Editor — "
+        maxWidth={660}
+      >
+        <form onSubmit={handleSubmit} className="admin-modal-form">
+          <div className="admin-modal-body">
+            {/* Row: Project Code & Status */}
+            <div className="admin-form-grid-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Mã dự án</label>
+                <input
+                  type="text"
+                  className="admin-input"
+                  value={formData.project_code}
+                  onChange={(e) => setFormData({ ...formData, project_code: e.target.value })}
+                  placeholder="01"
+                  required
+                />
+              </div>
+
+              <div className="admin-form-group">
+                <label className="admin-form-label">Trạng thái</label>
+                <select
+                  className="admin-select"
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                >
+                  <option value="Latest">Mới nhất</option>
+                  <option value="Completed">Hoàn thành</option>
+                  <option value="In Progress">Đang thực hiện</option>
+                  <option value="Archived">Lưu trữ</option>
+                </select>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className="admin-modal-body">
-                {/* Row: Project Code & Status */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Mã dự án (Project Code)</label>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      value={formData.project_code}
-                      onChange={(e) => setFormData({ ...formData, project_code: e.target.value })}
-                      placeholder="01"
-                      required
-                    />
-                  </div>
+            {/* Title */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Tên dự án</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="VD: Dev Roadmap Tracking System"
+                required
+              />
+            </div>
 
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Trạng thái (Status)</label>
-                    <select
-                      className="admin-select"
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    >
-                      <option value="Latest">Latest (Mới nhất)</option>
-                      <option value="Completed">Completed (Hoàn thành)</option>
-                      <option value="In Progress">In Progress (Đang làm)</option>
-                      <option value="Archived">Archived (Lưu trữ)</option>
-                    </select>
-                  </div>
-                </div>
+            {/* Description */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Mô tả</label>
+              <textarea
+                className="admin-textarea"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Mô tả chức năng và giá trị của sản phẩm..."
+                rows={3}
+              />
+            </div>
 
-                {/* Title */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Tên dự án (Title)</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="VD: Dev Roadmap Tracking System"
-                    required
+            {/* Image URL */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Ảnh đại diện (URL)</label>
+              <input
+                type="url"
+                className="admin-input"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                placeholder="https://..."
+              />
+              {formData.image_url && (
+                <div style={{ marginTop: 8 }}>
+                  <img
+                    src={formData.image_url}
+                    alt="Preview"
+                    style={{ width: 80, height: 48, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
                 </div>
+              )}
+            </div>
 
-                {/* Description */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Mô tả dự án (Description)</label>
-                  <textarea
-                    className="admin-textarea"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Mô tả chức năng, bài toán giải quyết và giá trị của sản phẩm..."
-                    rows={3}
-                  />
-                </div>
+            {/* Tags */}
+            <div className="admin-form-group">
+              <label className="admin-form-label">Công nghệ (Tags)</label>
+              <input
+                type="text"
+                className="admin-input"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                placeholder="React, TypeScript, Spring Boot, MySQL"
+              />
+            </div>
 
-                {/* Image URL & Live Preview */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Link ảnh đại diện (Image URL)</label>
-                  <input
-                    type="url"
-                    className="admin-input"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://res.cloudinary.com/... hoặc https://images.unsplash.com/..."
-                  />
-                  {formData.image_url && (
-                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <img
-                        src={formData.image_url}
-                        alt="Preview"
-                        style={{ width: 100, height: 60, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
-                        onError={(e) => (e.currentTarget.style.display = 'none')}
-                      />
-                      <span style={{ fontSize: 11.5, color: 'var(--admin-text-muted)' }}>Xem trước ảnh đại diện</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tags */}
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Công nghệ (Tags - cách nhau bằng dấu phẩy)</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={formData.tags}
-                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                    placeholder="React, TypeScript, Spring Boot, MySQL"
-                  />
-                </div>
-
-                {/* Row: GitHub URL & Deploy URL */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">GitHub Repository URL</label>
-                    <input
-                      type="url"
-                      className="admin-input"
-                      value={formData.github_url}
-                      onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
-                      placeholder="https://github.com/datlee27/..."
-                    />
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">Live Demo / Deploy URL</label>
-                    <input
-                      type="url"
-                      className="admin-input"
-                      value={formData.deploy_url}
-                      onChange={(e) => setFormData({ ...formData, deploy_url: e.target.value })}
-                      placeholder="https://dev-roadmap.vercel.app/"
-                    />
-                  </div>
-                </div>
+            {/* Row: GitHub URL & Deploy URL */}
+            <div className="admin-form-grid-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Link GitHub</label>
+                <input
+                  type="url"
+                  className="admin-input"
+                  value={formData.github_url}
+                  onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                  placeholder="https://github.com/..."
+                />
               </div>
 
-              <div className="admin-modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="admin-btn admin-btn-secondary"
-                >
-                  Hủy Bỏ
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="admin-btn admin-btn-primary"
-                >
-                  {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Thêm Dự Án'}
-                </button>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Link Demo / Website</label>
+                <input
+                  type="url"
+                  className="admin-input"
+                  value={formData.deploy_url}
+                  onChange={(e) => setFormData({ ...formData, deploy_url: e.target.value })}
+                  placeholder="https://..."
+                />
               </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* ─── Delete Confirmation Dialog ─── */}
-      {deleteConfirmId && (
-        <div className="admin-modal-backdrop" onClick={() => setDeleteConfirmId(null)}>
-          <div className="admin-modal" style={{ maxWidth: 440 }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title" style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={18} />
-                <span>Xác Nhận Xóa Dự Án</span>
-              </h3>
-              <button onClick={() => setDeleteConfirmId(null)} className="admin-btn-icon">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="admin-modal-body">
-              <p style={{ margin: 0, fontSize: 14, color: 'var(--admin-text)' }}>
-                Bạn có chắc chắn muốn xóa dự án này? Thao tác này sẽ xóa dữ liệu trên hệ thống cơ sở dữ liệu và không thể hoàn tác.
-              </p>
-            </div>
-
-            <div className="admin-modal-footer">
+          <div className="admin-modal-footer">
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
               <button
                 type="button"
-                onClick={() => setDeleteConfirmId(null)}
+                onClick={() => setModalOpen(false)}
                 className="admin-btn admin-btn-secondary"
               >
-                Hủy
+                Hủy Bỏ
               </button>
               <button
-                type="button"
-                disabled={deleting}
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="admin-btn admin-btn-danger"
+                type="submit"
+                disabled={saving}
+                className="admin-btn admin-btn-primary"
               >
-                {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+                {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Thêm Dự Án'}
               </button>
             </div>
           </div>
+        </form>
+      </AdminMacModal>
+
+      {/* ─── Delete Confirmation macOS Dialog ─── */}
+      <AdminMacModal
+        isOpen={Boolean(deleteConfirmId)}
+        onClose={() => setDeleteConfirmId(null)}
+        title="Xác Nhận Xóa Dự Án"
+        prefix="Cảnh Báo — "
+        maxWidth={440}
+        danger
+      >
+        <div className="admin-modal-body">
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--admin-text)' }}>
+            Bạn có chắc chắn muốn xóa dự án này không? Thao tác này không thể hoàn tác.
+          </p>
         </div>
-      )}
+
+        <div className="admin-modal-footer">
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmId(null)}
+              className="admin-btn admin-btn-secondary"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => handleDelete(deleteConfirmId)}
+              className="admin-btn admin-btn-danger"
+            >
+              {deleting ? 'Đang xóa...' : 'Xác Nhận Xóa'}
+            </button>
+          </div>
+        </div>
+      </AdminMacModal>
     </div>
   );
 }

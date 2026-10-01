@@ -164,6 +164,13 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         </div>
       )}
 
+      {/* ─── Mobile Sidebar Backdrop Overlay ─── */}
+      <div
+        className={`admin-sidebar-backdrop ${sidebarOpen ? 'open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* ─── Sidebar ─── */}
       <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         {/* Brand */}
@@ -243,8 +250,8 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           <div className="admin-topbar-left">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="admin-btn-icon"
-              style={{ display: 'none' }}
+              className="admin-btn-icon admin-menu-toggle"
+              aria-label="Toggle navigation menu"
             >
               {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -256,6 +263,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           <div className="admin-topbar-right">
             {/* Online / Offline Status Badge */}
             <div
+              className="admin-status-badge"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -278,7 +286,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             <button
               onClick={fetchData}
               disabled={loading}
-              className="admin-btn admin-btn-secondary"
+              className="admin-btn admin-btn-secondary admin-sync-btn"
               title="Làm mới dữ liệu từ API"
               style={{ padding: '6px 12px', fontSize: 12.5 }}
             >

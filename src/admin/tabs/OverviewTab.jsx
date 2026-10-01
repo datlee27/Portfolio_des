@@ -30,73 +30,75 @@ export default function OverviewTab({
       <div className="admin-grid-cols-4">
         {/* Stat 1: Projects */}
         <div className="admin-stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="admin-stat-label">Tổng Dự Án</div>
+              <div className="admin-stat-label">Dự Án</div>
               <div className="admin-stat-value">{projects.length}</div>
-              <div className="admin-stat-sub">Dự án Portfolio hoạt động</div>
             </div>
-            <div className="admin-badge admin-badge-orange" style={{ padding: 8 }}>
-              <FolderKanban size={20} />
+            <div className="admin-stat-icon-neutral">
+              <FolderKanban size={18} />
             </div>
           </div>
         </div>
 
         {/* Stat 2: Blog Posts */}
         <div className="admin-stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="admin-stat-label">Bài Viết Blog</div>
+              <div className="admin-stat-label">Bài Viết</div>
               <div className="admin-stat-value">{posts.length}</div>
-              <div className="admin-stat-sub">Threads & Ghi chép kỹ thuật</div>
             </div>
-            <div className="admin-badge admin-badge-blue" style={{ padding: 8 }}>
-              <FileText size={20} />
+            <div className="admin-stat-icon-neutral">
+              <FileText size={18} />
             </div>
           </div>
         </div>
 
         {/* Stat 3: Tech Skills */}
         <div className="admin-stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="admin-stat-label">Danh Mục Kỹ Năng</div>
+              <div className="admin-stat-label">Kỹ Năng</div>
               <div className="admin-stat-value">{skills.length}</div>
-              <div className="admin-stat-sub">Phân hệ Tech Stack</div>
             </div>
-            <div className="admin-badge admin-badge-green" style={{ padding: 8 }}>
-              <Database size={20} />
+            <div className="admin-stat-icon-neutral">
+              <Database size={18} />
             </div>
           </div>
         </div>
 
         {/* Stat 4: Server Status */}
         <div className="admin-stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div className="admin-stat-label">Trạng Thái API</div>
+              <div className="admin-stat-label">Hệ Thống API</div>
               <div
                 className="admin-stat-value"
                 style={{
-                  fontSize: 20,
-                  color: isConnected ? '#10b981' : '#f59e0b',
+                  fontSize: 15,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 8,
+                  marginTop: 6,
                 }}
               >
-                <CheckCircle2 size={20} />
-                <span>{isConnected ? 'ONLINE' : 'LOCAL / OFFLINE'}</span>
-              </div>
-              <div className="admin-stat-sub">
-                {isConnected ? 'datdoc.id.vn • REST 200 OK' : 'Đang dùng bộ nhớ cục bộ dự phòng'}
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: isConnected ? '#10b981' : '#f59e0b',
+                    display: 'inline-block',
+                    boxShadow: isConnected ? '0 0 0 3px rgba(16, 185, 129, 0.18)' : '0 0 0 3px rgba(245, 158, 11, 0.18)',
+                  }}
+                />
+                <span style={{ fontWeight: 700, color: 'var(--admin-text)' }}>
+                  {isConnected ? 'Sẵn Sàng' : 'Cục Bộ'}
+                </span>
               </div>
             </div>
-            <div
-              className={`admin-badge ${isConnected ? 'admin-badge-green' : 'admin-badge-orange'}`}
-              style={{ padding: 8 }}
-            >
-              <Activity size={20} />
+            <div className="admin-stat-icon-neutral">
+              <Activity size={18} />
             </div>
           </div>
         </div>
@@ -111,61 +113,60 @@ export default function OverviewTab({
           borderColor: 'var(--admin-card-border)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <img
               src={personal.avatar_url || personal.avatarUrl || 'https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg'}
               alt={personal.name || 'Avatar'}
               style={{
-                width: 64,
-                height: 64,
+                width: 52,
+                height: 52,
                 borderRadius: '50%',
                 objectFit: 'cover',
-                border: '2px solid var(--admin-card-border)',
+                border: '1.5px solid var(--admin-card-border)',
               }}
             />
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: 'var(--admin-text)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: 'var(--admin-text)' }}>
                   {personal.name || 'Lê Văn Đạt'}
                 </h3>
-                <span className="admin-badge admin-badge-orange">
+                <span className="admin-tag-pill" style={{ margin: 0 }}>
                   {personal.short_name || personal.shortName || 'DAT LEE'}
                 </span>
               </div>
-              <p style={{ fontSize: 13, color: 'var(--admin-text-muted)', margin: '4px 0 0 0' }}>
+              <p style={{ fontSize: 12.5, color: 'var(--admin-text-muted)', margin: '3px 0 0 0' }}>
                 {personal.title || 'Technical Artisan & Fullstack Developer'} • {personal.coordinates || 'Da Nang, Vietnam'}
               </p>
-              <div style={{ fontSize: 12.5, color: 'var(--admin-text-secondary)', marginTop: 6, fontStyle: 'italic' }}>
-                "{personal.identity_statement || personal.identityStatement || personal.bio || 'Creating bold, functional digital experiences.'}"
-              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={() => onNavigateTab('profile')}
               className="admin-btn admin-btn-secondary"
+              style={{ fontSize: 12.5, padding: '7px 14px' }}
             >
               <UserCheck size={14} />
-              <span>Sửa Thông Tin Cá Nhân</span>
+              <span>Sửa Hồ Sơ</span>
             </button>
 
             {onResetToDefaults && (
               <button
                 type="button"
                 onClick={() => {
-                  if (window.confirm('Bạn có chắc muốn khôi phục toàn bộ dữ liệu về mã nguồn tĩnh ban đầu không? (Mọi chỉnh sửa lưu tạm sẽ được đặt lại)')) {
+                  if (window.confirm('Khôi phục toàn bộ dữ liệu về mã nguồn gốc ban đầu?')) {
                     onResetToDefaults();
-                    if (showToast) showToast('Đã khôi phục dữ liệu gốc từ mã nguồn!', 'success');
+                    if (showToast) showToast('Đã khôi phục dữ liệu gốc!', 'success');
                     if (onRefresh) onRefresh();
                   }
                 }}
                 className="admin-btn admin-btn-secondary"
-                title="Khôi phục lại dữ liệu static mặc định ban đầu"
+                title="Khôi phục lại dữ liệu ban đầu"
+                style={{ fontSize: 12.5, padding: '7px 12px' }}
               >
-                <span>Khôi Phục Dữ Liệu Gốc</span>
+                <span>Khôi Phục Gốc</span>
               </button>
             )}
 
@@ -174,16 +175,18 @@ export default function OverviewTab({
               target="_blank"
               rel="noopener noreferrer"
               className="admin-btn admin-btn-secondary"
+              title="Mở Swagger API Docs"
+              style={{ fontSize: 12.5, padding: '7px 12px' }}
             >
               <ExternalLink size={14} />
-              <span>Swagger API Docs</span>
+              <span>Swagger API</span>
             </a>
           </div>
         </div>
       </div>
 
       {/* ─── Quick Actions & Recent Projects Row ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
         {/* Recent Projects Card */}
         <div className="admin-table-container">
           <div

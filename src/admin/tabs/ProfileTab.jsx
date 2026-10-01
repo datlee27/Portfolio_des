@@ -80,27 +80,28 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
     <div>
       <div className="admin-section-header">
         <div>
-          <h2 className="admin-section-title">Thông Tin Cá Nhân & Hero Section</h2>
-          <p className="admin-section-desc">
-            Chỉnh sửa tên, chức danh, slogan, bio và ảnh đại diện hiển thị trên trang chủ
-          </p>
+          <h2 className="admin-section-title">Hồ Sơ Cá Nhân</h2>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={saving}
+            className="admin-btn admin-btn-primary"
+            style={{ height: 36, padding: '0 16px' }}
+          >
+            <Save size={15} />
+            <span>{saving ? 'Đang lưu...' : 'Lưu Thay Đổi'}</span>
+          </button>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} style={{ maxWidth: 900 }}>
-        <div className="admin-table-container" style={{ padding: 28 }}>
+        <div className="admin-table-container admin-profile-card">
           {/* Avatar Preview Row */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 20,
-              paddingBottom: 24,
-              marginBottom: 24,
-              borderBottom: '1px solid var(--admin-card-border)',
-            }}
-          >
-            <div style={{ position: 'relative' }}>
+          <div className="admin-profile-avatar-row">
+            <div style={{ position: 'relative', flexShrink: 0 }}>
               <img
                 src={
                   formData.avatar_url ||
@@ -116,7 +117,7 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
                 }}
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 200, width: '100%' }}>
               <label className="admin-form-label">Link Ảnh Đại Diện (Avatar URL)</label>
               <input
                 type="url"
@@ -132,7 +133,7 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
           </div>
 
           {/* Row 1: Name & Short Name */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18 }}>
+          <div className="admin-form-grid-profile-name">
             <div className="admin-form-group">
               <label className="admin-form-label">Họ và Tên Đầy Đủ</label>
               <input
@@ -158,7 +159,7 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
           </div>
 
           {/* Row 2: Title & Role */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+          <div className="admin-form-grid-2">
             <div className="admin-form-group">
               <label className="admin-form-label">Chức Danh Kỹ Thuật (Title)</label>
               <input
@@ -184,7 +185,7 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
           </div>
 
           {/* Row 3: Status & Coordinates */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+          <div className="admin-form-grid-2">
             <div className="admin-form-group">
               <label className="admin-form-label">Trạng Thái Hoạt Động (Status)</label>
               <input
@@ -253,7 +254,7 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
               style={{ padding: '12px 28px', fontSize: 14 }}
             >
               <Save size={16} />
-              <span>{saving ? 'Đang Lưu...' : 'Lưu Thay Đổi Thông Tin'}</span>
+              <span>{saving ? 'Đang lưu...' : 'Lưu Thay Đổi'}</span>
             </button>
           </div>
         </div>
