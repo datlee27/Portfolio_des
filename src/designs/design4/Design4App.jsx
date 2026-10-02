@@ -14,8 +14,12 @@ import Des4AboutPage from './components/Des4AboutPage';
 import ScrollEase from '../../components/common/ScrollEase';
 import ScrollBlurByAki from '../../components/common/ScrollBlurByAki';
 import PageTransition from './components/PageTransition';
+import { usePortfolio } from '@/context/PortfolioContext';
 
 export default function Design4App() {
+  const { loading: portfolioLoading } = usePortfolio();
+  const [isPageReady, setIsPageReady] = useState(true);
+
   // Determine initial view from URL path
   const [activeView, setActiveView] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -46,6 +50,7 @@ export default function Design4App() {
       return;
     }
 
+    setIsPageReady(false);
     setTransition({
       isActive: true,
       targetView: view,
@@ -106,6 +111,63 @@ export default function Design4App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Target Page Readiness Gate:
+  // Ensures destination page has mounted, double RAF paint pass completed, fonts loaded, and data fetched
+  useEffect(() => {
+    if (!transition.isActive) {
+      setIsPageReady(true);
+      return;
+    }
+
+    // Only verify readiness once midpoint has swapped activeView to targetView
+    if (transition.targetView && activeView !== transition.targetView) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const checkReady = async () => {
+      try {
+        if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
+      } catch {
+        // Fallback if document.fonts API is not available
+      }
+
+      // Double requestAnimationFrame ensures browser has completed DOM layout & paint pass
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!isMounted) return;
+
+          // If portfolio data is still actively loading over network, wait until ready
+          if (portfolioLoading) {
+            const pollInterval = setInterval(() => {
+              if (!portfolioLoading) {
+                clearInterval(pollInterval);
+                if (isMounted) setIsPageReady(true);
+              }
+            }, 50);
+
+            // Safety limit: if API takes > 3s, release gate anyway
+            setTimeout(() => {
+              clearInterval(pollInterval);
+              if (isMounted) setIsPageReady(true);
+            }, 3000);
+          } else {
+            setIsPageReady(true);
+          }
+        });
+      });
+    };
+
+    checkReady();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [transition.isActive, transition.targetView, activeView, portfolioLoading]);
+
   // Update document title and ensure body scroll is unlocked based on current view
   useEffect(() => {
     document.body.style.overflow = '';
@@ -129,6 +191,7 @@ export default function Design4App() {
       <PageTransition
         isActive={transition.isActive}
         targetView={transition.targetView || activeView}
+        isTargetReady={isPageReady}
         onMidpoint={handleTransitionMidpoint}
         onComplete={handleTransitionComplete}
       />

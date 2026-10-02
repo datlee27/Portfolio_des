@@ -1,30 +1,27 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * PageTransition — Horizontal Interlaced Black & Orange Strip Transition
+ * PageTransition — Premium Horizontal Interlaced Strip Transition
  *
- * Flow:
- *   1. IN (Entering): 5 horizontal strips sweep across the screen from alternating sides:
- *      - Strip 0 (Black): from Left
- *      - Strip 1 (Orange): from Right
- *      - Strip 2 (Black): from Left
- *      - Strip 3 (Orange): from Right
- *      - Strip 4 (Black): from Left
- *   2. HOLD:
- *      - Midpoint callback fires → swaps active view behind the strips & resets scroll position to top.
- *      - Center emblem `dl*` appears with subtle scale and the target page name.
- *   3. OUT (Exiting):
- *      - Emblem dissolves and strips sweep out to the opposite edges, revealing the loaded page.
+ * Dual-Gate Readiness Architecture:
+ *   Phase 1 (Sweep In): 5 horizontal black & orange strips sweep in (0.55s) with subpixel overlap.
+ *   Phase 2 (Hold & Ready Gate):
+ *     - Minimum hold duration (500ms) guarantees the animation is never rushed, even on 0ms load.
+ *     - Waits for destination page to signal readiness (data loaded, DOM painted, fonts ready).
+ *     - If network is slow, displays subtle pulsing indicator so the user knows it's fetching.
+ *     - Failsafe safety timeout (3500ms) prevents any lockup.
+ *   Phase 3 (Sweep Out & Reveal): Strips sweep to opposite edges (0.55s), revealing the fully ready page.
  */
 
 const STRIP_COUNT = 5;
-const ENTER_DURATION = 0.5;
-const HOLD_DURATION = 0.38;
-const EXIT_DURATION = 0.52;
-const STAGGER = 0.045;
+const ENTER_DURATION = 0.55;
+const MIN_HOLD_DURATION = 500; // ms: cinematic floor
+const EXIT_DURATION = 0.55;
+const STAGGER = 0.04;
+const SAFETY_TIMEOUT = 3500; // ms: failsafe for dead network
 
-const stripColors = [
+const STRIP_COLORS = [
   '#0d1117',
   '#fe3c01',
   '#0d1117',
@@ -32,39 +29,103 @@ const stripColors = [
   '#0d1117',
 ];
 
+const TARGET_LABELS = {
+  main: 'home // engineering logic & craft',
+  work: 'work // selected projects & systems',
+  blog: 'blog // chạng vạng • notes',
+  about: 'about // technical artisan & philosophy',
+  lab: 'lab // creative digital experiments',
+};
+
+const EASING = [0.85, 0, 0.15, 1]; // Luxurious editorial bezier
+
 export default function PageTransition({
   isActive,
   targetView = 'main',
+  isTargetReady = true,
   onMidpoint,
   onComplete,
 }) {
-  const [phase, setPhase] = useState('idle'); // idle | entering | holding | exiting
+  const [phase, setPhase] = useState('idle'); // 'idle' | 'entering' | 'holding' | 'exiting'
+  const [minHoldDone, setMinHoldDone] = useState(false);
+  const [showSlowLoader, setShowSlowLoader] = useState(false);
+  const hasTriggeredExit = useRef(false);
 
+  // Stop Lenis during transition to avoid scroll jumps
   useEffect(() => {
-    if (isActive && phase === 'idle') {
-      setPhase('entering');
+    if (isActive && phase !== 'idle') {
+      if (typeof window !== 'undefined' && window.lenis) {
+        window.lenis.stop();
+      }
+    } else {
+      if (typeof window !== 'undefined' && window.lenis) {
+        window.lenis.start();
+      }
     }
   }, [isActive, phase]);
 
-  // Phase transition callbacks
+  // When transition becomes active, start entering sweep
+  useEffect(() => {
+    if (isActive && phase === 'idle') {
+      setPhase('entering');
+      setMinHoldDone(false);
+      setShowSlowLoader(false);
+      hasTriggeredExit.current = false;
+    }
+  }, [isActive, phase]);
+
+  // When hold begins, initiate timers
+  useEffect(() => {
+    if (phase !== 'holding') return;
+
+    // 1. Minimum hold timer (guarantees animation completeness)
+    const minTimer = setTimeout(() => {
+      setMinHoldDone(true);
+    }, MIN_HOLD_DURATION);
+
+    // 2. Slow network indicator timer (shows if network holds > 650ms)
+    const slowTimer = setTimeout(() => {
+      setShowSlowLoader(true);
+    }, 650);
+
+    // 3. Failsafe safety timeout
+    const safetyTimer = setTimeout(() => {
+      if (!hasTriggeredExit.current) {
+        hasTriggeredExit.current = true;
+        setPhase('exiting');
+      }
+    }, SAFETY_TIMEOUT);
+
+    return () => {
+      clearTimeout(minTimer);
+      clearTimeout(slowTimer);
+      clearTimeout(safetyTimer);
+    };
+  }, [phase]);
+
+  // Dual-Condition Gate: Check both Minimum Hold AND Target Page Readiness
+  useEffect(() => {
+    if (phase === 'holding' && minHoldDone && isTargetReady && !hasTriggeredExit.current) {
+      hasTriggeredExit.current = true;
+      setPhase('exiting');
+    }
+  }, [phase, minHoldDone, isTargetReady]);
+
+  // Callback when enter sweep finishes
   const handleEnterComplete = useCallback(() => {
     setPhase('holding');
-
-    // Fire midpoint: Parent updates state & resets scroll while veil is 100% covered
     if (onMidpoint) onMidpoint();
-
-    // After brief hold, begin exit sweep
-    setTimeout(() => {
-      setPhase('exiting');
-    }, HOLD_DURATION * 1000);
   }, [onMidpoint]);
 
+  // Callback when exit sweep finishes
   const handleExitComplete = useCallback(() => {
     setPhase('idle');
     if (onComplete) onComplete();
   }, [onComplete]);
 
   if (!isActive && phase === 'idle') return null;
+
+  const targetLabel = TARGET_LABELS[targetView] || 'portfolio // digital craft';
 
   return (
     <AnimatePresence>
@@ -80,15 +141,16 @@ export default function PageTransition({
           }}
           aria-hidden={phase === 'idle'}
         >
-          {/* ─── 5 Horizontal Alternating Black & Orange Strips ─── */}
+          {/* ─── 5 Horizontal Alternating Black & Orange Strips with Subpixel Overlap ─── */}
           {Array.from({ length: STRIP_COUNT }).map((_, i) => {
             const fromRight = i % 2 === 1;
-            const stripHeight = `${100 / STRIP_COUNT}%`;
+            // Overlap by 2px to eliminate subpixel hairline gaps on Retina displays
+            const stripHeight = `calc(${100 / STRIP_COUNT}% + 2px)`;
             const enterDelay = i * STAGGER;
-            const exitDelay = (STRIP_COUNT - 1 - i) * (STAGGER * 0.8);
+            const exitDelay = (STRIP_COUNT - 1 - i) * (STAGGER * 0.75);
 
-            const enterInitialX = fromRight ? '100%' : '-100%';
-            const exitTargetX = fromRight ? '-105%' : '105%';
+            const enterInitialX = fromRight ? '101%' : '-101%';
+            const exitTargetX = fromRight ? '-103%' : '103%';
 
             return (
               <motion.div
@@ -99,7 +161,7 @@ export default function PageTransition({
                   right: 0,
                   top: `${(100 / STRIP_COUNT) * i}%`,
                   height: stripHeight,
-                  background: stripColors[i],
+                  background: STRIP_COLORS[i],
                   willChange: 'transform',
                 }}
                 initial={{ x: enterInitialX }}
@@ -110,7 +172,7 @@ export default function PageTransition({
                         transition: {
                           duration: EXIT_DURATION,
                           delay: exitDelay,
-                          ease: [0.76, 0, 0.24, 1],
+                          ease: EASING,
                         },
                       }
                     : {
@@ -118,7 +180,7 @@ export default function PageTransition({
                         transition: {
                           duration: ENTER_DURATION,
                           delay: enterDelay,
-                          ease: [0.76, 0, 0.24, 1],
+                          ease: EASING,
                         },
                       }
                 }
@@ -127,7 +189,7 @@ export default function PageTransition({
                   if (phase === 'entering' && i === STRIP_COUNT - 1) {
                     handleEnterComplete();
                   }
-                  // Only fire complete when the last strip finishes exiting
+                  // Only fire complete when the first strip finishes exiting
                   if (phase === 'exiting' && i === 0) {
                     handleExitComplete();
                   }
@@ -136,25 +198,26 @@ export default function PageTransition({
             );
           })}
 
-          {/* ─── Center Logo & Target Label (Visible during Hold) ─── */}
+          {/* ─── Center Logo & Brand Identity (Visible during Hold & Reveal) ─── */}
           <AnimatePresence>
             {(phase === 'holding' || phase === 'exiting') && (
               <motion.div
-                key="center-logo"
-                initial={{ opacity: 0, scale: 0.8 }}
+                key="center-identity"
+                initial={{ opacity: 0, scale: 0.85, y: 10 }}
                 animate={
                   phase === 'exiting'
                     ? {
                         opacity: 0,
-                        scale: 1.4,
-                        filter: 'blur(10px)',
-                        transition: { duration: 0.25, ease: [0.76, 0, 0.24, 1] },
+                        scale: 1.25,
+                        filter: 'blur(8px)',
+                        transition: { duration: 0.28, ease: EASING },
                       }
                     : {
                         opacity: 1,
                         scale: 1,
+                        y: 0,
                         filter: 'blur(0px)',
-                        transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+                        transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
                       }
                 }
                 exit={{ opacity: 0 }}
@@ -175,13 +238,13 @@ export default function PageTransition({
                     display: 'inline-flex',
                     alignItems: 'flex-start',
                     fontFamily: 'var(--font-outfit)',
-                    fontSize: 'clamp(54px, 12vw, 100px)',
+                    fontSize: 'clamp(56px, 12vw, 104px)',
                     fontWeight: 900,
                     letterSpacing: '-0.04em',
                     color: '#ffffff',
                     lineHeight: 1,
                     userSelect: 'none',
-                    textShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+                    textShadow: '0 10px 40px rgba(0, 0, 0, 0.7)',
                   }}
                 >
                   dl
@@ -200,7 +263,7 @@ export default function PageTransition({
                     animate={{ rotate: 360 }}
                     transition={{
                       repeat: Infinity,
-                      duration: 2.2,
+                      duration: 2.4,
                       ease: 'linear',
                     }}
                   >
@@ -219,6 +282,67 @@ export default function PageTransition({
                     </svg>
                   </motion.span>
                 </span>
+
+                {/* Subtitle destination badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 0.85, y: 0 }}
+                  transition={{ delay: 0.12, duration: 0.3 }}
+                  style={{
+                    marginTop: 18,
+                    fontFamily: 'var(--font-mono, monospace)',
+                    fontSize: 'clamp(11px, 2.2vw, 13px)',
+                    fontWeight: 500,
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    letterSpacing: '0.12em',
+                    textTransform: 'lowercase',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    padding: '6px 16px',
+                    borderRadius: 100,
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                  }}
+                >
+                  {targetLabel}
+                </motion.div>
+
+                {/* Slow Network Indicator: gentle pulsing dots when hold exceeds 650ms */}
+                {showSlowLoader && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      marginTop: 14,
+                    }}
+                  >
+                    {[0, 1, 2].map((dotIdx) => (
+                      <motion.span
+                        key={dotIdx}
+                        style={{
+                          width: 5,
+                          height: 5,
+                          borderRadius: '50%',
+                          background: '#fe3c01',
+                        }}
+                        animate={{
+                          opacity: [0.3, 1, 0.3],
+                          scale: [0.85, 1.25, 0.85],
+                        }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          delay: dotIdx * 0.2,
+                          ease: 'easeInOut',
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
