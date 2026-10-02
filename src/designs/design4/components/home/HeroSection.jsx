@@ -70,15 +70,28 @@ export default function HeroSection() {
   };
 
   useEffect(() => {
+    let rafId = null;
     const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
-      const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
-      setMousePos({ x, y });
+      // Skip updates completely if user has scrolled past Hero section
+      if (typeof window !== 'undefined' && window.scrollY > window.innerHeight) {
+        return;
+      }
+      if (rafId) return;
+
+      rafId = requestAnimationFrame(() => {
+        const { innerWidth, innerHeight } = window;
+        const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
+        const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
+        setMousePos({ x, y });
+        rafId = null;
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const scrollToWork = () => {

@@ -220,10 +220,10 @@ export default function Design4App() {
         onGoHome={() => navigateWithTransition('main', '/')}
       />
 
-      {/* Smooth inertia scroll ONLY on Home and Work pages */}
-      {(activeView === 'main' || activeView === 'work' || activeView === 'about') && <ScrollEase intensity={75} />}
+      {/* Smooth inertia scroll with snappy response (intensity 40) */}
+      {(activeView === 'main' || activeView === 'work' || activeView === 'about') && <ScrollEase intensity={40} />}
 
-      {/* Progressive edge blur ONLY on Home page (Work and others do not have scrollblur) */}
+      {/* Lightweight progressive edge blur on Home page (2-layer GPU accelerated) */}
       {activeView === 'main' && (
         <>
           <div
@@ -232,12 +232,12 @@ export default function Design4App() {
               top: 0,
               left: 0,
               right: 0,
-              height: '80px',
+              height: '70px',
               zIndex: 90,
               pointerEvents: 'none',
             }}
           >
-            <ScrollBlurByAki direction="top" blur={16} quality="high" />
+            <ScrollBlurByAki direction="top" blur={8} quality="low" />
           </div>
 
           <div
@@ -246,12 +246,12 @@ export default function Design4App() {
               bottom: 0,
               left: 0,
               right: 0,
-              height: '80px',
+              height: '70px',
               zIndex: 90,
               pointerEvents: 'none',
             }}
           >
-            <ScrollBlurByAki direction="bottom" blur={16} quality="high" />
+            <ScrollBlurByAki direction="bottom" blur={8} quality="low" />
           </div>
         </>
       )}

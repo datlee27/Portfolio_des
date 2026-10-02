@@ -277,6 +277,7 @@ export default function Spiral3DSlider({
   const lastWheelTime = useRef(0);
   const lastInteraction = useRef(0);
   const visible = useRef(false);
+  const [isCanvasVisible, setIsCanvasVisible] = useState(false);
 
   const [isMobileScreen, setIsMobileScreen] = useState(
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
@@ -306,9 +307,11 @@ export default function Spiral3DSlider({
     previousScroll.current = window.scrollY;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        visible.current = Boolean(entry?.isIntersecting);
+        const isInter = Boolean(entry?.isIntersecting);
+        visible.current = isInter;
+        setIsCanvasVisible(isInter);
       },
-      { threshold: 0.08 }
+      { rootMargin: '250px 0px', threshold: 0 }
     );
     observer.observe(stage);
 
@@ -454,7 +457,8 @@ export default function Spiral3DSlider({
         <WebGLErrorBoundary fallback={<WebGLFallback className="des4-webgl-fallback" />}>
           <div style={{ position: 'absolute', inset: 0 }}>
             <Canvas
-              dpr={[1, 1.75]}
+              frameloop={isCanvasVisible ? 'always' : 'never'}
+              dpr={[1, 1.5]}
               camera={{
                 position: [0, 0, isMobileScreen ? 11 : 10],
                 fov: isMobileScreen ? 48 : fov,

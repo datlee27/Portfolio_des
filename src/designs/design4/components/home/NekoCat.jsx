@@ -286,8 +286,13 @@ export default function NekoCat(props) {
             mouseRef.current = { x: event.clientX, y: event.clientY };
         };
 
+        let scrollRaf = null;
         const onResizeOrScroll = () => {
-            measureHome();
+            if (scrollRaf) return;
+            scrollRaf = requestAnimationFrame(() => {
+                measureHome();
+                scrollRaf = null;
+            });
         };
 
         window.addEventListener("mousemove", onMouseMove);
@@ -471,6 +476,7 @@ export default function NekoCat(props) {
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("resize", onResizeOrScroll);
             window.removeEventListener("scroll", onResizeOrScroll);
+            if (scrollRaf) cancelAnimationFrame(scrollRaf);
             window.clearInterval(interval);
         };
     }, [

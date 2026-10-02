@@ -11,9 +11,9 @@ import 'lenis/dist/lenis.css';
  * Honors the Framer ScrollEase API while resolving discrete wheel jitter.
  */
 export default function ScrollEase({
-  duration = 1.2,
-  intensity = 75,
-  wheelMultiplier = 1.15,
+  duration = 1.0,
+  intensity = 40,
+  wheelMultiplier = 1.0,
 }) {
   const lenisRef = useRef(null);
 
@@ -27,8 +27,8 @@ export default function ScrollEase({
     if (prefersReducedMotion) return;
 
     // Scale duration based on intensity:
-    // intensity 70-80 -> duration ~1.2s - 1.4s for luxurious gliding feel
-    const computedDuration = duration * (0.6 + (intensity / 100) * 0.8);
+    // intensity ~40 -> duration ~0.88s for responsive, natural gliding feel
+    const computedDuration = duration * (0.6 + (intensity / 100) * 0.7);
 
     const lenis = new Lenis({
       duration: computedDuration,
@@ -37,7 +37,7 @@ export default function ScrollEase({
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: wheelMultiplier,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.0,
       autoResize: true,
     });
 

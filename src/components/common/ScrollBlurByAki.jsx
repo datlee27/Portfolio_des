@@ -12,9 +12,9 @@ import React, { useMemo } from 'react';
 const LAYER_MIN = 1;
 const LAYER_MAX = 8;
 const QUALITY_LAYER_PRESETS = {
-  low: 3,
-  balanced: 4,
-  high: 6,
+  low: 2,
+  balanced: 3,
+  high: 4,
 };
 
 function clampLayerCount(value) {
@@ -23,7 +23,7 @@ function clampLayerCount(value) {
 
 function resolveLayerCount(quality, customLayers) {
   if (quality === 'custom') return clampLayerCount(customLayers);
-  return clampLayerCount(QUALITY_LAYER_PRESETS[quality] || 4);
+  return clampLayerCount(QUALITY_LAYER_PRESETS[quality] || 2);
 }
 
 function getMaskDirection(direction) {
@@ -47,14 +47,16 @@ function buildLayerStyle(direction, index, total, blur) {
     WebkitBackdropFilter: blurFilter,
     maskImage: buildLayerMask(direction, index, total),
     WebkitMaskImage: buildLayerMask(direction, index, total),
+    transform: 'translateZ(0)',
+    pointerEvents: 'none',
   };
 }
 
 export default function ScrollBlurByAki({
   direction = 'bottom',
-  blur = 16,
-  quality = 'balanced',
-  layers = 4,
+  blur = 10,
+  quality = 'low',
+  layers = 2,
   style = {},
   className = '',
 }) {
@@ -77,6 +79,7 @@ export default function ScrollBlurByAki({
     height: '100%',
     overflow: 'hidden',
     pointerEvents: 'none',
+    contain: 'paint layout',
     ...style,
   };
 
