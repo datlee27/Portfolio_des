@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, Mail } from 'lucide-react';
 import { SiGithub, SiFacebook } from 'react-icons/si';
-import { siteMeta } from '../data/homeData';
+import { siteMeta } from '../../data/homeData';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function FooterSection() {

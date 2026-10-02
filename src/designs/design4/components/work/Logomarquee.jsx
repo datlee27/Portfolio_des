@@ -2,25 +2,25 @@
 import React, { useEffect, useMemo } from 'react';
 
 // ─── Import Official Tech Stack Icons from Assets ───
-import jsIcon from '../../../assets/techicons/javascript.svg';
-import html5Icon from '../../../assets/techicons/html5.svg';
-import css3Icon from '../../../assets/techicons/css3.svg';
-import springIcon from '../../../assets/techicons/spring.svg';
-import tsIcon from '../../../assets/techicons/typescript.svg';
-import csharpIcon from '../../../assets/techicons/csharp.svg';
-import javaIcon from '../../../assets/techicons/java.svg';
-import sqlIcon from '../../../assets/techicons/sql.svg';
-import swaggerIcon from '../../../assets/techicons/swagger.svg';
-import figmaIcon from '../../../assets/techicons/figma.svg';
-import arduinoIcon from '../../../assets/techicons/arduino.svg';
-import gitIcon from '../../../assets/techicons/git.svg';
-import bootstrapIcon from '../../../assets/techicons/bootstrap.svg';
-import viteIcon from '../../../assets/techicons/vite.svg';
-import reactIcon from '../../../assets/techicons/react.svg';
-import restfulIcon from '../../../assets/techicons/restful.svg';
-import lmstudioIcon from '../../../assets/techicons/lmstudio.svg';
-import sensorsIcon from '../../../assets/techicons/sensors.svg';
-import motorsIcon from '../../../assets/techicons/motors.svg';
+import jsIcon from '@/assets/techicons/javascript.svg';
+import html5Icon from '@/assets/techicons/html5.svg';
+import css3Icon from '@/assets/techicons/css3.svg';
+import springIcon from '@/assets/techicons/spring.svg';
+import tsIcon from '@/assets/techicons/typescript.svg';
+import csharpIcon from '@/assets/techicons/csharp.svg';
+import javaIcon from '@/assets/techicons/java.svg';
+import sqlIcon from '@/assets/techicons/sql.svg';
+import swaggerIcon from '@/assets/techicons/swagger.svg';
+import figmaIcon from '@/assets/techicons/figma.svg';
+import arduinoIcon from '@/assets/techicons/arduino.svg';
+import gitIcon from '@/assets/techicons/git.svg';
+import bootstrapIcon from '@/assets/techicons/bootstrap.svg';
+import viteIcon from '@/assets/techicons/vite.svg';
+import reactIcon from '@/assets/techicons/react.svg';
+import restfulIcon from '@/assets/techicons/restful.svg';
+import lmstudioIcon from '@/assets/techicons/lmstudio.svg';
+import sensorsIcon from '@/assets/techicons/sensors.svg';
+import motorsIcon from '@/assets/techicons/motors.svg';
 
 // ─── Icon mapping by skill name (lowercase) ───
 const ICON_MAP = {

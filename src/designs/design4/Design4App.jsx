@@ -1,19 +1,26 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './styles/design4.css';
-import CornerNav from './components/CornerNav';
-import HeroSection from './components/HeroSection';
-import IntroSection from './components/IntroSection';
-import FeaturedProjectsSection from './components/FeaturedProjectsSection';
-import WhatIDoSection from './components/WhatIDoSection';
-import Spiral3DSlider from './components/Spiral3DSlider';
-import FooterSection from './components/FooterSection';
-import Des4LabView from './components/Des4LabView';
-import Des4WorkPage from './components/Des4WorkPage';
+// Common / Shared Layout Components
+import CornerNav from './components/common/CornerNav';
+import PageTransition from './components/common/PageTransition';
+import FooterSection from './components/common/FooterSection';
+
+// Home Page Sections
+import HeroSection from './components/home/HeroSection';
+import IntroSection from './components/home/IntroSection';
+import FeaturedProjectsSection from './components/home/FeaturedProjectsSection';
+import WhatIDoSection from './components/home/WhatIDoSection';
+import Spiral3DSlider from './components/home/Spiral3DSlider';
+
+// Dedicated Page Views
+import WorkPage from './components/work/WorkPage';
 import BlogPageRedesign from './components/blog/BlogPageRedesign';
-import Des4AboutPage from './components/Des4AboutPage';
+import AboutPage from './components/about/AboutPage';
+import LabPage from './components/lab/LabPage';
+
+// Common Utilities
 import ScrollEase from '../../components/common/ScrollEase';
 import ScrollBlurByAki from '../../components/common/ScrollBlurByAki';
-import PageTransition from './components/PageTransition';
 import { usePortfolio } from '@/context/PortfolioContext';
 
 export default function Design4App() {
@@ -251,16 +258,16 @@ export default function Design4App() {
 
       {activeView === 'work' ? (
         /* Dedicated Work Page (/work) with 6 Projects & Footer */
-        <Des4WorkPage onGoHome={() => navigateWithTransition('main', '/')} />
+        <WorkPage onGoHome={() => navigateWithTransition('main', '/')} />
       ) : activeView === 'blog' ? (
         /* Dedicated Blog Page — "chạng vạng" redesign */
         <BlogPageRedesign />
       ) : activeView === 'about' ? (
         /* Dedicated About Page (/about) */
-        <Des4AboutPage onGoHome={() => navigateWithTransition('main', '/')} />
+        <AboutPage onGoHome={() => navigateWithTransition('main', '/')} />
       ) : activeView === 'lab' ? (
         /* Lab View (/lab) */
-        <Des4LabView onBack={() => navigateWithTransition('main', '/')} />
+        <LabPage onBack={() => navigateWithTransition('main', '/')} />
       ) : (
         /* Main Des4 Flow (/) */
         <>

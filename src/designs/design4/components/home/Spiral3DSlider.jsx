@@ -12,7 +12,7 @@ import {
   SRGBColorSpace,
   TextureLoader,
 } from 'three';
-import { WebGLErrorBoundary, WebGLFallback } from './webgl-error-boundary';
+import { WebGLErrorBoundary, WebGLFallback } from '../common/webgl-error-boundary';
 
 // 7 Curated User Pinterest Slides
 const DEFAULT_SPIRAL_SLIDES = [

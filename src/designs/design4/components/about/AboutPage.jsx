@@ -1,9 +1,9 @@
 import React from 'react';
 import { Code, Sparkles } from 'lucide-react';
-import { siteMeta } from '../data/homeData';
-import FooterSection from './FooterSection';
+import { siteMeta } from '../../data/homeData';
+import FooterSection from '../common/FooterSection';
 
-export default function Des4AboutPage({ onGoHome }) {
+export default function AboutPage({ onGoHome }) {
   const containerStyle = {
     maxWidth: '1160px',
     margin: '0 auto',

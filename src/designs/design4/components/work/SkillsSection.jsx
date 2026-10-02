@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import portfolioData from '../../../../portfolioData.json';
-import { usePortfolio } from '../../../context/PortfolioContext';
+import portfolioData from '../../../../../portfolioData.json';
+import { usePortfolio } from '@/context/PortfolioContext';
 import Logomarquee from './Logomarquee';
 
 export default function SkillsSection() {

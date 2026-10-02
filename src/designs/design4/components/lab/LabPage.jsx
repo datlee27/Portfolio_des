@@ -30,8 +30,8 @@ import {
   Compass,
   Trash2,
 } from 'lucide-react';
-import { featuredProjects, siteMeta } from '../data/homeData';
-import ProjectModalD4 from './ProjectModalD4';
+import { featuredProjects, siteMeta } from '../../data/homeData';
+import ProjectModalD4 from '../common/ProjectModalD4';
 import NotesModalContent from './NotesModalContent';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -655,7 +655,7 @@ const TrafficDots = styled.div`
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* ─── MAIN DES4 LAB VIEW COMPONENT ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Des4LabView({ onBack }) {
+export default function LabPage({ onBack }) {
   const containerRef = useRef(null);
 
   // Active window state

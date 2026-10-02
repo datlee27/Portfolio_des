@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
-import { featuredProjects } from '../data/homeData';
+import { featuredProjects } from '../../data/homeData';
 import { usePortfolio } from '@/context/PortfolioContext';
-import FooterSection from './FooterSection';
-import PDFViewer from './PDFViewer';
+import FooterSection from '../common/FooterSection';
+import PDFViewer from '../common/PDFViewer';
 import SkillsSection from './SkillsSection';
-import ProjectModalD4 from './ProjectModalD4';
+import ProjectModalD4 from '../common/ProjectModalD4';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
-export default function Des4WorkPage({ onGoHome }) {
+export default function WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedProject, setSelectedProject] = useState(null);
   const { projects } = usePortfolio();

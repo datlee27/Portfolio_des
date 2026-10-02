@@ -1,5 +1,5 @@
 import React from 'react';
-import { whatIDoData } from '../data/homeData';
+import { whatIDoData } from '../../data/homeData';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function WhatIDoSection() {

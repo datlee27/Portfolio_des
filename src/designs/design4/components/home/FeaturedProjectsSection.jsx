@@ -3,9 +3,9 @@ import { Eye, ExternalLink, ArrowUpRight } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
-import { featuredProjects } from '../data/homeData';
+import { featuredProjects } from '../../data/homeData';
 import { usePortfolio } from '@/context/PortfolioContext';
-import ProjectModalD4 from './ProjectModalD4';
+import ProjectModalD4 from '../common/ProjectModalD4';
 
 export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
