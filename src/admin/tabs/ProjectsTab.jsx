@@ -113,6 +113,14 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         hasCaseStudy: Boolean(formData.deploy_url || formData.github_url),
       };
 
+      if (isEditing) {
+        await api.updateProject(currentId, normalizedProject);
+        showToast('Cập nhật dự án thành công!', 'success');
+      } else {
+        await api.createProject(normalizedProject);
+        showToast('Tạo dự án mới thành công!', 'success');
+      }
+
       let updatedList;
       if (isEditing) {
         updatedList = localProjects.map((p) => (p.id === currentId ? { ...p, ...normalizedProject } : p));
@@ -125,28 +133,10 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         contextUpdateProjects(updatedList);
       }
 
-      // Sync with API in background
-      try {
-        if (isEditing) {
-          await api.updateProject(currentId, normalizedProject);
-          showToast('Cập nhật dự án thành công (Đồng bộ máy chủ)!', 'success');
-        } else {
-          await api.createProject(normalizedProject);
-          showToast('Tạo dự án mới thành công (Đồng bộ máy chủ)!', 'success');
-        }
-      } catch (apiErr) {
-        console.warn('API sync deferred/offline:', apiErr);
-        showToast(
-          isEditing
-            ? 'Đã lưu thay đổi dự án vào bộ nhớ máy (Chế độ Ngoại tuyến)!'
-            : 'Đã thêm dự án mới vào bộ nhớ máy (Chế độ Ngoại tuyến)!',
-          'success'
-        );
-      }
-
       setModalOpen(false);
       if (onRefresh) onRefresh();
     } catch (err) {
+      console.error('Lỗi lưu dự án:', err);
       showToast(err.message || 'Lỗi khi lưu dự án.', 'error');
     } finally {
       setSaving(false);
@@ -156,23 +146,19 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   const handleDelete = async (id) => {
     setDeleting(true);
     try {
+      await api.deleteProject(id);
+
       const updatedList = localProjects.filter((p) => p.id !== id);
       setLocalProjects(updatedList);
       if (contextUpdateProjects) {
         contextUpdateProjects(updatedList);
       }
 
-      try {
-        await api.deleteProject(id);
-        showToast('Đã xóa dự án thành công!', 'success');
-      } catch (apiErr) {
-        console.warn('API delete deferred/offline:', apiErr);
-        showToast('Đã xóa dự án khỏi bộ nhớ cục bộ!', 'success');
-      }
-
+      showToast('Đã xóa dự án thành công!', 'success');
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
     } catch (err) {
+      console.error('Lỗi xóa dự án:', err);
       showToast(err.message || 'Lỗi khi xóa dự án.', 'error');
     } finally {
       setDeleting(false);

@@ -53,7 +53,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     }, 3500);
   }, []);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (isManual = false) => {
     setLoading(true);
     try {
       const [pRes, bRes] = await Promise.all([
@@ -93,10 +93,12 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
       }
 
       setIsServerReachable(gotServerData);
-      if (gotServerData) {
-        showToast('Đã đồng bộ dữ liệu mới nhất từ máy chủ API!', 'success');
-      } else {
-        showToast('Máy chủ API đang ngoại tuyến. Hệ thống tự động chuyển sang chế độ Cục Bộ.', 'error');
+      if (isManual === true) {
+        if (gotServerData) {
+          showToast('Đã đồng bộ dữ liệu mới nhất từ máy chủ API!', 'success');
+        } else {
+          showToast('Không thể kết nối máy chủ API hoặc phiên làm việc hết hạn.', 'error');
+        }
       }
     } catch {
       setIsServerReachable(false);
@@ -106,7 +108,9 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         personal: contextPersonal,
       });
       setPostsData(contextPosts);
-      showToast('Đang hoạt động trên bộ nhớ đệm cục bộ (Chế độ Ngoại tuyến).', 'error');
+      if (isManual === true) {
+        showToast('Đang hoạt động trên bộ nhớ đệm cục bộ.', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -284,7 +288,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
 
             {/* Live Refresh Button */}
             <button
-              onClick={fetchData}
+              onClick={() => fetchData(true)}
               disabled={loading}
               className="admin-btn admin-btn-secondary admin-sync-btn"
               title="Làm mới dữ liệu từ API"

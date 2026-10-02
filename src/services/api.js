@@ -19,23 +19,28 @@ async function request(url, options = {}) {
 
   try {
     const res = await fetch(`${API_BASE}${url}`, config);
-    const contentType = res.headers.get('content-type') || '';
+    const text = await res.text();
     
     let data;
-    if (contentType.includes('application/json')) {
-      data = await res.json();
-    } else {
-      const text = await res.text();
+    if (text && text.trim()) {
       try {
         data = JSON.parse(text);
       } catch {
         data = { success: res.ok, message: text };
       }
+    } else {
+      data = { success: res.ok };
     }
 
     if (!res.ok) {
-      const errorMsg = data?.message || `HTTP Error ${res.status}`;
-      throw new Error(errorMsg);
+      let errorMsg = data?.message || `Lỗi máy chủ HTTP ${res.status}`;
+      if (res.status === 401) {
+        errorMsg = 'Phiên làm việc hết hạn hoặc chưa đăng nhập (401 Unauthorized). Vui lòng đăng nhập lại!';
+      }
+      const error = new Error(errorMsg);
+      error.status = res.status;
+      error.data = data;
+      throw error;
     }
 
     return data;
@@ -142,14 +147,18 @@ export const api = {
   },
 
   async updatePost(id, postData) {
-    return request(`/index.php?endpoint=posts&id=${id}`, {
+    // Backend PHP router expects endpoint=post&post_id=...
+    const postId = postData?.post_id || id;
+    return request(`/index.php?endpoint=post&post_id=${encodeURIComponent(postId)}`, {
       method: 'PUT',
       body: JSON.stringify(postData),
     });
   },
 
-  async deletePost(id) {
-    return request(`/index.php?endpoint=posts&id=${id}`, {
+  async deletePost(id, altPostId) {
+    // Backend PHP router expects endpoint=post&post_id=...
+    const postId = altPostId || id;
+    return request(`/index.php?endpoint=post&post_id=${encodeURIComponent(postId)}`, {
       method: 'DELETE',
     });
   },

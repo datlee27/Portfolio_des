@@ -87,7 +87,8 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
 
   const handleOpenEdit = (post) => {
     setIsEditing(true);
-    setCurrentId(post.id || post.post_id);
+    const targetPostId = post.post_id || post.id;
+    setCurrentId(targetPostId);
     setFormData({
       title: post.title || '',
       slug: post.slug || '',
@@ -134,6 +135,14 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
         media: formData.image_url ? { type: 'image', items: [formData.image_url] } : null,
       };
 
+      if (isEditing) {
+        await api.updatePost(currentId, payload);
+        showToast('Cập nhật bài viết thành công!', 'success');
+      } else {
+        await api.createPost(payload);
+        showToast('Đăng bài viết mới thành công!', 'success');
+      }
+
       let updatedList;
       if (isEditing) {
         updatedList = localPosts.map((p) =>
@@ -148,53 +157,36 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
         contextUpdatePosts(updatedList);
       }
 
-      try {
-        if (isEditing) {
-          await api.updatePost(currentId, payload);
-          showToast('Cập nhật bài viết thành công (Đồng bộ máy chủ)!', 'success');
-        } else {
-          await api.createPost(payload);
-          showToast('Đăng bài viết mới thành công (Đồng bộ máy chủ)!', 'success');
-        }
-      } catch (apiErr) {
-        console.warn('API sync deferred/offline:', apiErr);
-        showToast(
-          isEditing
-            ? 'Đã lưu chỉnh sửa bài viết vào bộ nhớ máy (Chế độ Ngoại tuyến)!'
-            : 'Đã tạo bài viết mới vào bộ nhớ máy (Chế độ Ngoại tuyến)!',
-          'success'
-        );
-      }
-
       setModalOpen(false);
       if (onRefresh) onRefresh();
     } catch (err) {
-      showToast(err.message || 'Lỗi khi lưu bài viết.', 'error');
+      console.error('Lỗi lưu bài viết:', err);
+      showToast(err.message || 'Lỗi khi lưu bài viết trên máy chủ.', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (target) => {
     setDeleting(true);
     try {
-      const updatedList = localPosts.filter((p) => p.id !== id && p.post_id !== id);
+      const targetPostId = typeof target === 'object' && target !== null 
+        ? (target.post_id || target.id) 
+        : target;
+
+      await api.deletePost(targetPostId);
+      
+      const updatedList = localPosts.filter((p) => p.id !== targetPostId && p.post_id !== targetPostId);
       setLocalPosts(updatedList);
       if (contextUpdatePosts) {
         contextUpdatePosts(updatedList);
       }
 
-      try {
-        await api.deletePost(id);
-        showToast('Đã xóa bài viết thành công!', 'success');
-      } catch (apiErr) {
-        console.warn('API delete deferred/offline:', apiErr);
-        showToast('Đã xóa bài viết khỏi bộ nhớ cục bộ!', 'success');
-      }
-
+      showToast('Đã xóa bài viết thành công!', 'success');
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
     } catch (err) {
+      console.error('Lỗi xóa bài viết:', err);
       showToast(err.message || 'Lỗi khi xóa bài viết.', 'error');
     } finally {
       setDeleting(false);
@@ -262,7 +254,7 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
               </tr>
             ) : (
               filteredPosts.map((p) => {
-                const postId = p.id || p.post_id;
+                const postId = p.post_id || p.id;
                 return (
                   <tr key={postId}>
                     {/* Thumbnail */}
@@ -349,7 +341,7 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
                           <Pencil size={13} />
                         </button>
                         <button
-                          onClick={() => setDeleteConfirmId(postId)}
+                          onClick={() => setDeleteConfirmId(p)}
                           className="admin-btn-icon"
                           style={{ color: '#ef4444' }}
                           title="Xóa bài viết"

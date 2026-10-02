@@ -131,23 +131,22 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       // Persist locally and sync to context immediately
       persistSkills(updatedSkillsList);
 
-      // Call API in background
-      try {
-        await api.updateSkills(updatedSkillsList);
-        if (isEditing) {
-          await api.updateSkill(currentId, {
-            category: formData.category.toUpperCase().trim(),
-            items: itemsArray,
-          }).catch(() => {});
-        } else {
-          await api.createSkill({
-            category: formData.category.toUpperCase().trim(),
-            items: itemsArray,
-          }).catch(() => {});
-        }
-      } catch (apiErr) {
-        console.warn('API skill call handled:', apiErr);
+      // Call API
+      await api.updateSkills(updatedSkillsList);
+      if (isEditing) {
+        await api.updateSkill(currentId, {
+          category: formData.category.toUpperCase().trim(),
+          items: itemsArray,
+        }).catch(() => {});
+      } else {
+        await api.createSkill({
+          category: formData.category.toUpperCase().trim(),
+          items: itemsArray,
+        }).catch(() => {});
       }
+
+      // Persist locally and sync to context immediately
+      persistSkills(updatedSkillsList);
 
       showToast(
         isEditing
@@ -158,6 +157,7 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       setModalOpen(false);
       if (onRefresh) onRefresh();
     } catch (err) {
+      console.error('Lỗi lưu kỹ năng:', err);
       showToast(err.message || 'Lỗi khi lưu kỹ năng.', 'error');
     } finally {
       setSaving(false);
@@ -174,15 +174,15 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       s.id === catId ? { ...s, items: newItems } : s
     );
 
-    persistSkills(updatedSkillsList);
-
     try {
       await api.updateSkills(updatedSkillsList);
       await api.updateSkill(catId, { ...targetCat, items: newItems }).catch(() => {});
+      persistSkills(updatedSkillsList);
       showToast(`Đã xóa kỹ năng "${itemToRemove}"`, 'success');
       if (onRefresh) onRefresh();
-    } catch {
-      showToast('Lỗi khi cập nhật kỹ năng.', 'error');
+    } catch (err) {
+      console.error('Lỗi xóa kỹ năng:', err);
+      showToast(err.message || 'Lỗi khi cập nhật kỹ năng.', 'error');
     }
   };
 
@@ -205,16 +205,16 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
       s.id === catId ? { ...s, items: newItems } : s
     );
 
-    persistSkills(updatedSkillsList);
-    setQuickInputs({ ...quickInputs, [catId]: '' });
-
     try {
       await api.updateSkills(updatedSkillsList);
       await api.updateSkill(catId, { ...targetCat, items: newItems }).catch(() => {});
+      persistSkills(updatedSkillsList);
+      setQuickInputs({ ...quickInputs, [catId]: '' });
       showToast(`Đã thêm "${cleanVal}" vào ${targetCat.category}`, 'success');
       if (onRefresh) onRefresh();
-    } catch {
-      showToast('Lỗi khi thêm kỹ năng.', 'error');
+    } catch (err) {
+      console.error('Lỗi thêm kỹ năng:', err);
+      showToast(err.message || 'Lỗi khi thêm kỹ năng.', 'error');
     }
   };
 
@@ -222,15 +222,17 @@ export default function SkillsTab({ skills = [], onRefresh, showToast }) {
     setDeleting(true);
     try {
       const updatedSkillsList = localSkills.filter((s) => s.id !== id);
-      persistSkills(updatedSkillsList);
 
-      await api.updateSkills(updatedSkillsList).catch(() => {});
+      await api.updateSkills(updatedSkillsList);
       await api.deleteSkill(id).catch(() => {});
+      
+      persistSkills(updatedSkillsList);
       showToast('Đã xóa danh mục kỹ năng!', 'success');
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
-    } catch {
-      showToast('Lỗi khi xóa danh mục kỹ năng.', 'error');
+    } catch (err) {
+      console.error('Lỗi xóa danh mục kỹ năng:', err);
+      showToast(err.message || 'Lỗi khi xóa danh mục kỹ năng.', 'error');
     } finally {
       setDeleting(false);
     }

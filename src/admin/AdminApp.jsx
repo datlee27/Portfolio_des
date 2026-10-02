@@ -29,30 +29,32 @@ export default function AdminApp({ onGoHome }) {
     async function verify() {
       try {
         const res = await api.checkAuth();
-        if (res && res.success && (res.data?.logged_in || res.data?.username)) {
+        if (res && res.success && res.data?.logged_in) {
           setIsAuthenticated(true);
           setUser(res.data);
           try {
             localStorage.setItem('admin_session', JSON.stringify(res.data));
           } catch {}
         } else {
-          // If server explicitly says not logged in, check local session fallback
-          const localSession = localStorage.getItem('admin_session');
-          if (localSession) {
-            setIsAuthenticated(true);
-            setUser(JSON.parse(localSession));
-          } else {
-            setIsAuthenticated(false);
-            setUser(null);
-          }
+          // If server explicitly returned logged_in === false, invalidate local session
+          setIsAuthenticated(false);
+          setUser(null);
+          try {
+            localStorage.removeItem('admin_session');
+          } catch {}
         }
       } catch {
-        // Network error / offline fallback: keep local session if present
+        // Only allow offline session if user explicitly entered offline mode
         const localSession = localStorage.getItem('admin_session');
         if (localSession) {
           try {
-            setIsAuthenticated(true);
-            setUser(JSON.parse(localSession));
+            const parsed = JSON.parse(localSession);
+            if (parsed.isOfflineMode) {
+              setIsAuthenticated(true);
+              setUser(parsed);
+            } else {
+              setIsAuthenticated(false);
+            }
           } catch {
             setIsAuthenticated(false);
           }

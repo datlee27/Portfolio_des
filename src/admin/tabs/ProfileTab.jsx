@@ -42,6 +42,8 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
     e.preventDefault();
     setSaving(true);
     try {
+      await api.updatePersonal(formData);
+
       // Immediate local context & localStorage update
       if (contextUpdatePersonal) {
         contextUpdatePersonal({
@@ -59,17 +61,10 @@ export default function ProfileTab({ personalData, onRefresh, showToast }) {
         });
       }
 
-      // Background API sync
-      try {
-        await api.updatePersonal(formData);
-        showToast('Cập nhật thông tin cá nhân thành công (Đồng bộ máy chủ)!', 'success');
-      } catch (apiErr) {
-        console.warn('API sync deferred/offline:', apiErr);
-        showToast('Đã lưu thông tin cá nhân vào bộ nhớ máy (Chế độ Ngoại tuyến)!', 'success');
-      }
-
+      showToast('Cập nhật thông tin cá nhân thành công!', 'success');
       if (onRefresh) onRefresh();
     } catch (err) {
+      console.error('Lỗi cập nhật hồ sơ:', err);
       showToast(err.message || 'Lỗi khi cập nhật thông tin.', 'error');
     } finally {
       setSaving(false);
