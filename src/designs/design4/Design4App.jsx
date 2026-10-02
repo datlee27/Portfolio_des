@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './styles/design4.css';
 import CornerNav from './components/CornerNav';
 import HeroSection from './components/HeroSection';
@@ -19,6 +19,7 @@ import { usePortfolio } from '@/context/PortfolioContext';
 export default function Design4App() {
   const { loading: portfolioLoading } = usePortfolio();
   const [isPageReady, setIsPageReady] = useState(true);
+  const isTransitioningRef = useRef(false);
 
   // Determine initial view from URL path
   const [activeView, setActiveView] = useState(() => {
@@ -42,6 +43,9 @@ export default function Design4App() {
 
   // Trigger a page transition with cinematic overlay
   const navigateWithTransition = useCallback((view, path, targetHash) => {
+    // Guard: Prevent triggering a new transition while one is already active (bulletproof against synchronous spam clicks)
+    if (isTransitioningRef.current || transition.isActive) return;
+
     // Don't transition if already on the target view
     if (view === activeView) {
       if (typeof window !== 'undefined') {
@@ -50,6 +54,7 @@ export default function Design4App() {
       return;
     }
 
+    isTransitioningRef.current = true;
     setIsPageReady(false);
     setTransition({
       isActive: true,
@@ -57,7 +62,7 @@ export default function Design4App() {
       targetPath: path,
       targetHash: targetHash || null,
     });
-  }, [activeView]);
+  }, [activeView, transition.isActive]);
 
   // Called at the midpoint of the transition — swap content while strips cover the screen
   const handleTransitionMidpoint = useCallback(() => {
@@ -81,6 +86,7 @@ export default function Design4App() {
 
   // Called when transition fully completes — clean up
   const handleTransitionComplete = useCallback(() => {
+    isTransitioningRef.current = false;
     setTransition({
       isActive: false,
       targetView: null,
@@ -92,6 +98,7 @@ export default function Design4App() {
   // Listen to browser Back/Forward (popstate) — no transition on back/forward
   useEffect(() => {
     const handlePopState = () => {
+      isTransitioningRef.current = false;
       const path = window.location.pathname;
       if (path === '/work' || path.startsWith('/work/')) {
         setActiveView('work');

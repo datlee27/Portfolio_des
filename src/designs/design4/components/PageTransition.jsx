@@ -119,6 +119,8 @@ export default function PageTransition({
 
   // Callback when exit sweep finishes
   const handleExitComplete = useCallback(() => {
+    hasTriggeredExit.current = false;
+    setMinHoldDone(false);
     setPhase('idle');
     if (onComplete) onComplete();
   }, [onComplete]);
@@ -132,6 +134,7 @@ export default function PageTransition({
       {(phase === 'entering' || phase === 'holding' || phase === 'exiting') && (
         <div
           key="page-transition-overlay"
+          data-page-transition="overlay"
           style={{
             position: 'fixed',
             inset: 0,

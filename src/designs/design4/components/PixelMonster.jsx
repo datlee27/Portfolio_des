@@ -113,8 +113,8 @@ export default function PixelMonster({ size = 48, className = '', style = {} }) 
 
       {/* SVG Pixel Matrix */}
       <svg
-        width={typeof size === 'number' ? size : size}
-        height={typeof size === 'number' ? Math.round((size * 8) / 17) : 'auto'}
+        width={size}
+        height={typeof size === 'number' ? Math.round((size * 8) / 17) : undefined}
         viewBox="0 0 17 8"
         style={{
           display: 'block',
