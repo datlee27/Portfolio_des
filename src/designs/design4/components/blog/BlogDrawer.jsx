@@ -20,10 +20,18 @@ export default function BlogDrawer({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const likeCount = post ? post.likes + (likedPosts[post.id] ? 1 : 0) : 0;
+  const commentsList = Array.isArray(post?.comments) ? post.comments : [];
+  const rawLikes = post
+    ? (typeof post.likes === 'number' && !isNaN(post.likes)
+      ? post.likes
+      : (!isNaN(parseInt(post.total_likes, 10)) && parseInt(post.total_likes, 10) > 0
+        ? parseInt(post.total_likes, 10)
+        : (parseInt(post.likes, 10) || 12)))
+    : 0;
+  const likeCount = Math.max(0, rawLikes) + (likedPosts[post?.id] ? 1 : 0);
 
   const allComments = post
-    ? [...(post.comments || []), ...(extraComments[post.id] || [])]
+    ? [...commentsList, ...(extraComments[post.id] || [])]
     : [];
 
   const mediaItems = post && post.media ? post.media.items : [];

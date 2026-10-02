@@ -161,18 +161,19 @@ function IconParticleLayer({ poolRef, running, particleSvg }) {
 
 // Bouncing counter component
 function BounceCounter({ count, color, fontSize = 13 }) {
+  const safeCount = typeof count === 'number' && !isNaN(count) ? count : (parseInt(count, 10) || 0);
   const controls = useAnimation();
-  const prevCount = useRef(count);
+  const prevCount = useRef(safeCount);
 
   useEffect(() => {
-    if (count !== prevCount.current) {
-      prevCount.current = count;
+    if (safeCount !== prevCount.current) {
+      prevCount.current = safeCount;
       controls.start({
         scale: [1, 1.3, 1],
         transition: { duration: 0.25, ease: 'easeOut' },
       });
     }
-  }, [count, controls]);
+  }, [safeCount, controls]);
 
   return (
     <motion.span
@@ -187,7 +188,7 @@ function BounceCounter({ count, color, fontSize = 13 }) {
         transition: 'color 0.2s ease',
       }}
     >
-      {count}
+      {safeCount}
     </motion.span>
   );
 }

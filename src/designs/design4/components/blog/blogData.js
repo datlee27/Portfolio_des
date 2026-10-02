@@ -21,6 +21,7 @@ export const VIDEO_LIMIT = 2;
 export const POSTS = [
   {
     id: 1,
+    slug: 'mot-nam-lam-viec-mot-minh',
     title: 'một năm làm việc một mình',
     excerpt:
       'tự do hoá ra không hề dễ. mười hai tháng làm một mình dạy mình nhiều hơn bốn năm đi làm công ty.',
@@ -40,6 +41,7 @@ export const POSTS = [
   },
   {
     id: 2,
+    slug: 've-tay-truoc-khi-mo-figma',
     title: 'vẽ tay trước khi mở figma',
     excerpt:
       'màn hình trắng của figma khiến mình thiết kế theo những gì công cụ cho phép, chứ không phải điều mình muốn.',
@@ -65,6 +67,7 @@ export const POSTS = [
   },
   {
     id: 3,
+    slug: 'muoi-lam-phut-moi-sang-truoc-khi-mo-dien-thoai',
     title: 'mười lăm phút mỗi sáng, trước khi mở điện thoại',
     excerpt:
       'một thay đổi nhỏ, nhưng cảm giác kiểm soát buổi sáng của mình rõ rệt hơn hẳn.',
@@ -81,6 +84,7 @@ export const POSTS = [
   },
   {
     id: 4,
+    slug: 'mot-nam-dung-react-server-components',
     title: 'một năm dùng react server components',
     excerpt:
       'sau một năm dùng rsc trong dự án thật, đây là điều mình ước có ai đó đã nói từ đầu.',
@@ -105,6 +109,7 @@ export const POSTS = [
   },
   {
     id: 5,
+    slug: 'cuon-sach-ve-nghe-lam-gom-da-thay-doi-cach-minh-lam-viec',
     title: 'cuốn sách về nghề làm gốm đã thay đổi cách mình làm việc',
     excerpt:
       'không phải sách self-help hô hào, mà là một cuốn sách viết về nghề làm gốm.',
@@ -133,6 +138,7 @@ export const POSTS = [
   },
   {
     id: 6,
+    slug: 'toi-gian-khong-phai-la-bot-do-dac',
     title: 'tối giản không phải là bớt đồ đạc',
     excerpt:
       'mình từng nghĩ tối giản là vứt bớt đồ. hoá ra nó là bớt đi những quyết định không cần thiết.',
@@ -154,6 +160,7 @@ export const POSTS = [
   },
   {
     id: 7,
+    slug: 'goc-lam-viec-tai-nha-phien-ban-duoi-hai-trieu',
     title: 'góc làm việc tại nhà, phiên bản dưới hai triệu',
     excerpt:
       'không cần bàn đứng đắt tiền. đây là góc làm việc mình dựng với chưa tới hai triệu đồng.',

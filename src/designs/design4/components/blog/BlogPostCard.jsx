@@ -12,8 +12,18 @@ export default function BlogPostCard({
   onToggleLike,
   onSelect,
 }) {
-  const commentCount = (post.comments || []).length;
-  const currentLikes = post.likes + (isLiked ? 1 : 0);
+  const commentsList = Array.isArray(post.comments) ? post.comments : [];
+  const commentCount = commentsList.length > 0
+    ? commentsList.length
+    : (parseInt(post.total_comments, 10) || 0);
+
+  const rawLikes = typeof post.likes === 'number' && !isNaN(post.likes)
+    ? post.likes
+    : (!isNaN(parseInt(post.total_likes, 10)) && parseInt(post.total_likes, 10) > 0
+      ? parseInt(post.total_likes, 10)
+      : (parseInt(post.likes, 10) || 12));
+
+  const currentLikes = Math.max(0, rawLikes) + (isLiked ? 1 : 0);
 
   return (
     <button

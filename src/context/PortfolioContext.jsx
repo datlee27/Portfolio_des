@@ -48,27 +48,57 @@ export function mapApiProject(p, idx) {
 
 // Map API post object to frontend post object
 export function mapApiPost(p, idx) {
+  const normalize = (s) =>
+    (s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9]/g, '');
+
+  const pNorm = normalize(p.slug || p.title);
+
   const matchedDefault = defaultPosts.find(
     (dp) =>
-      dp.slug === p.slug ||
-      dp.title?.toLowerCase().trim() === p.title?.toLowerCase().trim() ||
-      dp.id === Number(p.id)
+      (dp.slug && p.slug && dp.slug === p.slug) ||
+      (dp.title && p.title && dp.title.toLowerCase().trim() === p.title.toLowerCase().trim()) ||
+      (pNorm && (normalize(dp.slug) === pNorm || normalize(dp.title) === pNorm)) ||
+      (dp.id && p.id && Number(dp.id) === Number(p.id))
   );
+
+  const parsedTotalLikes = parseInt(p.total_likes, 10);
+  let safeLikes = 0;
+  if (typeof p.likes === 'number' && !isNaN(p.likes)) {
+    safeLikes = p.likes;
+  } else if (!isNaN(parsedTotalLikes) && parsedTotalLikes > 0) {
+    safeLikes = parsedTotalLikes;
+  } else if (matchedDefault?.likes) {
+    safeLikes = matchedDefault.likes;
+  } else {
+    safeLikes = 12;
+  }
+
+  let safeComments = [];
+  if (Array.isArray(p.comments) && p.comments.length > 0) {
+    safeComments = p.comments;
+  } else if (Array.isArray(matchedDefault?.comments) && matchedDefault.comments.length > 0) {
+    safeComments = matchedDefault.comments;
+  }
 
   return {
     id: p.id || p.post_id || idx + 1,
     post_id: p.post_id || `post-${p.id || idx + 1}`,
-    slug: p.slug || `post-${p.id || idx + 1}`,
+    slug: p.slug || matchedDefault?.slug || `post-${p.id || idx + 1}`,
     title: p.title,
     excerpt: p.excerpt || matchedDefault?.excerpt || '',
     content: p.content || matchedDefault?.content || '',
     author: p.author || 'Lê Văn Đạt',
     date: p.published_date || p.date || matchedDefault?.date || '2026-08-12',
-    readTime: p.read_time ? `${p.read_time} min read` : '5 min read',
+    readTime: p.read_time ? `${p.read_time} min read` : (matchedDefault?.readTime || '5 min read'),
     image: p.image_url || p.image || matchedDefault?.media?.items?.[0] || '',
     tag: p.tag || matchedDefault?.tag || 'suy ngẫm',
-    likes: parseInt(p.total_likes, 10) || matchedDefault?.likes || 12,
-    comments: matchedDefault?.comments || [],
+    likes: safeLikes,
+    comments: safeComments,
     media: matchedDefault?.media || (p.image_url ? { type: 'image', items: [p.image_url] } : null),
   };
 }
@@ -100,13 +130,15 @@ export function PortfolioProvider({ children }) {
     return defaultSiteMeta;
   });
 
-  // 3. Posts: check localStorage override -> fallback to defaultPosts
+  // 3. Posts: check localStorage override -> fallback to defaultPosts (with normalization)
   const [posts, setPosts] = useState(() => {
     try {
       const saved = localStorage.getItem('portfolio_posts_override');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p, idx) => mapApiPost(p, idx));
+        }
       }
     } catch {}
     return defaultPosts;
@@ -166,9 +198,10 @@ export function PortfolioProvider({ children }) {
   }, []);
 
   const updatePosts = useCallback((newPosts) => {
-    setPosts(newPosts);
+    const normalized = (newPosts || []).map((p, idx) => mapApiPost(p, idx));
+    setPosts(normalized);
     try {
-      localStorage.setItem('portfolio_posts_override', JSON.stringify(newPosts));
+      localStorage.setItem('portfolio_posts_override', JSON.stringify(normalized));
     } catch (e) {
       console.warn('Failed to cache posts in localStorage:', e);
     }
