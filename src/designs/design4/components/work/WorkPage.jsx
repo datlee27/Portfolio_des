@@ -227,10 +227,14 @@ export default function WorkPage({ onGoHome }) {
                     </div>
 
                     <img
-                      src={project.image}
+                      src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
                       alt={project.title}
                       className="des4-work-card-img"
                       loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+                      }}
                     />
                   </div>
 

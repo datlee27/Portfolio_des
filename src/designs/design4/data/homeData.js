@@ -120,6 +120,9 @@ export const featuredProjects = portfolioData.projects.map((proj, idx) => ({
   deploy: proj.deploy,
   status: proj.status,
   image: proj.image && proj.image.startsWith('http') ? proj.image : defaultProjectImages[idx % defaultProjectImages.length],
+  body_images: proj.body_images || [],
+  video_demo: proj.video_demo || '',
+  video_url: proj.video_demo || '',
   accentColor: accentColors[idx % accentColors.length],
   hasCaseStudy: Boolean(proj.deploy || proj.github),
 }));

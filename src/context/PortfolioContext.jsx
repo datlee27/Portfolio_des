@@ -26,8 +26,49 @@ const PortfolioContext = createContext({
 const accentColors = ['#fe3c01', '#2563eb', '#059669', '#9333ea', '#d97706', '#0284c7'];
 
 // Map API project object to frontend project object
-export function mapApiProject(p, idx) {
+export function mapApiProject(p, idx = 0) {
   const tags = Array.isArray(p.tags) ? p.tags : (p.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
+  
+  // Resolve image with fallback for missing or broken relative paths like "/assets/img/..."
+  const rawImage = (p.image_url || p.image || '').trim();
+  const fallbackImage =
+    defaultProjects[idx % defaultProjects.length]?.image ||
+    'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+  const isInvalidAsset = rawImage.startsWith('/assets/img/');
+  const finalImage = !rawImage || isInvalidAsset ? fallbackImage : rawImage;
+
+  // Resolve body_images safely (up to 6 images)
+  let bodyImages = [];
+  if (Array.isArray(p.body_images)) {
+    bodyImages = p.body_images;
+  } else if (typeof p.body_images === 'string' && p.body_images.trim().startsWith('[')) {
+    try {
+      bodyImages = JSON.parse(p.body_images);
+    } catch {
+      bodyImages = [];
+    }
+  } else if (typeof p.body_images === 'string' && p.body_images.trim().length > 0) {
+    bodyImages = p.body_images.split(',').map((s) => s.trim()).filter(Boolean);
+  } else if (Array.isArray(p.images)) {
+    bodyImages = p.images;
+  }
+
+  // Fallback to defaultProjects if body_images is empty
+  if (bodyImages.length === 0) {
+    const matchedDefault = defaultProjects.find(
+      (dp) => (dp.id && dp.id === p.id) || (dp.title && dp.title.toLowerCase().trim() === (p.title || '').toLowerCase().trim())
+    ) || defaultProjects[idx % defaultProjects.length];
+    if (matchedDefault && Array.isArray(matchedDefault.body_images) && matchedDefault.body_images.length > 0) {
+      bodyImages = matchedDefault.body_images;
+    }
+  }
+
+  bodyImages = (Array.isArray(bodyImages) ? bodyImages : [])
+    .filter((img) => typeof img === 'string' && img.trim().length > 0)
+    .slice(0, 6);
+
+  const videoDemo = (p.video_demo || p.video_url || p.video || '').trim();
+
   return {
     id: p.id || String(idx + 1),
     project_code: p.project_code || `0${idx + 1}`,
@@ -38,9 +79,15 @@ export function mapApiProject(p, idx) {
     clientCode: `(PR0${idx + 1})`,
     tags,
     github: p.github_url || p.github || '',
+    github_url: p.github_url || p.github || '',
     deploy: p.deploy_url || p.deploy || '',
+    deploy_url: p.deploy_url || p.deploy || '',
     status: p.status || 'Latest',
-    image: p.image_url || p.image || defaultProjects[idx % defaultProjects.length]?.image || '',
+    image: finalImage,
+    image_url: finalImage,
+    body_images: bodyImages,
+    video_demo: videoDemo,
+    video_url: videoDemo,
     accentColor: accentColors[idx % accentColors.length],
     hasCaseStudy: Boolean(p.deploy_url || p.deploy || p.github_url || p.github),
   };
@@ -110,10 +157,12 @@ export function PortfolioProvider({ children }) {
       const saved = localStorage.getItem('portfolio_projects_override');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p, idx) => mapApiProject(p, idx));
+        }
       }
     } catch {}
-    return defaultProjects;
+    return defaultProjects.map((p, idx) => mapApiProject(p, idx));
   });
 
   // 2. Personal info: check localStorage override -> fallback to defaultSiteMeta
@@ -177,9 +226,10 @@ export function PortfolioProvider({ children }) {
 
   // Setters with persistent offline storage
   const updateProjects = useCallback((newProjects) => {
-    setProjects(newProjects);
+    const normalized = (newProjects || []).map((p, idx) => mapApiProject(p, idx));
+    setProjects(normalized);
     try {
-      localStorage.setItem('portfolio_projects_override', JSON.stringify(newProjects));
+      localStorage.setItem('portfolio_projects_override', JSON.stringify(normalized));
     } catch (e) {
       console.warn('Failed to cache projects in localStorage:', e);
     }

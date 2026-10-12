@@ -22,6 +22,11 @@
       "title": "Dev Roadmap Tracking System",
       "description": "An advanced learning management platform designed for developers to track a 3-month personalized roadmap. Featuring a dynamic task manager across multiple phases and interactive progress tracking.",
       "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775903083/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.23.35_z4qpji.png",
+      "body_images": [
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775904892/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.52.52_cb9myu.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1764500651/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2025-11-30_lu%CC%81c_18.03.15_drt2kr.png",
+        "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80"
+      ],
       "tags": ["React", "TypeScript", "Vite", "Tailwind CSS"],
       "github": "https://github.com/datlee27/dev-roadmap",
       "deploy": "https://dev-roadmap-brown.vercel.app/",
@@ -32,6 +37,10 @@
       "title": "IELTS Writing Practice",
       "description": "A specialized training tool designed to simulate the IELTS Computer-based Writing environment. Features a split-screen interface and real-time word counting.",
       "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775904892/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.52.52_cb9myu.png",
+      "body_images": [
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775903083/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.23.35_z4qpji.png",
+        "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80"
+      ],
       "tags": ["React", "TypeScript", "Tailwind CSS", "Educational"],
       "github": "https://github.com/datlee27/Practice-ielts-writing-typing-react",
       "status": "Latest"
@@ -49,7 +58,7 @@
       "id": "04",
       "title": "AI-Integrated LMS",
       "description": "Full-stack Learning Management System built to modernize digital course management. Integrates advanced AI logic for personalized student recommendations.",
-      "image": "/assets/img/projectlearning.png",
+      "image": "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80",
       "tags": ["Java", "MySQL", "AI", "FullStack"],
       "github": "https://github.com/datlee27/LearningWebsite-1",
       "status": "2025"
@@ -58,7 +67,7 @@
       "id": "05",
       "title": "Smart Recycle Bin",
       "description": "IoT-enabled smart recycle bin using Arduino. Features hybrid sensor arrays and mechanical waste sorting for sustainable urban environments.",
-      "image": "/assets/img/projectpic.png",
+      "image": "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
       "tags": ["Arduino", "IoT", "Sensors"],
       "github": "https://github.com/datlee27/iot102-smart-recycle-bin",
       "status": "2025"
@@ -67,7 +76,7 @@
       "id": "06",
       "title": "Fruit Shop Web App",
       "description": "E-commerce platform for high-traffic fruit marketplaces. Features complex cart logic and session management built for speed and reliability.",
-      "image": "/assets/img/fruitshop.png",
+      "image": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=1200&q=80",
       "tags": ["Java Servlets", "JSP", "SQL"],
       "github": "https://github.com/datlee27/FruitShopOnline",
       "status": "2025"

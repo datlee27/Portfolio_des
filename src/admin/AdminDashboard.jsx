@@ -74,6 +74,31 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             }
           }
         } catch {}
+
+        // Preserve body_images and video_demo from localStorage if server dropped them
+        try {
+          const rawProj = localStorage.getItem('portfolio_projects_override');
+          if (rawProj && Array.isArray(pRes.data.projects)) {
+            const savedProjects = JSON.parse(rawProj);
+            if (Array.isArray(savedProjects)) {
+              pRes.data.projects = pRes.data.projects.map((sp) => {
+                const match = savedProjects.find(
+                  (lp) => String(lp.id) === String(sp.id) || (lp.title && lp.title === sp.title)
+                );
+                return {
+                  ...sp,
+                  body_images:
+                    (Array.isArray(sp.body_images) && sp.body_images.length > 0)
+                      ? sp.body_images
+                      : (match?.body_images || []),
+                  video_demo: sp.video_demo || sp.video_url || match?.video_demo || '',
+                  video_url: sp.video_demo || sp.video_url || match?.video_demo || '',
+                };
+              });
+            }
+          }
+        } catch {}
+
         setPortfolioData(pRes.data);
       } else {
         // Fallback to local context data

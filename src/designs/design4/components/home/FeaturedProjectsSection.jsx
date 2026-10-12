@@ -118,9 +118,13 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
                 )}
 
                 <img
-                  src={project.image}
+                  src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
                   alt={project.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+                  }}
                 />
               </div>
 

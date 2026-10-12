@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * AdminMacModal - Reusable Draggable macOS-style Window Modal for Admin Dashboard
@@ -111,7 +112,7 @@ export default function AdminMacModal({
     setPosition({ x: 0, y: 0 });
   };
 
-  return (
+  const modalElement = (
     <div
       className="admin-modal-backdrop"
       onClick={onClose}
@@ -124,6 +125,7 @@ export default function AdminMacModal({
         style={{
           width: '100%',
           maxWidth,
+          margin: 'auto',
           transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
           transition: isDragging ? 'none' : 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)',
           display: 'flex',
@@ -188,4 +190,9 @@ export default function AdminMacModal({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalElement, document.body);
+  }
+  return modalElement;
 }

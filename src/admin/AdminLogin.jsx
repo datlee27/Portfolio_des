@@ -28,6 +28,7 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
         }
       } else {
         setError(res?.message || 'Tài khoản hoặc mật khẩu không chính xác.');
+        setAllowOfflineLogin(true);
       }
     } catch (err) {
       setError(
@@ -214,6 +215,28 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
               </>
             )}
           </button>
+
+          {/* Quick Offline Access Option */}
+          <div style={{ marginTop: 14, textAlign: 'center' }}>
+            <button
+              type="button"
+              onClick={handleOfflineLogin}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--admin-text-muted)',
+                fontSize: 12,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                textDecoration: 'underline',
+              }}
+            >
+              <WifiOff size={13} />
+              <span>Đăng nhập chế độ ngoại tuyến (Offline Mode)</span>
+            </button>
+          </div>
         </form>
       </div>
     </div>

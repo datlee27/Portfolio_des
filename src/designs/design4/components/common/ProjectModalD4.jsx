@@ -1,13 +1,110 @@
-import React, { useEffect } from 'react';
-import { ExternalLink, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ExternalLink, ArrowUpRight, ChevronLeft, ChevronRight, Play, Maximize2, Minimize2 } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 
-export default function ProjectModalD4({ project, onClose }) {
-  useEffect(() => {
-    if (!project) return;
+function getEmbedVideo(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+  if (ytMatch) {
+    return {
+      type: 'youtube',
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0`,
+    };
+  }
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/i);
+  if (vimeoMatch) {
+    return {
+      type: 'vimeo',
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
+    };
+  }
+  return {
+    type: 'html5',
+    url,
+  };
+}
 
+export default function ProjectModalD4({ project, onClose }) {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [fitMode, setFitMode] = useState('cover'); // 'cover' or 'contain'
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+
+  // Only reset slide to 0 when project ID genuinely changes
+  useEffect(() => {
+    setCurrentSlideIndex(0);
+  }, [project?.id]);
+
+  if (!project) return null;
+
+  const projectTitle = project.title || project.name || 'Untitled Project';
+  const projectSubtitle = project.subtitle || project.code || 'Selected Project';
+  const projectClient = project.client || 'Personal / Open-Source';
+  const projectYear = project.year || '2025 – 2026';
+  const projectType = project.type || project.tags?.[0] || 'Fullstack Web Application';
+  const projectCredits = Array.isArray(project.tags)
+    ? project.tags.join(', ')
+    : project.credits || 'React, Vite, Node.js';
+  const projectDescription = project.description || project.summary || '';
+  const projectCover =
+    project.image ||
+    project.image_url ||
+    project.coverImage ||
+    'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+  const liveUrl = project.deploy || project.liveUrl || '';
+  const githubUrl = project.github || project.githubUrl || '';
+
+  // Extract body images (up to 6)
+  let rawBodyImages = [];
+  if (Array.isArray(project.body_images)) {
+    rawBodyImages = project.body_images;
+  } else if (typeof project.body_images === 'string' && project.body_images.startsWith('[')) {
+    try {
+      rawBodyImages = JSON.parse(project.body_images);
+    } catch {
+      rawBodyImages = [];
+    }
+  } else if (typeof project.body_images === 'string' && project.body_images.trim().length > 0) {
+    rawBodyImages = project.body_images.split(',').map((s) => s.trim()).filter(Boolean);
+  } else if (Array.isArray(project.images)) {
+    rawBodyImages = project.images;
+  }
+  const bodyImages = (Array.isArray(rawBodyImages) ? rawBodyImages : [])
+    .filter((img) => typeof img === 'string' && img.trim().length > 0)
+    .slice(0, 6);
+
+  // Extract video demo
+  const videoDemo = (project.video_demo || project.video_url || project.video || '').trim();
+
+  // Combine into slides list: [Cover Image, ...Body Images, Video Demo (if any)]
+  const slides = [
+    ...(projectCover ? [{ type: 'image', url: projectCover, label: 'Ảnh đại diện (Cover)' }] : []),
+    ...bodyImages.map((img, i) => ({
+      type: 'image',
+      url: img,
+      label: `Ảnh chi tiết (${i + 1}/${bodyImages.length})`,
+    })),
+    ...(videoDemo ? [{ type: 'video', url: videoDemo, label: 'Video Demo' }] : []),
+  ];
+
+  // Clamp current index
+  const safeCurrentIndex = Math.min(Math.max(0, currentSlideIndex), Math.max(0, slides.length - 1));
+  const currentSlide = slides[safeCurrentIndex] || slides[0];
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
+      if (slides.length > 1) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setCurrentSlideIndex((prev) => (prev > 0 ? prev - 1 : slides.length - 1));
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setCurrentSlideIndex((prev) => (prev < slides.length - 1 ? prev + 1 : 0));
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
 
@@ -16,7 +113,6 @@ export default function ProjectModalD4({ project, onClose }) {
       window.lenis.stop();
     }
 
-    // Prevent body and html scrolling ONLY when modal is actively open
     const originalBodyOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -30,22 +126,63 @@ export default function ProjectModalD4({ project, onClose }) {
         window.lenis.start();
       }
     };
-  }, [project, onClose]);
+  }, [slides.length, onClose]);
 
-  if (!project) return null;
+  // Mouse Drag handlers for desktop Swiper
+  const handleMouseDown = (e) => {
+    if (slides.length <= 1) return;
+    setIsDragging(true);
+    setDragStartX(e.clientX);
+    setDragOffset(0);
+  };
 
-  const projectTitle = project.title || project.name || 'Untitled Project';
-  const projectSubtitle = project.subtitle || project.code || 'Selected Project';
-  const projectClient = project.client || 'Personal / Open-Source';
-  const projectYear = project.year || '2025 – 2026';
-  const projectType = project.type || project.tags?.[0] || 'Fullstack Web Application';
-  const projectCredits = Array.isArray(project.tags)
-    ? project.tags.join(', ')
-    : project.credits || 'React, Vite, Node.js';
-  const projectDescription = project.description || project.summary || '';
-  const projectCover = project.image || project.coverImage || '';
-  const liveUrl = project.deploy || project.liveUrl || '';
-  const githubUrl = project.github || project.githubUrl || '';
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const diff = e.clientX - dragStartX;
+    setDragOffset(diff);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    if (dragOffset < -45) {
+      setCurrentSlideIndex((prev) => (prev < slides.length - 1 ? prev + 1 : 0));
+    } else if (dragOffset > 45) {
+      setCurrentSlideIndex((prev) => (prev > 0 ? prev - 1 : slides.length - 1));
+    }
+    setIsDragging(false);
+    setDragOffset(0);
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+    }
+  };
+
+  // Touch Swipe handlers for mobile Swiper
+  const handleTouchStart = (e) => {
+    if (slides.length <= 1) return;
+    setIsDragging(true);
+    setDragStartX(e.touches[0].clientX);
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const diff = e.touches[0].clientX - dragStartX;
+    setDragOffset(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    if (dragOffset < -45) {
+      setCurrentSlideIndex((prev) => (prev < slides.length - 1 ? prev + 1 : 0));
+    } else if (dragOffset > 45) {
+      setCurrentSlideIndex((prev) => (prev > 0 ? prev - 1 : slides.length - 1));
+    }
+    setIsDragging(false);
+    setDragOffset(0);
+  };
 
   return (
     <div
@@ -454,34 +591,345 @@ export default function ProjectModalD4({ project, onClose }) {
             </div>
           )}
 
-          {/* Project Media / Gallery */}
-          {projectCover && (
+          {/* Project Media / Gallery Swiper */}
+          {slides.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <div
                 style={{
-                  fontFamily: 'var(--font-inter)',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  color: '#71717a',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                   marginBottom: 12,
+                  flexWrap: 'wrap',
+                  gap: 8,
                 }}
               >
-                Project Preview & Interface
+                <div
+                  style={{
+                    fontFamily: 'var(--font-inter)',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    color: '#71717a',
+                  }}
+                >
+                  Project Preview & Interface
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {/* Aspect Ratio / Fit Mode Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setFitMode(fitMode === 'cover' ? 'contain' : 'cover')}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      padding: '4px 10px',
+                      borderRadius: 100,
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
+                      color: '#475569',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                    title={fitMode === 'cover' ? 'Chuyển sang xem toàn bộ ảnh gốc (Contain)' : 'Chuyển sang cắt vừa khung mockup (Cover)'}
+                  >
+                    {fitMode === 'cover' ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                    <span>{fitMode === 'cover' ? 'Cắt vừa khung (Cover)' : 'Xem toàn ảnh (Fit)'}</span>
+                  </button>
+
+                  {slides.length > 1 && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-inter)',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: '#fe3c01',
+                      }}
+                    >
+                      {safeCurrentIndex + 1} / {slides.length} mục
+                    </span>
+                  )}
+                </div>
               </div>
-              <img
-                src={projectCover}
-                alt={projectTitle}
+
+              {/* Main Swiper Viewport */}
+              <div
+                className="des4-swiper-viewport"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 style={{
+                  position: 'relative',
                   width: '100%',
+                  aspectRatio: '16 / 10',
+                  minHeight: 280,
+                  maxHeight: 520,
                   borderRadius: 14,
-                  objectFit: 'cover',
-                  display: 'block',
-                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+                  overflow: 'hidden',
+                  background: '#09090b',
+                  boxShadow: '0 14px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.08)',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  touchAction: 'pan-y',
+                  cursor: isDragging ? 'grabbing' : slides.length > 1 ? 'grab' : 'default',
                 }}
-                loading="lazy"
-              />
+              >
+                {/* Horizontal Sliding Track */}
+                <div
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    height: '100%',
+                    transform: `translateX(calc(-${safeCurrentIndex * 100}% + ${dragOffset}px))`,
+                    transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    willChange: 'transform',
+                  }}
+                >
+                  {slides.map((s, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        flex: '0 0 100%',
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        background: '#09090b',
+                      }}
+                    >
+                      {s.type === 'image' ? (
+                        <img
+                          src={s.url}
+                          alt={`${projectTitle} - ${s.label}`}
+                          draggable={false}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: fitMode,
+                            objectPosition: 'top center',
+                            display: 'block',
+                            pointerEvents: 'none',
+                          }}
+                          loading={idx === 0 ? 'eager' : 'lazy'}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src =
+                              'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+                          }}
+                        />
+                      ) : (
+                        (() => {
+                          const videoInfo = getEmbedVideo(s.url);
+                          if (videoInfo?.type === 'youtube' || videoInfo?.type === 'vimeo') {
+                            return (
+                              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                <iframe
+                                  src={videoInfo.embedUrl}
+                                  title="Project Video Demo"
+                                  style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    border: 0,
+                                  }}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            );
+                          }
+                          return (
+                            <video
+                              controls
+                              playsInline
+                              src={s.url}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                display: 'block',
+                                background: '#000',
+                              }}
+                            />
+                          );
+                        })()
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Top Overlay Badge */}
+                {slides.length > 1 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 12,
+                      left: 12,
+                      padding: '4px 10px',
+                      borderRadius: 100,
+                      background: 'rgba(0, 0, 0, 0.65)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      color: '#ffffff',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: '0.02em',
+                      pointerEvents: 'none',
+                      zIndex: 10,
+                    }}
+                  >
+                    {currentSlide.type === 'video'
+                      ? '🎥 Video Demo'
+                      : safeCurrentIndex === 0
+                      ? '⭐ Ảnh đại diện'
+                      : `📷 Ảnh chi tiết #${safeCurrentIndex}`}
+                  </div>
+                )}
+
+                {/* Navigation Arrows (if > 1 slide) */}
+                {slides.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentSlideIndex((prev) => (prev > 0 ? prev - 1 : slides.length - 1));
+                      }}
+                      title="Ảnh trước"
+                      aria-label="Previous slide"
+                      style={{
+                        position: 'absolute',
+                        left: 12,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 38,
+                        height: 38,
+                        borderRadius: '50%',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 10,
+                        transition: 'transform 0.15s ease, background 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-50%) scale(1.12)';
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+                      }}
+                    >
+                      <ChevronLeft size={22} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentSlideIndex((prev) => (prev < slides.length - 1 ? prev + 1 : 0));
+                      }}
+                      title="Ảnh tiếp theo"
+                      aria-label="Next slide"
+                      style={{
+                        position: 'absolute',
+                        right: 12,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 38,
+                        height: 38,
+                        borderRadius: '50%',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 10,
+                        transition: 'transform 0.15s ease, background 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-50%) scale(1.12)';
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+                      }}
+                    >
+                      <ChevronRight size={22} />
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Dots Pagination ở dưới cùng (theo đúng yêu cầu của người dùng) */}
+              {slides.length > 1 && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    padding: '10px 14px',
+                    marginTop: 12,
+                    background: '#f8fafc',
+                    borderRadius: 100,
+                    border: '1px solid #e2e8f0',
+                    width: 'fit-content',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                  }}
+                >
+                  {slides.map((s, idx) => {
+                    const isActive = idx === safeCurrentIndex;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCurrentSlideIndex(idx)}
+                        title={s.label}
+                        aria-label={`Chuyển đến ${s.label}`}
+                        style={{
+                          width: isActive ? 26 : 8,
+                          height: 8,
+                          borderRadius: 999,
+                          border: 'none',
+                          padding: 0,
+                          background: isActive ? '#fe3c01' : '#cbd5e1',
+                          cursor: 'pointer',
+                          transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                          boxShadow: isActive ? '0 2px 8px rgba(254, 60, 1, 0.45)' : 'none',
+                          outline: 'none',
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -489,6 +937,10 @@ export default function ProjectModalD4({ project, onClose }) {
 
       {/* Global CSS Keyframes for smooth animations */}
       <style>{`
+        @keyframes des4SlideFade {
+          from { opacity: 0.4; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
+        }
         @keyframes des4ModalFadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus,
   Pencil,
@@ -10,8 +10,11 @@ import {
   X,
   Search,
   AlertTriangle,
+  Upload,
+  Loader2,
 } from 'lucide-react';
 import api from '../../services/api';
+import { uploadToCloudinary } from '../../services/cloudinary';
 import { usePortfolio } from '../../context/PortfolioContext';
 import AdminMacModal from '../components/AdminMacModal';
 
@@ -78,9 +81,35 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
     return title.includes(term) || excerpt.includes(term) || slug.includes(term);
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [localPreview, setLocalPreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Vui lòng chọn file hình ảnh hợp lệ (PNG, JPG, WEBP, GIF).', 'error');
+      return;
+    }
+    setSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setLocalPreview(objectUrl);
+  };
+
+  const handleClearSelectedFile = () => {
+    setSelectedFile(null);
+    setLocalPreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleOpenAdd = () => {
     setIsEditing(false);
     setCurrentId(null);
+    setSelectedFile(null);
+    setLocalPreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setFormData({ ...initialFormState, published_date: getTodayDate() });
     setModalOpen(true);
   };
@@ -89,6 +118,9 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
     setIsEditing(true);
     const targetPostId = post.post_id || post.id;
     setCurrentId(targetPostId);
+    setSelectedFile(null);
+    setLocalPreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setFormData({
       title: post.title || '',
       slug: post.slug || '',
@@ -124,15 +156,35 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
 
     setSaving(true);
     try {
+      let finalImageUrl = formData.image_url.trim();
+
+      // Upload to Cloudinary if local file was selected
+      if (selectedFile) {
+        setUploadingImage(true);
+        try {
+          const uploadRes = await uploadToCloudinary(selectedFile);
+          finalImageUrl = uploadRes.secure_url;
+        } catch (uploadErr) {
+          console.error('Lỗi upload Cloudinary:', uploadErr);
+          showToast(`Lỗi tải ảnh lên Cloudinary: ${uploadErr.message}`, 'error');
+          setSaving(false);
+          setUploadingImage(false);
+          return;
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+
       const payload = {
         ...formData,
         id: isEditing ? currentId : String(Date.now()),
         post_id: isEditing ? currentId : `post-${Date.now()}`,
         read_time: Number(formData.read_time) || 5,
         readTime: `${Number(formData.read_time) || 5} min read`,
-        image: formData.image_url,
+        image: finalImageUrl,
+        image_url: finalImageUrl,
         date: formData.published_date,
-        media: formData.image_url ? { type: 'image', items: [formData.image_url] } : null,
+        media: finalImageUrl ? { type: 'image', items: [finalImageUrl] } : null,
       };
 
       if (isEditing) {
@@ -441,24 +493,127 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
               </div>
             </div>
 
-            {/* Image URL */}
+            {/* Image URL & File Picker */}
             <div className="admin-form-group">
-              <label className="admin-form-label">Ảnh bìa (URL)</label>
-              <input
-                type="url"
-                className="admin-input"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://..."
-              />
-              {formData.image_url && (
-                <div style={{ marginTop: 8 }}>
-                  <img
-                    src={formData.image_url}
-                    alt="Preview"
-                    style={{ width: 80, height: 48, borderRadius: 4, objectFit: 'cover', border: '1px solid var(--admin-card-border)' }}
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label className="admin-form-label" style={{ margin: 0 }}>Ảnh bìa</label>
+                <span style={{ fontSize: 11.5, color: 'var(--admin-text-muted)' }}>
+                  Nhập URL hoặc chọn file từ máy
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input
+                  type="text"
+                  className="admin-input"
+                  style={{ flex: 1 }}
+                  value={selectedFile ? `📁 ${selectedFile.name}` : formData.image_url}
+                  onChange={(e) => {
+                    if (!selectedFile) {
+                      setFormData({ ...formData, image_url: e.target.value });
+                    }
+                  }}
+                  placeholder="https://... hoặc bấm nút bên phải để chọn ảnh"
+                  readOnly={Boolean(selectedFile)}
+                />
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
+                  style={{ display: 'none' }}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="admin-btn admin-btn-secondary"
+                  style={{
+                    height: 38,
+                    padding: '0 12px',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 12.5,
+                  }}
+                  title="Chọn ảnh từ máy tính / thư viện"
+                >
+                  <Upload size={14} />
+                  <span>Chọn từ thư viện</span>
+                </button>
+
+                {selectedFile && (
+                  <button
+                    type="button"
+                    onClick={handleClearSelectedFile}
+                    className="admin-btn admin-btn-secondary"
+                    style={{
+                      height: 38,
+                      padding: '0 10px',
+                      color: '#ef4444',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                    title="Bỏ chọn file này"
+                  >
+                    <X size={15} />
+                  </button>
+                )}
+              </div>
+
+              {/* Instant Image Preview */}
+              {(localPreview || formData.image_url) && (
+                <div
+                  style={{
+                    marginTop: 10,
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    background: '#f8fafc',
+                    border: '1px solid var(--admin-card-border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 72,
+                      height: 48,
+                      borderRadius: 4,
+                      overflow: 'hidden',
+                      background: '#e2e8f0',
+                      border: '1px solid #cbd5e1',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={localPreview || formData.image_url}
+                      alt="Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ fontSize: 12, lineHeight: 1.4, flex: 1 }}>
+                    {selectedFile ? (
+                      <div>
+                        <div style={{ color: '#059669', fontWeight: 600 }}>
+                          ✓ Đã chọn ảnh từ máy (Xem trước)
+                        </div>
+                        <div style={{ color: 'var(--admin-text-muted)', fontSize: 11 }}>
+                          Ảnh sẽ tự động upload lên Cloudinary khi bạn nhấn "{isEditing ? 'Lưu Thay Đổi' : 'Đăng Bài Viết'}".
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ color: 'var(--admin-text-muted)' }}>
+                        Xem trước ảnh bìa hiện tại
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -488,10 +643,20 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
               </button>
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploadingImage}
                 className="admin-btn admin-btn-primary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                {saving ? 'Đang lưu...' : isEditing ? 'Lưu Thay Đổi' : 'Đăng Bài Viết'}
+                {(saving || uploadingImage) && <Loader2 size={14} className="spin" />}
+                <span>
+                  {uploadingImage
+                    ? 'Đang tải ảnh lên Cloudinary...'
+                    : saving
+                    ? 'Đang lưu...'
+                    : isEditing
+                    ? 'Lưu Thay Đổi'
+                    : 'Đăng Bài Viết'}
+                </span>
               </button>
             </div>
           </div>
