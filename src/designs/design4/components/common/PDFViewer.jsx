@@ -48,8 +48,8 @@ function loadPdfJsScript() {
 
 export default function PDFViewer({
   pdfUrl = '/sample-cv.pdf',
-  title = 'Dat Le – Curriculum Vitae',
-  downloadName = 'DatLe_CV.pdf',
+  title = 'Lê Văn Đạt – Curriculum Vitae',
+  downloadName = 'LeVanDat_CV.pdf',
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -492,10 +492,10 @@ export default function PDFViewer({
         }}
       >
         <span>
-          💡 File: <code style={{ color: '#fe3c01' }}>{pdfUrl}</code>
+          📄 File: <code style={{ color: '#fe3c01' }}>{pdfUrl}</code>
         </span>
         <span>
-          Tip: Replace with your actual CV file anytime in <code style={{ color: '#94a3b8' }}>/public/sample-cv.pdf</code>
+          Official Resume: <strong style={{ color: '#e2e8f0' }}>Lê Văn Đạt</strong> (Software Engineering)
         </span>
       </div>
     </div>

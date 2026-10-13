@@ -10,7 +10,16 @@ import ProjectModalD4 from '../common/ProjectModalD4';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 export default function WorkPage({ onGoHome }) {
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      if (hash === '#cv' || params.get('tab')?.toUpperCase() === 'CV') {
+        return 'CV';
+      }
+    }
+    return 'ALL';
+  });
   const [selectedProject, setSelectedProject] = useState(null);
   const { projects } = usePortfolio();
   const allProjects = projects && projects.length > 0 ? projects : featuredProjects;
@@ -22,6 +31,16 @@ export default function WorkPage({ onGoHome }) {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
     document.body.style.overflow = '';
+
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      if (hash === '#cv' || params.get('tab')?.toUpperCase() === 'CV') {
+        setSelectedCategory('CV');
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
   const categories = [
@@ -82,18 +101,6 @@ export default function WorkPage({ onGoHome }) {
       {/* ─── Hero Header ─── */}
       <div className="des4-work-header-section">
         <div className="des4-container">
-          {/* Breadcrumb / Back Link */}
-          <div style={{ marginBottom: 28 }}>
-            <button
-              onClick={onGoHome}
-              className="des4-work-back-btn"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              <ArrowLeft size={14} />
-              <span>Back to Overview</span>
-            </button>
-          </div>
-
           {/* Title & Count */}
           <div className="des4-work-title-row">
             <h1 className="des4-work-main-title">
@@ -132,6 +139,13 @@ export default function WorkPage({ onGoHome }) {
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
                     } else {
                       setSelectedCategory(cat.key);
+                      if (typeof window !== 'undefined') {
+                        if (cat.key === 'CV') {
+                          window.history.replaceState(null, '', '#cv');
+                        } else if (window.location.hash.toLowerCase() === '#cv') {
+                          window.history.replaceState(null, '', window.location.pathname);
+                        }
+                      }
                     }
                   }}
                   className={`des4-work-filter-pill ${isActive ? 'is-active' : ''}`}
@@ -185,8 +199,8 @@ export default function WorkPage({ onGoHome }) {
             <div style={{ padding: '10px 0 30px 0' }}>
               <PDFViewer
                 pdfUrl="/sample-cv.pdf"
-                title="Dat Le – Curriculum Vitae (Resume)"
-                downloadName="DatLe_CV.pdf"
+                title="Lê Văn Đạt – Curriculum Vitae (Resume)"
+                downloadName="LeVanDat_CV.pdf"
               />
             </div>
           ) : (
@@ -202,123 +216,123 @@ export default function WorkPage({ onGoHome }) {
                   <article
                     className="des4-work-card"
                   >
-                  {/* Media Container */}
-                  <div
-                    className="des4-work-card-media"
-                    onClick={() => setSelectedProject(project)}
-                    style={{ cursor: 'pointer' }}
-                    title={`View ${project.title} Case Study`}
-                  >
-                    {/* Status Pill */}
-                    {project.status && (
-                      <div
-                        className="des4-work-card-status"
-                        style={{
-                          background: project.status === 'Latest' ? '#fe3c01' : '#0f172a',
-                        }}
-                      >
-                        {project.status}
-                      </div>
-                    )}
-
-                    {/* Project Index */}
-                    <div className="des4-work-card-index">
-                      {project.code}
-                    </div>
-
-                    <img
-                      src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
-                      alt={project.title}
-                      className="des4-work-card-img"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
-                      }}
-                    />
-                  </div>
-
-                  {/* Content Container */}
-                  <div className="des4-work-card-body">
-                    <div className="des4-work-card-top-info">
-                      <span
-                        className="des4-work-card-accent-code"
-                        style={{ color: project.accentColor || '#fe3c01' }}
-                      >
-                        {project.client || 'Digital Product'}
-                      </span>
-                      <h3
-                        className="des4-work-card-title"
-                        onClick={() => setSelectedProject(project)}
-                        title={`View ${project.title} Case Study`}
-                      >
-                        {project.title}
-                      </h3>
-                      <p className="des4-work-card-desc">
-                        {project.description}
-                      </p>
-                    </div>
-
-                    <div className="des4-work-card-bottom-info">
-                      {/* Tech Tags */}
-                      <div className="des4-work-tags-list">
-                        {project.tags.map((tag, idx) => (
-                          <span key={idx} className="des4-work-tag-pill">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Action Links */}
-                      <div className="des4-work-card-actions">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedProject(project)}
-                          className="des4-work-btn-primary"
+                    {/* Media Container */}
+                    <div
+                      className="des4-work-card-media"
+                      onClick={() => setSelectedProject(project)}
+                      style={{ cursor: 'pointer' }}
+                      title={`View ${project.title} Case Study`}
+                    >
+                      {/* Status Pill */}
+                      {project.status && (
+                        <div
+                          className="des4-work-card-status"
                           style={{
-                            cursor: 'pointer',
-                            border: 'none',
-                            outline: 'none',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 6,
+                            background: project.status === 'Latest' ? '#fe3c01' : '#0f172a',
                           }}
                         >
-                          <Eye size={14} />
-                          <span>Details</span>
-                          <ArrowUpRight size={13} style={{ opacity: 0.7 }} />
-                        </button>
+                          {project.status}
+                        </div>
+                      )}
 
-                        {project.deploy && (
-                          <a
-                            href={project.deploy}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="des4-work-btn-secondary"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                      {/* Project Index */}
+                      <div className="des4-work-card-index">
+                        {project.code}
+                      </div>
+
+                      <img
+                        src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
+                        alt={project.title}
+                        className="des4-work-card-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
+                        }}
+                      />
+                    </div>
+
+                    {/* Content Container */}
+                    <div className="des4-work-card-body">
+                      <div className="des4-work-card-top-info">
+                        <span
+                          className="des4-work-card-accent-code"
+                          style={{ color: project.accentColor || '#fe3c01' }}
+                        >
+                          {project.client || 'Digital Product'}
+                        </span>
+                        <h3
+                          className="des4-work-card-title"
+                          onClick={() => setSelectedProject(project)}
+                          title={`View ${project.title} Case Study`}
+                        >
+                          {project.title}
+                        </h3>
+                        <p className="des4-work-card-desc">
+                          {project.description}
+                        </p>
+                      </div>
+
+                      <div className="des4-work-card-bottom-info">
+                        {/* Tech Tags */}
+                        <div className="des4-work-tags-list">
+                          {project.tags.map((tag, idx) => (
+                            <span key={idx} className="des4-work-tag-pill">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Action Links */}
+                        <div className="des4-work-card-actions">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProject(project)}
+                            className="des4-work-btn-primary"
+                            style={{
+                              cursor: 'pointer',
+                              border: 'none',
+                              outline: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                            }}
                           >
-                            <ExternalLink size={14} />
-                            <span>Live Demo</span>
-                          </a>
-                        )}
-                        {project.github && (
-                          <a
-                            href={project.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="des4-work-btn-secondary"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                          >
-                            <SiGithub size={14} />
-                            <span>GitHub Code</span>
+                            <Eye size={14} />
+                            <span>Details</span>
                             <ArrowUpRight size={13} style={{ opacity: 0.7 }} />
-                          </a>
-                        )}
+                          </button>
+
+                          {project.deploy && (
+                            <a
+                              href={project.deploy}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="des4-work-btn-secondary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            >
+                              <ExternalLink size={14} />
+                              <span>Live Demo</span>
+                            </a>
+                          )}
+                          {project.github && (
+                            <a
+                              href={project.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="des4-work-btn-secondary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            >
+                              <SiGithub size={14} />
+                              <span>GitHub Code</span>
+                              <ArrowUpRight size={13} style={{ opacity: 0.7 }} />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
-              </ScrollAnimation>
+                  </article>
+                </ScrollAnimation>
               ))}
             </div>
           )}

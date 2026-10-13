@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, ArrowUpRight, ChevronLeft, ChevronRight, Play, Maximize2, Minimize2 } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 
 function getEmbedVideo(url) {
@@ -26,7 +26,6 @@ function getEmbedVideo(url) {
 
 export default function ProjectModalD4({ project, onClose }) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [fitMode, setFitMode] = useState('cover'); // 'cover' or 'contain'
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
@@ -618,30 +617,6 @@ export default function ProjectModalD4({ project, onClose }) {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  {/* Aspect Ratio / Fit Mode Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setFitMode(fitMode === 'cover' ? 'contain' : 'cover')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5,
-                      padding: '4px 10px',
-                      borderRadius: 100,
-                      background: '#f1f5f9',
-                      border: '1px solid #e2e8f0',
-                      color: '#475569',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                    title={fitMode === 'cover' ? 'Chuyển sang xem toàn bộ ảnh gốc (Contain)' : 'Chuyển sang cắt vừa khung mockup (Cover)'}
-                  >
-                    {fitMode === 'cover' ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                    <span>{fitMode === 'cover' ? 'Cắt vừa khung (Cover)' : 'Xem toàn ảnh (Fit)'}</span>
-                  </button>
-
                   {slides.length > 1 && (
                     <span
                       style={{
@@ -717,7 +692,7 @@ export default function ProjectModalD4({ project, onClose }) {
                           style={{
                             width: '100%',
                             height: '100%',
-                            objectFit: fitMode,
+                            objectFit: 'cover',
                             objectPosition: 'top center',
                             display: 'block',
                             pointerEvents: 'none',

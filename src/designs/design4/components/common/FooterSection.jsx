@@ -7,6 +7,9 @@ import { ScrollAnimation } from '@/components/ui/scroll-animation';
 export default function FooterSection() {
   const [daNangTime, setDaNangTime] = useState('');
 
+  const emailAddress = siteMeta.email || 'lvd27012004@gmail.com';
+  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailAddress)}`;
+
   // Live Da Nang (GMT+7) Clock
   useEffect(() => {
     function updateClock() {
@@ -98,7 +101,9 @@ export default function FooterSection() {
             </p>
 
             <a
-              href={siteMeta.emailHref}
+              href={gmailComposeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -114,6 +119,7 @@ export default function FooterSection() {
                 transition: 'all 0.2s ease',
                 touchAction: 'manipulation',
                 minHeight: '44px',
+                cursor: 'pointer',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#262626';
@@ -144,12 +150,15 @@ export default function FooterSection() {
               }}
             >
               <a
-                href={siteMeta.emailHref}
+                href={gmailComposeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   color: '#111111',
                   textDecoration: 'underline',
                   textUnderlineOffset: '4px',
                   fontWeight: 500,
+                  cursor: 'pointer',
                 }}
               >
                 email

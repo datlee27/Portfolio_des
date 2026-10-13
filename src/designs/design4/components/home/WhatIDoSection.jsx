@@ -65,12 +65,20 @@ export default function WhatIDoSection() {
                 border: '1px solid rgba(17, 17, 17, 0.12)',
                 background: '#ffffff',
                 width: '100%',
+                aspectRatio: '696 / 1024',
+                position: 'relative',
               }}
             >
               <img
-                src="https://framerusercontent.com/images/nNLGLKBaN3TMBNgUnAFjyxbtQ.jpg?width=696&height=1024"
-                alt="Blender 3D Workspace"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
+                src="https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg"
+                alt="datlee avatar"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 60%',
+                  display: 'block',
+                }}
               />
             </div>
           </ScrollAnimation>

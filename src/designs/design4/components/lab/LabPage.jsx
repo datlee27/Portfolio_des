@@ -922,7 +922,7 @@ export default function LabPage({ onBack }) {
           whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedDesktopIcon('resume')}
           onDoubleClick={() => {
-            window.location.href = '/work';
+            window.location.href = '/work#cv';
           }}
         >
           <div
@@ -940,7 +940,7 @@ export default function LabPage({ onBack }) {
           >
             <FileText size={28} />
           </div>
-          <DesktopIconLabel>Resume.pdf</DesktopIconLabel>
+          <DesktopIconLabel>LeVanDat_CV.pdf</DesktopIconLabel>
         </DesktopIconItem>
 
         <DesktopIconItem
