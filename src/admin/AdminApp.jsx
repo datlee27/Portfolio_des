@@ -5,30 +5,20 @@ import AdminDashboard from './AdminDashboard';
 import api from '../services/api';
 
 export default function AdminApp({ onGoHome }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try {
-      return Boolean(localStorage.getItem('admin_session'));
-    } catch {
-      return false;
-    }
-  });
-
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('admin_session');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-
+  // Always default to unauthenticated; never trust localStorage blindly
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  // Check existing session on mount
+  // Strictly verify session with backend server on mount
   useEffect(() => {
+    let isMounted = true;
+
     async function verify() {
       try {
         const res = await api.checkAuth();
+        if (!isMounted) return;
+
         if (res && res.success && res.data?.logged_in) {
           setIsAuthenticated(true);
           setUser(res.data);
@@ -36,7 +26,7 @@ export default function AdminApp({ onGoHome }) {
             localStorage.setItem('admin_session', JSON.stringify(res.data));
           } catch {}
         } else {
-          // If server explicitly returned logged_in === false, invalidate local session
+          // Server says not logged in -> strictly force logout & clear localStorage
           setIsAuthenticated(false);
           setUser(null);
           try {
@@ -44,28 +34,25 @@ export default function AdminApp({ onGoHome }) {
           } catch {}
         }
       } catch {
-        // Only allow offline session if user explicitly entered offline mode
-        const localSession = localStorage.getItem('admin_session');
-        if (localSession) {
-          try {
-            const parsed = JSON.parse(localSession);
-            if (parsed.isOfflineMode) {
-              setIsAuthenticated(true);
-              setUser(parsed);
-            } else {
-              setIsAuthenticated(false);
-            }
-          } catch {
-            setIsAuthenticated(false);
-          }
-        } else {
-          setIsAuthenticated(false);
-        }
+        // Any network/server error -> strictly reject access, do not allow bypass
+        if (!isMounted) return;
+        setIsAuthenticated(false);
+        setUser(null);
+        try {
+          localStorage.removeItem('admin_session');
+        } catch {}
       } finally {
-        setCheckingAuth(false);
+        if (isMounted) {
+          setCheckingAuth(false);
+        }
       }
     }
+
     verify();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleLoginSuccess = (userData) => {
@@ -76,7 +63,12 @@ export default function AdminApp({ onGoHome }) {
     } catch {}
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.logout();
+    } catch (e) {
+      console.warn('Logout API error:', e);
+    }
     setIsAuthenticated(false);
     setUser(null);
     try {

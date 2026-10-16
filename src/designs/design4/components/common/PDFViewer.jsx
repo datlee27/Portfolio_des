@@ -10,6 +10,7 @@ import {
   Download,
   FileText,
   Layout,
+  ExternalLink,
 } from 'lucide-react';
 
 const PDFJS_SCRIPT_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
@@ -62,12 +63,17 @@ export default function PDFViewer({
   const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
   const [errorMsg, setErrorMsg] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [renderMode, setRenderMode] = useState('canvas'); // 'canvas' | 'native'
+  const [renderMode, setRenderMode] = useState('canvas'); // 'canvas' | 'native' | 'image'
+  const [imageFallbackUrl, setImageFallbackUrl] = useState('');
+  const [isFallbackActive, setIsFallbackActive] = useState(false);
 
-  // Load PDF Document
+  // Load PDF Document with Smart Fallback
   useEffect(() => {
     let cancelled = false;
     setStatus('loading');
+    setIsFallbackActive(false);
+    setImageFallbackUrl('');
+    setRenderMode('canvas');
 
     loadPdfJsScript()
       .then((pdfjs) => {
@@ -83,9 +89,24 @@ export default function PDFViewer({
       })
       .catch((err) => {
         if (cancelled) return;
-        console.warn('PDF.js render failed, switching to fallback:', err);
+        console.warn('PDF.js render failed, attempting Cloudinary High-Res Fallback:', err);
+
+        // Kiểm tra nếu là URL Cloudinary
+        const isCloudinary = typeof pdfUrl === 'string' && pdfUrl.includes('cloudinary.com');
+        if (isCloudinary) {
+          // Cloudinary tự động render tài liệu PDF thành ảnh PNG 300DPI độ nét cực cao
+          const fallbackPng = pdfUrl.replace(/\.pdf(\?.*)?$/i, '.png$1');
+          setImageFallbackUrl(fallbackPng);
+          setRenderMode('image');
+          setIsFallbackActive(true);
+          setNumPages(1);
+          setCurrentPage(1);
+          setStatus('ready');
+          return;
+        }
+
         setStatus('error');
-        setErrorMsg(err?.message || 'Failed to render PDF using Canvas');
+        setErrorMsg(err?.message || 'Failed to render PDF document');
       });
 
     return () => {
@@ -161,9 +182,12 @@ export default function PDFViewer({
   };
 
   const handleDownload = () => {
+    const downloadTarget = isFallbackActive && imageFallbackUrl ? imageFallbackUrl : pdfUrl;
+    const finalName = isFallbackActive && imageFallbackUrl ? downloadName.replace(/\.pdf$/i, '.png') : downloadName;
     const a = document.createElement('a');
-    a.href = pdfUrl;
-    a.download = downloadName;
+    a.href = downloadTarget;
+    a.download = finalName;
+    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -222,9 +246,9 @@ export default function PDFViewer({
           </span>
           <span
             style={{
-              background: 'rgba(254, 60, 1, 0.15)',
-              color: '#ff6b3d',
-              border: '1px solid rgba(254, 60, 1, 0.3)',
+              background: isFallbackActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(254, 60, 1, 0.15)',
+              color: isFallbackActive ? '#10b981' : '#ff6b3d',
+              border: `1px solid ${isFallbackActive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(254, 60, 1, 0.3)'}`,
               fontSize: 10,
               fontWeight: 800,
               padding: '2px 8px',
@@ -232,34 +256,60 @@ export default function PDFViewer({
               fontFamily: 'monospace',
             }}
           >
-            PDF PREVIEW
+            {isFallbackActive ? 'HQ DOCUMENT PREVIEW' : 'PDF PREVIEW'}
           </span>
         </div>
 
-        {/* View Mode Toggle: Canvas vs Native Embed */}
+        {/* View Mode Toggle: Canvas vs Native Embed vs Direct View */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            onClick={() => setRenderMode(renderMode === 'canvas' ? 'native' : 'canvas')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: '#94a3b8',
-              fontSize: 11,
-              fontWeight: 600,
-              fontFamily: 'var(--font-inter)',
-              padding: '4px 10px',
-              borderRadius: 6,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            title="Switch between Canvas renderer and Native Browser viewer"
-          >
-            <Layout size={14} />
-            <span>{renderMode === 'canvas' ? 'Switch to Native Embed' : 'Switch to Canvas 3D'}</span>
-          </button>
+          {!isFallbackActive ? (
+            <button
+              onClick={() => setRenderMode(renderMode === 'canvas' ? 'native' : 'canvas')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#94a3b8',
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: 'var(--font-inter)',
+                padding: '4px 10px',
+                borderRadius: 6,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              title="Switch between Canvas renderer and Native Browser viewer"
+            >
+              <Layout size={14} />
+              <span>{renderMode === 'canvas' ? 'Switch to Native Embed' : 'Switch to Canvas 3D'}</span>
+            </button>
+          ) : (
+            <a
+              href={imageFallbackUrl || pdfUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#94a3b8',
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: 'var(--font-inter)',
+                padding: '4px 10px',
+                borderRadius: 6,
+                textDecoration: 'none',
+              }}
+              title="Mở tài liệu độ nét cao trong tab mới"
+            >
+              <ExternalLink size={13} />
+              <span>Mở tab mới</span>
+            </a>
+          )}
         </div>
       </div>
 
@@ -462,7 +512,7 @@ export default function PDFViewer({
             </div>
           </div>
         ) : (
-          /* Canvas View */
+          /* Canvas or High-Res Image View */
           <div
             style={{
               boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
@@ -470,9 +520,27 @@ export default function PDFViewer({
               overflow: 'hidden',
               background: '#ffffff',
               transition: 'transform 0.2s ease',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <canvas ref={canvasRef} style={{ display: 'block' }} />
+            {renderMode === 'image' && imageFallbackUrl ? (
+              <img
+                src={imageFallbackUrl}
+                alt={title}
+                style={{
+                  display: 'block',
+                  width: `${Math.round(680 * (scale / 1.2))}px`,
+                  maxWidth: '100%',
+                  height: 'auto',
+                  transform: `rotate(${rotation}deg)`,
+                  transition: 'transform 0.2s ease, width 0.2s ease',
+                }}
+              />
+            ) : (
+              <canvas ref={canvasRef} style={{ display: 'block' }} />
+            )}
           </div>
         )}
       </div>
@@ -489,10 +557,17 @@ export default function PDFViewer({
           fontFamily: 'monospace',
           fontSize: 11,
           color: '#64748b',
+          flexWrap: 'wrap',
+          gap: 8,
         }}
       >
         <span>
           📄 File: <code style={{ color: '#fe3c01' }}>{pdfUrl}</code>
+          {isFallbackActive && (
+            <span style={{ color: '#10b981', marginLeft: 8 }}>
+              (Tự động tối ưu chế độ High-Res Document Preview)
+            </span>
+          )}
         </span>
         <span>
           Official Resume: <strong style={{ color: '#e2e8f0' }}>Lê Văn Đạt</strong> (Software Engineering)

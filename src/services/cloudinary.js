@@ -20,7 +20,8 @@ export async function uploadToCloudinary(file, customPreset = '', resourceType =
 
   const preset = customPreset || CLOUDINARY_UPLOAD_PRESET;
   const isVideo = file.type && file.type.startsWith('video/');
-  const type = resourceType === 'auto' ? (isVideo ? 'video' : 'image') : resourceType;
+  const isPdf = file.type === 'application/pdf' || (file.name && file.name.toLowerCase().endsWith('.pdf'));
+  const type = resourceType === 'auto' ? (isVideo ? 'video' : isPdf ? 'auto' : 'image') : resourceType;
   const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${type}/upload`;
 
   const formData = new FormData();

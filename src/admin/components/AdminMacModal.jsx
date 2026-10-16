@@ -18,9 +18,12 @@ export default function AdminMacModal({
   title,
   prefix = 'Editor — ',
   maxWidth = 640,
+  width,
   children,
   danger = false,
 }) {
+  const resolvedMaxWidth = maxWidth || width || 640;
+  const cleanTitle = (title || '').replace(/^(Editor|Cảnh Báo|Preview)\s*[-—–]\s*/i, '');
   // Draggable Window State
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -124,7 +127,7 @@ export default function AdminMacModal({
         className="admin-mac-draggable-wrapper"
         style={{
           width: '100%',
-          maxWidth,
+          maxWidth: resolvedMaxWidth,
           margin: 'auto',
           transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
           transition: isDragging ? 'none' : 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -174,10 +177,10 @@ export default function AdminMacModal({
             </div>
 
             {/* Centered TitleBar Text */}
-            <div className="admin-mac-title-text" title={`${prefix}${title}`}>
+            <div className="admin-mac-title-text" title={`${prefix}${cleanTitle}`}>
               {danger && <span className="admin-mac-danger-badge">!</span>}
               <span className="admin-mac-prefix">{prefix}</span>
-              <span className="admin-mac-title">{title}</span>
+              <span className="admin-mac-title">{cleanTitle}</span>
             </div>
 
             {/* Right Placeholder for Optical Balance */}

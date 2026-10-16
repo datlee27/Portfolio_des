@@ -134,6 +134,34 @@ export const api = {
     return request('/index.php?endpoint=setup-portfolio');
   },
 
+  // ─── Journey & Experience Endpoints ───
+  async updateExperience(experienceData) {
+    return request('/index.php?endpoint=portfolio&type=experience', {
+      method: 'PUT',
+      body: JSON.stringify(experienceData),
+    });
+  },
+
+  async updateExperienceItem(id, experienceItem) {
+    return request(`/index.php?endpoint=portfolio&type=experience&id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(experienceItem),
+    });
+  },
+
+  async createExperience(experienceItem) {
+    return request('/index.php?endpoint=portfolio&type=experience', {
+      method: 'POST',
+      body: JSON.stringify(experienceItem),
+    });
+  },
+
+  async deleteExperience(id) {
+    return request(`/index.php?endpoint=portfolio&type=experience&id=${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   // ─── Blog / Posts Endpoints ───
   async getPosts() {
     return request('/index.php?endpoint=posts');

@@ -7,6 +7,7 @@ import {
   ExternalLink,
   CheckCircle2,
   UserCheck,
+  Briefcase,
 } from 'lucide-react';
 
 export default function OverviewTab({
@@ -22,6 +23,7 @@ export default function OverviewTab({
   const personal = portfolioData?.personal || {};
   const projects = portfolioData?.projects || [];
   const skills = portfolioData?.skills || [];
+  const experience = portfolioData?.experience || [];
   const posts = postsData || [];
 
   return (
@@ -67,7 +69,25 @@ export default function OverviewTab({
           </div>
         </div>
 
-        {/* Stat 4: Server Status */}
+        {/* Stat 4: Journey & About */}
+        <div
+          className="admin-stat-card"
+          onClick={() => onNavigateTab && onNavigateTab('experience')}
+          style={{ cursor: 'pointer' }}
+          title="Bấm để xem và quản lý Hành Trình & About"
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div className="admin-stat-label">Hành Trình / About</div>
+              <div className="admin-stat-value">{experience.length}</div>
+            </div>
+            <div className="admin-stat-icon-neutral">
+              <Briefcase size={18} />
+            </div>
+          </div>
+        </div>
+
+        {/* Stat 5: Server Status */}
         <div className="admin-stat-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>

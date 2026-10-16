@@ -17,7 +17,7 @@ import {
 import { SiGithub } from 'react-icons/si';
 import api from '../../services/api';
 import { uploadToCloudinary } from '../../services/cloudinary';
-import { usePortfolio } from '../../context/PortfolioContext';
+import { usePortfolio, isProjectMatch } from '../../context/PortfolioContext';
 import AdminMacModal from '../components/AdminMacModal';
 
 export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
@@ -165,7 +165,14 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   };
 
   const handleRemoveBodyImage = (id) => {
-    setBodyImagesList((prev) => prev.filter((item) => item.id !== id));
+    setBodyImagesList((prev) => {
+      const nextList = prev.filter((item) => item.id !== id);
+      const remainingUrls = nextList
+        .map((item) => (item.file ? item.previewUrl : item.url))
+        .filter(Boolean);
+      setFormData((prevForm) => ({ ...prevForm, body_images: remainingUrls }));
+      return nextList;
+    });
   };
 
   const handleTriggerReplace = (index) => {
@@ -249,35 +256,39 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
 
     // Parse existing body images
     let existingBody = [];
-    if (Array.isArray(project.body_images) && project.body_images.length > 0) {
+    let hasExplicitBody = false;
+
+    if (Array.isArray(project.body_images)) {
       existingBody = project.body_images;
+      hasExplicitBody = true;
     } else if (typeof project.body_images === 'string' && project.body_images.trim().length > 0) {
       if (project.body_images.trim().startsWith('[')) {
         try {
           existingBody = JSON.parse(project.body_images);
+          hasExplicitBody = true;
         } catch {
           existingBody = [];
         }
       } else {
         existingBody = project.body_images.split(',').map((s) => s.trim()).filter(Boolean);
+        hasExplicitBody = true;
       }
-    } else if (Array.isArray(project.images) && project.images.length > 0) {
+    } else if (Array.isArray(project.images)) {
       existingBody = project.images;
+      hasExplicitBody = true;
     }
 
-    // Fallback: check localStorage override if existingBody is empty
-    if (!existingBody || existingBody.length === 0) {
+    // Fallback: ONLY check localStorage override if body_images was never defined (undefined)
+    if (!hasExplicitBody) {
       try {
         const rawOverride = localStorage.getItem('portfolio_projects_override');
         if (rawOverride) {
           const stored = JSON.parse(rawOverride);
-          const matched = stored.find(
-            (p) => String(p.id) === String(project.id) || (p.title && p.title.toLowerCase().trim() === (project.title || '').toLowerCase().trim())
-          );
+          const matched = stored.find((p) => isProjectMatch(p, project.id, project.title));
           if (matched) {
-            if (Array.isArray(matched.body_images) && matched.body_images.length > 0) {
+            if (Array.isArray(matched.body_images)) {
               existingBody = matched.body_images;
-            } else if (Array.isArray(matched.images) && matched.images.length > 0) {
+            } else if (Array.isArray(matched.images)) {
               existingBody = matched.images;
             }
           }
@@ -306,9 +317,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         const rawOverride = localStorage.getItem('portfolio_projects_override');
         if (rawOverride) {
           const stored = JSON.parse(rawOverride);
-          const matched = stored.find(
-            (p) => String(p.id) === String(project.id) || (p.title && p.title.toLowerCase().trim() === (project.title || '').toLowerCase().trim())
-          );
+          const matched = stored.find((p) => isProjectMatch(p, project.id, project.title));
           if (matched) {
             existingVideo = (matched.video_demo || matched.video_url || matched.video || '').trim();
           }
@@ -438,7 +447,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       }
 
       const updatedList = (isEditing
-        ? localProjects.map((p) => (p.id === currentId ? { ...p, ...normalizedProject } : p))
+        ? localProjects.map((p) => (isProjectMatch(p, currentId, normalizedProject.title) ? { ...p, ...normalizedProject } : p))
         : [...localProjects, normalizedProject]
       ).map((item) => ({
         ...item,
@@ -474,7 +483,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
     try {
       await api.deleteProject(id);
 
-      const updatedList = localProjects.filter((p) => p.id !== id);
+      const updatedList = localProjects.filter((p) => !isProjectMatch(p, id));
       setLocalProjects(updatedList);
       try {
         localStorage.setItem('portfolio_projects_override', JSON.stringify(updatedList));

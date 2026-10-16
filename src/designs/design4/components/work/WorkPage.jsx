@@ -21,7 +21,7 @@ export default function WorkPage({ onGoHome }) {
     return 'ALL';
   });
   const [selectedProject, setSelectedProject] = useState(null);
-  const { projects } = usePortfolio();
+  const { projects, personal } = usePortfolio();
   const allProjects = projects && projects.length > 0 ? projects : featuredProjects;
 
   useEffect(() => {
@@ -198,9 +198,9 @@ export default function WorkPage({ onGoHome }) {
             /* CV PDF Viewer Preview */
             <div style={{ padding: '10px 0 30px 0' }}>
               <PDFViewer
-                pdfUrl="/sample-cv.pdf"
-                title="Lê Văn Đạt – Curriculum Vitae (Resume)"
-                downloadName="LeVanDat_CV.pdf"
+                pdfUrl={personal?.cv_url || personal?.cvUrl || "/sample-cv.pdf"}
+                title={`${personal?.name || 'Lê Văn Đạt'} – Curriculum Vitae (Resume)`}
+                downloadName={`${(personal?.name || 'LeVanDat').replace(/\s+/g, '_')}_CV.pdf`}
               />
             </div>
           ) : (

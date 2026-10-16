@@ -1,53 +1,39 @@
 import React, { useState } from 'react';
-import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert, WifiOff } from 'lucide-react';
+import { Lock, User, ArrowRight, ArrowLeft, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 
 export default function AdminLogin({ onLoginSuccess, onGoHome }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [allowOfflineLogin, setAllowOfflineLogin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
+    if (!username.trim() || !password) {
       setError('Vui lòng nhập đầy đủ tài khoản và mật khẩu.');
       return;
     }
 
     setLoading(true);
     setError(null);
-    setAllowOfflineLogin(false);
 
     try {
-      const res = await api.login(username, password);
+      const res = await api.login(username.trim(), password);
       if (res && res.success) {
         if (onLoginSuccess) {
-          onLoginSuccess(res.data || { username });
+          onLoginSuccess(res.data || { username: username.trim() });
         }
       } else {
         setError(res?.message || 'Tài khoản hoặc mật khẩu không chính xác.');
-        setAllowOfflineLogin(true);
       }
     } catch (err) {
       setError(
-        'Không thể kết nối đến máy chủ API (Mạng ngoại tuyến hoặc máy chủ chưa sẵn sàng).'
+        err?.message || 'Không thể kết nối đến máy chủ API. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.'
       );
-      // Offer offline login option
-      setAllowOfflineLogin(true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOfflineLogin = () => {
-    if (onLoginSuccess) {
-      onLoginSuccess({
-        username: username || 'admin',
-        role: 'offline_admin',
-        isOfflineMode: true,
-      });
     }
   };
 
@@ -103,39 +89,12 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
               fontSize: 13,
               marginBottom: 20,
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
               gap: 8,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ShieldAlert size={16} />
-              <span>{error}</span>
-            </div>
-
-            {allowOfflineLogin && (
-              <button
-                type="button"
-                onClick={handleOfflineLogin}
-                style={{
-                  marginTop: 6,
-                  padding: '7px 12px',
-                  borderRadius: 6,
-                  background: '#b91c1c',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-              >
-                <WifiOff size={14} />
-                <span>Vào Chế Độ Quản Trị Cục Bộ (Offline Mode)</span>
-              </button>
-            )}
+            <ShieldAlert size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
           </div>
         )}
 
@@ -177,12 +136,12 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
             <div style={{ position: 'relative' }}>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 className="admin-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                style={{ paddingLeft: 38 }}
+                style={{ paddingLeft: 38, paddingRight: 38 }}
                 autoComplete="current-password"
                 required
               />
@@ -196,6 +155,27 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
                   color: 'var(--admin-text-muted)',
                 }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--admin-text-muted)',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
@@ -215,28 +195,6 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
               </>
             )}
           </button>
-
-          {/* Quick Offline Access Option */}
-          <div style={{ marginTop: 14, textAlign: 'center' }}>
-            <button
-              type="button"
-              onClick={handleOfflineLogin}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--admin-text-muted)',
-                fontSize: 12,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                textDecoration: 'underline',
-              }}
-            >
-              <WifiOff size={13} />
-              <span>Đăng nhập chế độ ngoại tuyến (Offline Mode)</span>
-            </button>
-          </div>
         </form>
       </div>
     </div>

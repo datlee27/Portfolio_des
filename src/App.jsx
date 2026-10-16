@@ -2,14 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import GlobalStyles from './styles/GlobalStyles';
 import Design4App from './designs/design4/Design4App';
 import AdminApp from './admin/AdminApp';
-import NotFoundPage from './components/common/NotFoundPage';
+import ErrorPage from './components/common/ErrorPage';
 import GlobalErrorBoundary from './components/common/GlobalErrorBoundary';
 import OfflineIndicator from './components/common/OfflineIndicator';
 import { PortfolioProvider } from './context/PortfolioContext';
 
-function getRouteFromPath(pathname) {
+function getRouteInfo(pathname) {
   const cleanPath = (pathname || '/').trim();
-  if (cleanPath === '/admin' || cleanPath.startsWith('/admin/')) return 'admin';
+  if (cleanPath === '/admin' || cleanPath.startsWith('/admin/')) {
+    return { route: 'admin' };
+  }
   if (
     cleanPath === '/' ||
     cleanPath === '' ||
@@ -18,23 +20,32 @@ function getRouteFromPath(pathname) {
     cleanPath === '/blog' || cleanPath.startsWith('/blog/') ||
     cleanPath === '/lab' || cleanPath.startsWith('/lab/')
   ) {
-    return 'portfolio';
+    return { route: 'portfolio' };
   }
-  return 'not-found';
+  if (cleanPath === '/400') return { route: 'error', code: 400 };
+  if (cleanPath === '/403') return { route: 'error', code: 403 };
+  if (cleanPath === '/404') return { route: 'error', code: 404 };
+  if (cleanPath === '/500') return { route: 'error', code: 500 };
+  if (cleanPath.startsWith('/error')) {
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const codeParam = params ? (params.get('code') || 404) : 404;
+    return { route: 'error', code: codeParam };
+  }
+  return { route: 'error', code: 404 };
 }
 
 export default function App() {
-  const [route, setRoute] = useState(() => {
+  const [routeInfo, setRouteInfo] = useState(() => {
     if (typeof window !== 'undefined') {
-      return getRouteFromPath(window.location.pathname);
+      return getRouteInfo(window.location.pathname);
     }
-    return 'portfolio';
+    return { route: 'portfolio' };
   });
 
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
-      setRoute(getRouteFromPath(path));
+      setRouteInfo(getRouteInfo(path));
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -44,7 +55,7 @@ export default function App() {
   const handleNavigate = useCallback((path) => {
     if (typeof window !== 'undefined') {
       window.history.pushState({}, '', path);
-      setRoute(getRouteFromPath(path));
+      setRouteInfo(getRouteInfo(path));
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   }, []);
@@ -54,10 +65,14 @@ export default function App() {
       <PortfolioProvider>
         <GlobalStyles />
         <OfflineIndicator />
-        {route === 'admin' ? (
+        {routeInfo.route === 'admin' ? (
           <AdminApp onGoHome={() => handleNavigate('/')} />
-        ) : route === 'not-found' ? (
-          <NotFoundPage onNavigate={handleNavigate} />
+        ) : routeInfo.route === 'error' ? (
+          <ErrorPage
+            code={routeInfo.code}
+            onGoHome={() => handleNavigate('/')}
+            onRetry={() => window.location.reload()}
+          />
         ) : (
           <Design4App />
         )}

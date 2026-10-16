@@ -29,96 +29,50 @@ import {
   Image as ImageIcon,
   Compass,
   Trash2,
+  RotateCcw,
 } from 'lucide-react';
 import { featuredProjects, siteMeta } from '../../data/homeData';
 import ProjectModalD4 from '../common/ProjectModalD4';
 import NotesModalContent from './NotesModalContent';
+import HoverBloomCanvas from './HoverBloomCanvas';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* ─── DATA: INTERACTIVE DESKTOP FILES (YANXIN LAB STYLE) ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const DESKTOP_ITEMS = [
   {
-    id: 'potato',
-    name: 'Potato.mp4',
-    type: 'video',
-    src: '/assets/lab/potato.jpg',
-    thumb: '/assets/lab/potato.jpg',
-    title: '3D Procedural Texture & Light Simulation',
-    category: 'Motion R&D',
-    defaultPos: { x: 50, y: 70 },
+    id: 'art-canvas',
+    name: 'Art.canvas',
+    type: 'canvas',
+    src: '/assets/art-canvas-cover.png',
+    thumb: '/assets/art-canvas-cover.png',
+    title: 'Art.canvas',
+    category: 'Interactive Floral Canvas',
+    defaultPos: { x: 45, y: 55 },
+    isArtApp: true,
   },
   {
-    id: 'render-module',
-    name: 'RenderModule.jpg',
+    id: 'me-photo',
+    name: 'me.jpg',
     type: 'image',
-    src: '/assets/lab/render-module.jpg',
-    thumb: '/assets/lab/render-module.jpg',
-    title: 'Procedural Terrain & Shading Architecture',
-    category: '3D Graphics',
-    defaultPos: { x: 210, y: 80 },
+    src: '/assets/lab/me.jpg',
+    thumb: '/assets/lab/me.jpg',
+    title: 'me.jpg',
+    category: 'Personal Photo',
+    defaultPos: { x: 45, y: 200 },
   },
   {
-    id: 'uber-ride',
-    name: 'UberRide.mp4',
-    type: 'video',
-    src: '/assets/lab/uber-ride.jpg',
-    thumb: '/assets/lab/uber-ride.jpg',
-    title: 'Kinetic Typography & Micro-interactions',
-    category: 'Interaction',
-    defaultPos: { x: 370, y: 65 },
-  },
-  {
-    id: 'z08',
-    name: 'Z08.gif',
-    type: 'gif',
-    src: '/assets/lab/z08.png',
-    thumb: '/assets/lab/z08.png',
-    title: 'Character Animation & Dynamic Rigidbodies',
-    category: 'Animation',
-    defaultPos: { x: 70, y: 260 },
-  },
-  {
-    id: 'byte-events',
-    name: 'ByteEvents.gif',
-    type: 'gif',
-    src: '/assets/lab/byte-events.jpg',
-    thumb: '/assets/lab/byte-events.jpg',
-    title: 'Event-Driven Real-time Animation Stream',
-    category: 'Visual R&D',
-    defaultPos: { x: 230, y: 275 },
-  },
-  {
-    id: 'r02',
-    name: 'R02.gif',
-    type: 'gif',
-    src: '/assets/lab/r02.jpg',
-    thumb: '/assets/lab/r02.jpg',
-    title: 'Cyberpunk UI HUD & Particle Trails',
-    category: 'UI Concept',
-    defaultPos: { x: 390, y: 260 },
-  },
-  {
-    id: 'purple-cat',
-    name: 'PurpleCat.jpg',
+    id: 'coffee-photo',
+    name: 'photo.jpg',
     type: 'image',
-    src: '/assets/lab/purple-cat.png',
-    thumb: '/assets/lab/purple-cat.png',
-    title: 'Vector Character Concept Art',
-    category: 'Illustration',
-    defaultPos: { x: 130, y: 455 },
-  },
-  {
-    id: 'dev-roadmap',
-    name: 'DevRoadmap.tsx',
-    type: 'project',
-    src: '/assets/lab/dev-roadmap.png',
-    thumb: '/assets/lab/dev-roadmap.png',
-    title: 'Dev Roadmap Tracking System (React 19 + Spring Boot)',
-    category: 'Featured Project',
-    defaultPos: { x: 290, y: 465 },
+    src: '/assets/lab/photo.jpg',
+    thumb: '/assets/lab/photo.jpg',
+    title: 'photo.jpg',
+    category: 'Workspace & Coffee',
+    defaultPos: { x: 45, y: 345 },
   },
 ];
+
 
 /* ─── macOS Battery Indicator ─── */
 function MacOSBattery({ percentage = 100 }) {
@@ -364,9 +318,12 @@ const CardThumbnail = styled.div`
   border-radius: 12px;
   overflow: hidden;
   background: rgba(20, 20, 25, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.2);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: ${props => (props.$selected ? '2px solid #007aff' : '1px solid rgba(255, 255, 255, 0.35)')};
+  box-shadow: ${props =>
+    props.$selected
+      ? '0 0 0 3px rgba(0, 122, 255, 0.45), 0 16px 36px rgba(0, 0, 0, 0.45)'
+      : '0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.2)'};
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   & img {
     width: 100%;
@@ -422,19 +379,20 @@ const CardLabelPill = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  background: rgba(18, 20, 26, 0.65);
+  background: ${props => (props.$selected ? '#007aff' : 'rgba(18, 20, 26, 0.65)')};
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid ${props => (props.$selected ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)')};
   padding: 3px 10px;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: ${props => (props.$selected ? '0 2px 10px rgba(0, 122, 255, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.3)')};
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 
   & span {
     font-size: 11px;
     font-weight: 600;
     color: #ffffff;
     white-space: nowrap;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    text-shadow: ${props => (props.$selected ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.7)')};
   }
 `;
 
@@ -662,9 +620,33 @@ export default function LabPage({ onBack }) {
   const [activeWindow, setActiveWindow] = useState(null); // Clean desktop by default (Finder closed)
   const [windowZIndex, setWindowZIndex] = useState(150);
   const [selectedDesktopIcon, setSelectedDesktopIcon] = useState(null);
+  const [selectedPhotoId, setSelectedPhotoId] = useState(null);
+  const isDraggingDesktopCardRef = useRef(false);
+  const [finderTab, setFinderTab] = useState('projects'); // 'projects' | 'shots'
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [bouncingApp, setBouncingApp] = useState(null);
+
+  // Art Studio Canvas State
+  const artCanvasRef = useRef(null);
+  const [artPalette, setArtPalette] = useState('mixed'); // 'mixed' | 'warm' | 'pink' | 'cool'
+
+  // macOS Alert Sheet & Notification Banner State
+  const [macAlert, setMacAlert] = useState(null);
+  const [macNotification, setMacNotification] = useState(null);
+  const notifTimeoutRef = useRef(null);
+
+  const showMacOSAlert = (data) => {
+    setMacAlert(data);
+  };
+
+  const showMacOSNotification = (data) => {
+    if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
+    setMacNotification(data);
+    notifTimeoutRef.current = setTimeout(() => {
+      setMacNotification(null);
+    }, 4500);
+  };
 
   // Dock mouse tracking
   const mouseX = useMotionValue(Infinity);
@@ -704,6 +686,19 @@ export default function LabPage({ onBack }) {
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Keyboard dismiss listener for macOS Alert Dialog (Enter / Esc / Space)
+  useEffect(() => {
+    if (!macAlert) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault();
+        setMacAlert(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [macAlert]);
 
   // Close menus on outside click
   useEffect(() => {
@@ -781,9 +776,13 @@ export default function LabPage({ onBack }) {
   };
 
   return (
-    <Wrapper ref={containerRef} style={{ filter: `brightness(${brightness}%)` }}>
+    <Wrapper
+      ref={containerRef}
+      style={{ filter: `brightness(${brightness}%)` }}
+      onClick={() => setSelectedDesktopIcon(null)}
+    >
       {/* ─── macOS Top Menu Bar ─── */}
-      <MenuBar>
+      <MenuBar onClick={(e) => e.stopPropagation()}>
         <MenuBarLeft>
           {/* Exit Lab Menu Item (plain text like File/Edit) */}
           <MenuButton
@@ -806,7 +805,9 @@ export default function LabPage({ onBack }) {
                     ? 'Mail'
                     : activeWindow === 'terminal'
                       ? 'Terminal'
-                      : 'Portfolio'}
+                      : activeWindow === 'art'
+                        ? 'Art.canvas'
+                        : 'Portfolio'}
           </span>
 
           {/* Menus */}
@@ -859,106 +860,81 @@ export default function LabPage({ onBack }) {
       {/* ─── DESKTOP DRAGGABLE ITEMS CANVAS (YANXIN LAB STYLE) ─── */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <DesktopCanvas>
-        {DESKTOP_ITEMS.map((item) => (
-          <DraggableCard
-            key={item.id}
-            drag
-            dragMomentum={true}
-            dragElastic={0.12}
-            dragConstraints={containerRef}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{ left: item.defaultPos.x, top: item.defaultPos.y }}
-            whileHover={{ scale: 1.05 }}
-            whileDrag={{ scale: 1.1, zIndex: 850, cursor: 'grabbing', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
-            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-            onDoubleClick={() => setSelectedMedia(item)}
-          >
-            <CardThumbnail onClick={() => setSelectedMedia(item)}>
-              <img src={item.thumb} alt={item.name} draggable={false} />
-              <div className="type-badge">
-                {item.type === 'video' ? <Film size={10} /> : <ImageIcon size={10} />}
-                <span>{item.type}</span>
-              </div>
-              {item.type === 'video' && (
-                <div className="play-btn">
-                  <Play size={12} fill="#ffffff" style={{ marginLeft: 1 }} />
-                </div>
-              )}
-            </CardThumbnail>
+        {DESKTOP_ITEMS.map((item) => {
+          const isSelected = selectedDesktopIcon === item.id;
+          return (
+            <DraggableCard
+              key={item.id}
+              drag
+              dragMomentum={false}
+              dragElastic={0}
+              dragConstraints={containerRef}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{ left: item.defaultPos.x, top: item.defaultPos.y }}
+              whileHover={{ scale: 1.04 }}
+              whileDrag={{ scale: 1.08, zIndex: 850, cursor: 'grabbing', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))' }}
+              onDragStart={() => {
+                isDraggingDesktopCardRef.current = true;
+              }}
+              onDragEnd={() => {
+                setTimeout(() => {
+                  isDraggingDesktopCardRef.current = false;
+                }, 80);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isDraggingDesktopCardRef.current) return;
+                if (isSelected) {
+                  // Click a second time on the already selected item -> enter / open
+                  if (item.isArtApp) {
+                    handleAppLaunch('art');
+                  } else {
+                    setSelectedMedia(item);
+                  }
+                } else {
+                  // First click -> select
+                  setSelectedDesktopIcon(item.id);
+                }
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                if (item.isArtApp) {
+                  handleAppLaunch('art');
+                } else {
+                  setSelectedMedia(item);
+                }
+              }}
+            >
+              <CardThumbnail $selected={isSelected}>
+                <img
+                  src={item.thumb}
+                  alt={item.name}
+                  draggable={false}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+                {item.type === 'video' && (
+                  <div className="play-btn">
+                    <Play size={12} fill="#ffffff" style={{ marginLeft: 1 }} />
+                  </div>
+                )}
+              </CardThumbnail>
 
-            <CardLabelPill onClick={() => setSelectedMedia(item)}>
-              <span>{item.name}</span>
-            </CardLabelPill>
-          </DraggableCard>
-        ))}
+              <CardLabelPill $selected={isSelected}>
+                <span>{item.name}</span>
+              </CardLabelPill>
+            </DraggableCard>
+          );
+        })}
       </DesktopCanvas>
 
-      {/* ─── Desktop Icons Grid (Right Side) ─── */}
-      <DesktopGrid>
+      {/* ─── Desktop Icons Grid (Right Side) — Đã dọn sạch theo yêu cầu ─── */}
 
-
-
-
-        <DesktopIconItem
-          $selected={selectedDesktopIcon === 'notes'}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedDesktopIcon('notes')}
-          onDoubleClick={() => handleAppLaunch('notes')}
-        >
-          <img
-            src="/assets/notes.png"
-            alt="About DatLe"
-            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))' }}
-            draggable={false}
-          />
-          <DesktopIconLabel>About_Me.txt</DesktopIconLabel>
-        </DesktopIconItem>
-
-        <DesktopIconItem
-          $selected={selectedDesktopIcon === 'resume'}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedDesktopIcon('resume')}
-          onDoubleClick={() => {
-            window.location.href = '/work#cv';
-          }}
-        >
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 10,
-              background: '#ffffff',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fe3c01',
-            }}
-          >
-            <FileText size={28} />
-          </div>
-          <DesktopIconLabel>LeVanDat_CV.pdf</DesktopIconLabel>
-        </DesktopIconItem>
-
-        <DesktopIconItem
-          $selected={selectedDesktopIcon === 'terminal'}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedDesktopIcon('terminal')}
-          onDoubleClick={() => handleAppLaunch('terminal')}
-        >
-          <img
-            src="/assets/terminal.png"
-            alt="Terminal"
-            style={{ width: 48, height: 48, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))', transform: 'scale(1.27)' }}
-            draggable={false}
-          />
-          <DesktopIconLabel>Terminal.app</DesktopIconLabel>
-        </DesktopIconItem>
-      </DesktopGrid>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       {/* ─── MACOS DRAGGABLE WINDOWS (FRAMER MOTION) ─── */}
@@ -1005,6 +981,7 @@ export default function LabPage({ onBack }) {
                   fontSize: 12.5,
                   fontWeight: 600,
                   color: '#4b5563',
+                  flexShrink: 0,
                 }}
               >
                 <div>
@@ -1012,33 +989,38 @@ export default function LabPage({ onBack }) {
                     Favorites
                   </div>
                   <div
+                    onClick={() => setFinderTab('projects')}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
                       padding: '6px 10px',
                       borderRadius: 6,
-                      background: 'rgba(0, 122, 255, 0.12)',
-                      color: '#007aff',
+                      background: finderTab === 'projects' ? 'rgba(0, 122, 255, 0.12)' : 'transparent',
+                      color: finderTab === 'projects' ? '#007aff' : '#4b5563',
                       cursor: 'pointer',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <Folder size={14} fill="#007aff" />
+                    <Folder size={14} fill={finderTab === 'projects' ? '#007aff' : 'none'} color={finderTab === 'projects' ? '#007aff' : '#6b7280'} />
                     <span>Projects ({featuredProjects.length})</span>
                   </div>
                   <div
-                    onClick={() => handleAppLaunch('photos')}
+                    onClick={() => setFinderTab('shots')}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
                       padding: '6px 10px',
                       borderRadius: 6,
+                      background: finderTab === 'shots' ? 'rgba(0, 122, 255, 0.12)' : 'transparent',
+                      color: finderTab === 'shots' ? '#007aff' : '#4b5563',
                       cursor: 'pointer',
                       marginTop: 2,
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <Sparkles size={14} style={{ color: '#f59e0b' }} />
+                    <Sparkles size={14} style={{ color: finderTab === 'shots' ? '#007aff' : '#f59e0b' }} />
                     <span>Creative Shots</span>
                   </div>
                 </div>
@@ -1065,51 +1047,158 @@ export default function LabPage({ onBack }) {
               </div>
 
               {/* Main File Browser */}
-              <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: '#ffffff' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
-                    Selected Works ({featuredProjects.length} items)
-                  </h3>
-                  <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
-                </div>
+              <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: '#ffffff', display: 'flex', flexDirection: 'column' }}>
+                {finderTab === 'projects' ? (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                        Selected Works ({featuredProjects.length} items)
+                      </h3>
+                      <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
+                    </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-                  {featuredProjects.map((project) => (
-                    <motion.div
-                      key={project.id}
-                      whileHover={{ scale: 1.02, y: -3 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedProject(project)}
-                      style={{
-                        border: '1px solid #e5e7eb',
-                        borderRadius: 10,
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        background: '#fafafa',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
-                      }}
-                    >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        style={{ width: '100%', height: 120, objectFit: 'cover' }}
-                      />
-                      <div style={{ padding: 12 }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: '#fe3c01', textTransform: 'uppercase' }}>
-                          {project.code}
-                        </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '2px 0 6px' }}>
-                          {project.title}
-                        </div>
-                        <p style={{ fontSize: 11.5, color: '#6b7280', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          {project.description}
-                        </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
+                      {featuredProjects.map((project) => (
+                        <motion.div
+                          key={project.id}
+                          whileHover={{ scale: 1.02, y: -3 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setSelectedProject(project)}
+                          style={{
+                            border: '1px solid #e5e7eb',
+                            borderRadius: 10,
+                            overflow: 'hidden',
+                            cursor: 'pointer',
+                            background: '#fafafa',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
+                          }}
+                        >
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            style={{ width: '100%', height: 120, objectFit: 'cover' }}
+                          />
+                          <div style={{ padding: 12 }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: '#fe3c01', textTransform: 'uppercase' }}>
+                              {project.code}
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '2px 0 6px' }}>
+                              {project.title}
+                            </div>
+                            <p style={{ fontSize: 11.5, color: '#6b7280', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              {project.description}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
+                        Creative Shots ({DESKTOP_ITEMS.length} items)
+                      </h3>
+                      <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Visual Archive</span>
+                    </div>
+
+                    {DESKTOP_ITEMS.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
+                        {DESKTOP_ITEMS.map((item) => {
+                          const isPhotoSelected = selectedPhotoId === item.id;
+                          return (
+                            <motion.div
+                              key={item.id}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isPhotoSelected) {
+                                  if (item.isArtApp) {
+                                    handleAppLaunch('art');
+                                  } else {
+                                    setSelectedMedia(item);
+                                  }
+                                } else {
+                                  setSelectedPhotoId(item.id);
+                                }
+                              }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                if (item.isArtApp) {
+                                  handleAppLaunch('art');
+                                } else {
+                                  setSelectedMedia(item);
+                                }
+                              }}
+                              style={{
+                                borderRadius: 10,
+                                overflow: 'hidden',
+                                border: isPhotoSelected ? '2px solid #007aff' : '1px solid #e5e7eb',
+                                cursor: 'pointer',
+                                background: isPhotoSelected ? '#eff6ff' : '#f9fafb',
+                                boxShadow: isPhotoSelected
+                                  ? '0 0 0 3px rgba(0, 122, 255, 0.3), 0 8px 20px rgba(0,0,0,0.1)'
+                                  : '0 4px 12px rgba(0,0,0,0.06)',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              <img src={item.thumb} alt={item.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
+                              <div
+                                style={{
+                                  padding: '8px 10px',
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  color: isPhotoSelected ? '#007aff' : '#1f2937',
+                                }}
+                              >
+                                {item.name}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                    ) : (
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minHeight: 340,
+                          color: '#9ca3af',
+                          userSelect: 'none',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 56,
+                            height: 56,
+                            borderRadius: '50%',
+                            background: '#f3f4f6',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: 12,
+                            color: '#9ca3af',
+                          }}
+                        >
+                          <ImageIcon size={26} />
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#4b5563', marginBottom: 4 }}>
+                          Chưa có Creative Shots nào
+                        </div>
+                        <div style={{ fontSize: 12, color: '#9ca3af' }}>
+                          Mục này hiện đang trống. Thêm file vào DESKTOP_ITEMS để hiển thị tại đây.
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
+
           </WindowWrapper>
         )}
 
@@ -1171,30 +1260,102 @@ export default function LabPage({ onBack }) {
               <div style={{ width: 60 }} />
             </WindowTitleBar>
 
-            <div style={{ padding: 22, maxHeight: 460, overflowY: 'auto' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
-                {DESKTOP_ITEMS.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedMedia(item)}
+            <div
+              style={{ padding: 22, minHeight: 380, maxHeight: 460, overflowY: 'auto', background: '#ffffff', display: 'flex', flexDirection: 'column' }}
+              onClick={() => setSelectedPhotoId(null)}
+            >
+              {DESKTOP_ITEMS.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 14 }}>
+                  {DESKTOP_ITEMS.map((item) => {
+                    const isPhotoSelected = selectedPhotoId === item.id;
+                    return (
+                      <motion.div
+                        key={item.id}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isPhotoSelected) {
+                            if (item.isArtApp) {
+                              handleAppLaunch('art');
+                            } else {
+                              setSelectedMedia(item);
+                            }
+                          } else {
+                            setSelectedPhotoId(item.id);
+                          }
+                        }}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          if (item.isArtApp) {
+                            handleAppLaunch('art');
+                          } else {
+                            setSelectedMedia(item);
+                          }
+                        }}
+                        style={{
+                          borderRadius: 10,
+                          overflow: 'hidden',
+                          border: isPhotoSelected ? '2px solid #007aff' : '1px solid #e5e7eb',
+                          cursor: 'pointer',
+                          background: isPhotoSelected ? '#eff6ff' : '#f9fafb',
+                          boxShadow: isPhotoSelected
+                            ? '0 0 0 3px rgba(0, 122, 255, 0.3), 0 8px 20px rgba(0,0,0,0.1)'
+                            : '0 4px 12px rgba(0,0,0,0.06)',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <img src={item.thumb} alt={item.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
+                        <div
+                          style={{
+                            padding: '8px 10px',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: isPhotoSelected ? '#007aff' : '#1f2937',
+                          }}
+                        >
+                          {item.name}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 320,
+                    color: '#9ca3af',
+                    userSelect: 'none',
+                  }}
+                >
+                  <div
                     style={{
-                      borderRadius: 10,
-                      overflow: 'hidden',
-                      border: '1px solid #e5e7eb',
-                      cursor: 'pointer',
-                      background: '#f9fafb',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                      width: 56,
+                      height: 56,
+                      borderRadius: '50%',
+                      background: '#f3f4f6',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 12,
+                      color: '#9ca3af',
                     }}
                   >
-                    <img src={item.thumb} alt={item.name} style={{ width: '100%', height: 130, objectFit: 'cover' }} />
-                    <div style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#1f2937' }}>
-                      {item.name}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+                    <ImageIcon size={26} />
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#4b5563', marginBottom: 4 }}>
+                    Chưa có ảnh nào
+                  </div>
+                  <div style={{ fontSize: 12, color: '#9ca3af' }}>
+                    Thư viện Photos hiện đang trống.
+                  </div>
+                </div>
+              )}
             </div>
           </WindowWrapper>
         )}
@@ -1229,7 +1390,19 @@ export default function LabPage({ onBack }) {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Thank you for reaching out! Dat Le will reply shortly.');
+                showMacOSNotification({
+                  icon: '/assets/mail.png',
+                  app: 'Mail',
+                  title: 'Message Sent Successfully',
+                  message: 'Thank you for reaching out! Dat Le will reply to you shortly.',
+                });
+                showMacOSAlert({
+                  icon: '/assets/mail.png',
+                  app: 'Mail',
+                  title: 'Thank you for reaching out!',
+                  message: 'Your message has been sent. Dat Le will reply to you shortly.',
+                  buttonText: 'OK',
+                });
                 setActiveWindow(null);
               }}
               style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}
@@ -1441,10 +1614,154 @@ export default function LabPage({ onBack }) {
             </div>
           </WindowWrapper>
         )}
+
+        {/* ─── ART STUDIO WINDOW (HOVERBLOOM CANVAS) ─── */}
+        {activeWindow === 'art' && (
+          <WindowWrapper
+            drag
+            dragMomentum={false}
+            dragElastic={0.04}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 10 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 360 }}
+            $zIndex={windowZIndex}
+            $width="880px"
+            style={{
+              top: '5%',
+              left: 'calc(50% - 440px)',
+            }}
+            onClick={bringToFront}
+          >
+            {/* macOS Window Title Bar */}
+            <WindowTitleBar>
+              <TrafficLightsGroup onClose={() => setActiveWindow(null)} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Sparkles size={14} color="#D97706" />
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#374151', letterSpacing: '-0.01em' }}>
+                  Art.canvas
+                </span>
+              </div>
+              <div style={{ width: 60 }} />
+            </WindowTitleBar>
+
+            {/* macOS Modern Frosted Toolbar: Chỉ giữ lại Màu và nút Xóa nét */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '8px 14px',
+                background: '#f8fafc',
+                borderBottom: '1px solid #e2e8f0',
+                fontSize: 12,
+                userSelect: 'none',
+              }}
+            >
+              {/* Palette presets */}
+              <div style={{ display: 'flex', alignItems: 'center', background: '#e2e8f0', padding: 2, borderRadius: 7 }}>
+                {[
+                  { id: 'mixed', label: 'Đa Sắc', color: '#8B5CF6' },
+                  { id: 'warm', label: 'Cam Ấm', color: '#EA580C' },
+                  { id: 'pink', label: 'Hoa Hồng', color: '#EC4899' },
+                  { id: 'cool', label: 'Chàm Biển', color: '#3B82F6' },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setArtPalette(p.id)}
+                    style={{
+                      border: 'none',
+                      background: artPalette === p.id ? '#ffffff' : 'transparent',
+                      color: artPalette === p.id ? '#0f172a' : '#64748b',
+                      fontWeight: artPalette === p.id ? 700 : 500,
+                      fontSize: 11.5,
+                      padding: '4px 10px',
+                      borderRadius: 5,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      boxShadow: artPalette === p.id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: p.color, display: 'inline-block' }} />
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Action: Xóa nét */}
+              <button
+                type="button"
+                onClick={() => {
+                  artCanvasRef.current?.clear();
+                  showMacOSNotification({
+                    title: 'Art.canvas',
+                    message: 'Đã xóa toàn bộ nét vẽ và làm mới giấy vẽ.',
+                  });
+                }}
+                title="Xóa trắng canvas"
+                style={{
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#334155',
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  padding: '4px 11px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <RotateCcw size={12} />
+                Xóa nét
+              </button>
+            </div>
+
+            {/* Interactive Canvas Area */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: 460,
+                maxHeight: 'calc(70vh - 100px)',
+                background: '#F6F4EF',
+                overflow: 'hidden',
+                cursor: 'crosshair',
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <HoverBloomCanvas
+                ref={artCanvasRef}
+                paletteMode={artPalette}
+                growthMode="upright"
+                backgroundColor="#F6F4EF"
+                paperTint="#EBE5D8"
+                spawnOn="move"
+                spawnRate={6}
+                maxBlooms={75}
+                bloomScale={0.88}
+                watercolor={0.55}
+                blur={0.4}
+                grid={true}
+                gridSize={24}
+                gridColor="rgba(0,0,0,0.05)"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+          </WindowWrapper>
+        )}
       </AnimatePresence>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      {/* ─── QUICK LOOK / MEDIA LIGHTBOX VIEWER ─── */}
+      {/* ─── QUICK LOOK / MEDIA LIGHTBOX VIEWER (LIGHT THEME) ─── */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <AnimatePresence>
         {selectedMedia && (
@@ -1457,8 +1774,8 @@ export default function LabPage({ onBack }) {
               position: 'fixed',
               inset: 0,
               zIndex: 2500,
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(20px)',
+              background: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(16px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1475,45 +1792,45 @@ export default function LabPage({ onBack }) {
                 position: 'relative',
                 maxWidth: 860,
                 width: '100%',
-                background: '#18181b',
+                background: '#ffffff',
                 borderRadius: 16,
                 overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15)',
+                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08)',
               }}
             >
               <div
                 style={{
                   padding: '12px 18px',
-                  background: '#27272a',
+                  background: '#f3f4f6',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-start',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderBottom: '1px solid #e5e7eb',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <TrafficLightsGroup onClose={() => setSelectedMedia(null)} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1f2937' }}>
                     {selectedMedia.name}
                   </span>
                 </div>
               </div>
 
-              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#ffffff' }}>
                 <div
                   style={{
                     width: '100%',
                     minHeight: 380,
                     maxHeight: '60vh',
-                    background: 'radial-gradient(ellipse at center, rgba(39, 39, 42, 0.6) 0%, rgba(15, 15, 18, 0.95) 100%)',
+                    background: '#f8fafc',
                     borderRadius: 12,
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #e2e8f0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflow: 'hidden',
                     position: 'relative',
-                    boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.4)',
+                    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.04)',
                   }}
                 >
                   <img
@@ -1525,7 +1842,7 @@ export default function LabPage({ onBack }) {
                       borderRadius: 8,
                       objectFit: 'contain',
                       imageRendering: '-webkit-optimize-contrast',
-                      boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.12)',
                     }}
                   />
                 </div>
@@ -1542,30 +1859,32 @@ export default function LabPage({ onBack }) {
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>
                       {selectedMedia.title}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
                       <span
                         style={{
                           fontSize: 11,
-                          fontWeight: 600,
-                          background: 'rgba(255, 255, 255, 0.1)',
-                          color: '#e4e4e7',
-                          padding: '2px 8px',
-                          borderRadius: 4,
+                          fontWeight: 700,
+                          background: '#f1f5f9',
+                          color: '#475569',
+                          border: '1px solid #e2e8f0',
+                          padding: '3px 8px',
+                          borderRadius: 5,
                           textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
                         }}
                       >
                         {selectedMedia.category}
                       </span>
-                      <span style={{ fontSize: 11, color: '#71717a' }}>•</span>
-                      <span style={{ fontSize: 12, color: '#a1a1aa' }}>
-                        File: <strong style={{ color: '#d4d4d8' }}>{selectedMedia.name}</strong>
+                      <span style={{ fontSize: 11, color: '#9ca3af' }}>•</span>
+                      <span style={{ fontSize: 12, color: '#6b7280' }}>
+                        File: <strong style={{ color: '#111827' }}>{selectedMedia.name}</strong>
                       </span>
-                      <span style={{ fontSize: 11, color: '#71717a' }}>•</span>
-                      <span style={{ fontSize: 12, color: '#a1a1aa' }}>
-                        Type: {selectedMedia.type.toUpperCase()}
+                      <span style={{ fontSize: 11, color: '#9ca3af' }}>•</span>
+                      <span style={{ fontSize: 12, color: '#6b7280' }}>
+                        Type: <strong style={{ color: '#111827' }}>{selectedMedia.type.toUpperCase()}</strong>
                       </span>
                     </div>
                   </div>
@@ -1795,7 +2114,13 @@ export default function LabPage({ onBack }) {
                   ...DESKTOP_ITEMS.map((item) => ({
                     name: item.name,
                     type: item.category,
-                    action: () => setSelectedMedia(item),
+                    action: () => {
+                      if (item.isArtApp) {
+                        handleAppLaunch('art');
+                      } else {
+                        setSelectedMedia(item);
+                      }
+                    },
                   })),
                 ]
                   .filter((item) => item.name.toLowerCase().includes(spotlightQuery.toLowerCase()))
@@ -1884,12 +2209,214 @@ export default function LabPage({ onBack }) {
           mouseX={mouseX}
           icon="/assets/trash.png"
           label="Trash"
-          onClick={() => alert('Trash is clean and empty.')}
+          onClick={() => {
+            showMacOSAlert({
+              icon: '/assets/trash.png',
+              app: 'Trash',
+              title: 'Trash is clean and empty.',
+              message: 'There are no deleted items or temporary files in the Trash folder.',
+              buttonText: 'OK',
+            });
+            showMacOSNotification({
+              icon: '/assets/trash.png',
+              app: 'Trash',
+              title: 'Trash is clean and empty',
+              message: 'Zero items in macOS Trash.',
+            });
+          }}
           isActive={false}
           isBouncing={false}
           imgScale={1.16}
         />
       </DockContainer>
+
+      {/* ─── macOS Standard Alert Sheet Dialog ─── */}
+      <AnimatePresence>
+        {macAlert && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 99999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.32)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+            }}
+            onClick={() => setMacAlert(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.88, opacity: 0, y: -10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: -6 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 420 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: 'clamp(280px, 86vw, 320px)',
+                borderRadius: '20px',
+                backgroundColor: 'rgba(36, 36, 42, 0.82)',
+                backdropFilter: 'blur(40px) saturate(190%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(190%)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 24px 64px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.3)',
+                padding: '24px 22px 18px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                color: '#ffffff',
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif",
+                userSelect: 'none',
+              }}
+            >
+              {/* App Icon */}
+              {macAlert.icon && (
+                <div style={{ marginBottom: 14 }}>
+                  <img
+                    src={macAlert.icon}
+                    alt={macAlert.app || 'Alert'}
+                    style={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 12,
+                      filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.35))',
+                    }}
+                    draggable={false}
+                  />
+                </div>
+              )}
+
+              {/* Title */}
+              <div
+                style={{
+                  fontSize: '14.5px',
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '6px',
+                  lineHeight: 1.3,
+                }}
+              >
+                {macAlert.title}
+              </div>
+
+              {/* Message */}
+              {macAlert.message && (
+                <div
+                  style={{
+                    fontSize: '12.5px',
+                    color: 'rgba(255, 255, 255, 0.72)',
+                    lineHeight: 1.45,
+                    marginBottom: '20px',
+                  }}
+                >
+                  {macAlert.message}
+                </div>
+              )}
+
+              {/* Button Row */}
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  autoFocus
+                  onClick={() => setMacAlert(null)}
+                  style={{
+                    backgroundColor: '#007aff',
+                    color: '#ffffff',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    padding: '6px 24px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                    transition: 'all 0.15s ease',
+                    minWidth: '88px',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0071eb')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#007aff')}
+                  onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+                  onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                >
+                  {macAlert.buttonText || 'OK'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── macOS Top-Right Notification Banner ─── */}
+      <AnimatePresence>
+        {macNotification && (
+          <motion.div
+            initial={{ x: 120, opacity: 0, scale: 0.95 }}
+            animate={{ x: 0, opacity: 1, scale: 1 }}
+            exit={{ x: 140, opacity: 0, scale: 0.92 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 380 }}
+            onClick={() => setMacNotification(null)}
+            style={{
+              position: 'fixed',
+              top: '38px',
+              right: '18px',
+              zIndex: 99998,
+              width: 'clamp(290px, 88vw, 340px)',
+              borderRadius: '18px',
+              backgroundColor: 'rgba(32, 33, 38, 0.82)',
+              backdropFilter: 'blur(30px) saturate(190%)',
+              WebkitBackdropFilter: 'blur(30px) saturate(190%)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              boxShadow: '0 16px 40px -6px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.25)',
+              padding: '12px 14px',
+              cursor: 'pointer',
+              color: '#ffffff',
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif",
+              userSelect: 'none',
+            }}
+          >
+            {/* Header: App icon + App name + Timestamp + Close */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {macNotification.icon && (
+                  <img
+                    src={macNotification.icon}
+                    alt=""
+                    style={{ width: 18, height: 18, borderRadius: 4 }}
+                  />
+                )}
+                <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.7)' }}>
+                  {macNotification.app || 'Notification'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.45)' }}>now</span>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    padding: '2px 4px',
+                    borderRadius: '50%',
+                  }}
+                >
+                  ✕
+                </span>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', marginBottom: '2px' }}>
+              {macNotification.title}
+            </div>
+            {macNotification.message && (
+              <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.72)', lineHeight: 1.35 }}>
+                {macNotification.message}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Project Detail Modal */}
       {selectedProject && (

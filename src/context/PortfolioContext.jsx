@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { featuredProjects as defaultProjects, siteMeta as defaultSiteMeta } from '../designs/design4/data/homeData';
+import { featuredProjects as defaultProjects, siteMeta as defaultSiteMeta, defaultJourney } from '../designs/design4/data/homeData';
 import { POSTS as defaultPosts } from '../designs/design4/components/blog/blogData';
 import staticPortfolioData from '../../portfolioData.json';
 import api from '../services/api';
@@ -11,6 +11,7 @@ const PortfolioContext = createContext({
   personal: defaultSiteMeta,
   posts: defaultPosts,
   skills: defaultSkills,
+  experience: defaultJourney,
   loading: false,
   isOffline: false,
   isApiConnected: false,
@@ -20,10 +21,34 @@ const PortfolioContext = createContext({
   updatePersonal: () => {},
   updatePosts: () => {},
   updateSkills: () => {},
+  updateExperience: () => {},
   resetToDefaults: () => {},
 });
 
 const accentColors = ['#fe3c01', '#2563eb', '#059669', '#9333ea', '#d97706', '#0284c7'];
+
+export function isProjectMatch(p, targetId, targetTitle) {
+  if (!p) return false;
+  const pIdStr = String(p.id ?? '').trim();
+  const targetIdStr = String(targetId ?? '').trim();
+
+  // 1. Direct string match
+  if (pIdStr && targetIdStr && pIdStr === targetIdStr) return true;
+
+  // 2. Normalized leading zero match: "01" matches "1"
+  const normP = pIdStr.replace(/^0+/, '');
+  const normTarget = targetIdStr.replace(/^0+/, '');
+  if (normP && normTarget && normP === normTarget) return true;
+
+  // 3. Fallback title match (case-insensitive, trimmed)
+  if (p.title && targetTitle) {
+    const t1 = p.title.trim().toLowerCase();
+    const t2 = targetTitle.trim().toLowerCase();
+    if (t1 && t2 && t1 === t2) return true;
+  }
+
+  return false;
+}
 
 // Map API project object to frontend project object
 export function mapApiProject(p, idx = 0) {
@@ -39,26 +64,30 @@ export function mapApiProject(p, idx = 0) {
 
   // Resolve body_images safely (up to 6 images)
   let bodyImages = [];
+  let hasExplicitBody = false;
+
   if (Array.isArray(p.body_images)) {
     bodyImages = p.body_images;
+    hasExplicitBody = true;
   } else if (typeof p.body_images === 'string' && p.body_images.trim().startsWith('[')) {
     try {
       bodyImages = JSON.parse(p.body_images);
+      hasExplicitBody = true;
     } catch {
       bodyImages = [];
     }
   } else if (typeof p.body_images === 'string' && p.body_images.trim().length > 0) {
     bodyImages = p.body_images.split(',').map((s) => s.trim()).filter(Boolean);
+    hasExplicitBody = true;
   } else if (Array.isArray(p.images)) {
     bodyImages = p.images;
+    hasExplicitBody = true;
   }
 
-  // Fallback to defaultProjects if body_images is empty
-  if (bodyImages.length === 0) {
-    const matchedDefault = defaultProjects.find(
-      (dp) => (dp.id && dp.id === p.id) || (dp.title && dp.title.toLowerCase().trim() === (p.title || '').toLowerCase().trim())
-    ) || defaultProjects[idx % defaultProjects.length];
-    if (matchedDefault && Array.isArray(matchedDefault.body_images) && matchedDefault.body_images.length > 0) {
+  // Only fallback to defaultProjects if body_images was NEVER provided (undefined)
+  if (!hasExplicitBody) {
+    const matchedDefault = defaultProjects.find((dp) => isProjectMatch(dp, p.id, p.title));
+    if (matchedDefault && Array.isArray(matchedDefault.body_images)) {
       bodyImages = matchedDefault.body_images;
     }
   }
@@ -205,6 +234,18 @@ export function PortfolioProvider({ children }) {
     return defaultSkills;
   });
 
+  // 5. Experience / Journey: check localStorage override -> fallback to defaultJourney
+  const [experience, setExperience] = useState(() => {
+    try {
+      const saved = localStorage.getItem('portfolio_experience_override');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return defaultJourney;
+  });
+
   const [loading, setLoading] = useState(false);
   const [isOffline, setIsOffline] = useState(() =>
     typeof navigator !== 'undefined' ? !navigator.onLine : false
@@ -266,6 +307,24 @@ export function PortfolioProvider({ children }) {
     }
   }, []);
 
+  const updateExperience = useCallback((newExperience) => {
+    const normalized = (newExperience || []).map((exp, idx) => ({
+      id: exp.id || `exp-${idx + 1}`,
+      place: (exp.place || exp.company || '').trim(),
+      company: (exp.company || exp.place || '').trim(),
+      role: (exp.role || exp.title || '').trim(),
+      title: (exp.title || exp.role || '').trim(),
+      period: (exp.period || '').trim(),
+      description: (exp.description || '').trim(),
+    }));
+    setExperience(normalized);
+    try {
+      localStorage.setItem('portfolio_experience_override', JSON.stringify(normalized));
+    } catch (e) {
+      console.warn('Failed to cache experience in localStorage:', e);
+    }
+  }, []);
+
   // Revert back to original hardcoded files
   const resetToDefaults = useCallback(() => {
     try {
@@ -273,11 +332,13 @@ export function PortfolioProvider({ children }) {
       localStorage.removeItem('portfolio_personal_override');
       localStorage.removeItem('portfolio_posts_override');
       localStorage.removeItem('portfolio_skills_override');
+      localStorage.removeItem('portfolio_experience_override');
     } catch {}
     setProjects(defaultProjects);
     setPersonal(defaultSiteMeta);
     setPosts(defaultPosts);
     setSkills(defaultSkills);
+    setExperience(defaultJourney);
   }, []);
 
   // Fetch live API data with graceful offline/hardcoded fallback
@@ -306,6 +367,19 @@ export function PortfolioProvider({ children }) {
           setSkills(portRes.data.skills);
         }
 
+        const hasExpOverride = Boolean(localStorage.getItem('portfolio_experience_override'));
+        if (!hasExpOverride && Array.isArray(portRes.data.experience) && portRes.data.experience.length > 0) {
+          setExperience(portRes.data.experience.map((exp, idx) => ({
+            id: exp.id || `exp-${idx + 1}`,
+            place: exp.company || exp.place || '',
+            company: exp.company || exp.place || '',
+            role: exp.title || exp.role || '',
+            title: exp.title || exp.role || '',
+            period: exp.period || '',
+            description: exp.description || '',
+          })));
+        }
+
         const hasPersonalOverride = Boolean(localStorage.getItem('portfolio_personal_override'));
         if (!hasPersonalOverride && portRes.data.personal) {
           setPersonal((prev) => ({
@@ -319,6 +393,8 @@ export function PortfolioProvider({ children }) {
             coordinates: portRes.data.personal.coordinates || prev.coordinates,
             status: portRes.data.personal.status || prev.status,
             avatarUrl: portRes.data.personal.avatar_url || prev.avatarUrl,
+            cvUrl: portRes.data.personal.cv_url || prev.cvUrl || prev.cv_url,
+            cv_url: portRes.data.personal.cv_url || prev.cv_url || prev.cvUrl,
           }));
         }
       }
@@ -355,12 +431,15 @@ export function PortfolioProvider({ children }) {
         personal,
         posts,
         skills,
+        experience,
         loading,
         isOffline,
         isApiConnected,
         lastSynced,
         setSkills,
         updateSkills,
+        setExperience,
+        updateExperience,
         updateProjects,
         updatePersonal,
         updatePosts,

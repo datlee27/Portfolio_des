@@ -1,9 +1,13 @@
 import React from 'react';
 import { Code, Sparkles } from 'lucide-react';
-import { siteMeta } from '../../data/homeData';
+import { siteMeta, defaultJourney } from '../../data/homeData';
+import { usePortfolio } from '../../../../context/PortfolioContext';
 import FooterSection from '../common/FooterSection';
 
 export default function AboutPage({ onGoHome }) {
+  const { experience } = usePortfolio();
+  const journeyItems = (Array.isArray(experience) && experience.length > 0) ? experience : defaultJourney;
+
   const containerStyle = {
     maxWidth: '1160px',
     margin: '0 auto',
@@ -326,25 +330,9 @@ export default function AboutPage({ onGoHome }) {
 
             {/* Timeline Rows */}
             <div style={{ maxWidth: '720px', width: '100%' }}>
-              {[
-                {
-                  place: 'fpt university, da nang',
-                  role: 'software engineering student · distributed computing & web architecture',
-                  period: '2022 — present',
-                },
-                {
-                  place: 'phan chau trinh high school',
-                  role: 'natural sciences & advanced mathematics honors',
-                  period: '2020 — 2022',
-                },
-                {
-                  place: 'independent engineering craft & open source',
-                  role: 'fullstack web platforms, api design & design system authoring',
-                  period: 'ongoing',
-                },
-              ].map((item, idx) => (
+              {journeyItems.map((item, idx) => (
                 <div
-                  key={idx}
+                  key={item.id || idx}
                   style={{
                     padding: '24px 0',
                     borderTop: idx === 0 ? 'none' : '1px solid rgba(17, 17, 17, 0.12)',
@@ -364,7 +352,7 @@ export default function AboutPage({ onGoHome }) {
                         letterSpacing: '-0.01em',
                       }}
                     >
-                      {item.place}
+                      {item.place || item.company}
                     </div>
                     <div
                       style={{
@@ -374,7 +362,7 @@ export default function AboutPage({ onGoHome }) {
                         lineHeight: 1.5,
                       }}
                     >
-                      {item.role}
+                      {item.role || item.title}
                     </div>
                   </div>
                   <div

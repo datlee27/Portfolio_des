@@ -14,14 +14,16 @@ import {
   AlertCircle,
   Wifi,
   WifiOff,
+  Briefcase,
 } from 'lucide-react';
 import api from '../services/api';
-import { usePortfolio } from '../context/PortfolioContext';
+import { usePortfolio, isProjectMatch } from '../context/PortfolioContext';
 import OverviewTab from './tabs/OverviewTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import BlogTab from './tabs/BlogTab';
 import ProfileTab from './tabs/ProfileTab';
 import SkillsTab from './tabs/SkillsTab';
+import ExperienceTab from './tabs/ExperienceTab';
 
 export default function AdminDashboard({ onLogout, onGoHome, user }) {
   const {
@@ -29,18 +31,38 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     skills: contextSkills,
     personal: contextPersonal,
     posts: contextPosts,
+    experience: contextExperience,
     isOffline,
-    isApiConnected: contextApiConnected,
     resetToDefaults,
   } = usePortfolio();
 
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (['overview', 'projects', 'skills', 'experience', 'blog', 'profile'].includes(hash)) {
+        return hash;
+      }
+    }
+    return 'overview';
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (['overview', 'projects', 'skills', 'experience', 'blog', 'profile'].includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
   const [loading, setLoading] = useState(true);
   const [portfolioData, setPortfolioData] = useState(() => ({
     projects: contextProjects,
     skills: contextSkills,
     personal: contextPersonal,
+    experience: contextExperience,
   }));
   const [postsData, setPostsData] = useState(() => contextPosts || []);
   const [toast, setToast] = useState(null);
@@ -61,6 +83,14 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         api.getPosts().catch((e) => ({ success: false, error: e })),
       ]);
 
+      // If backend reports session is invalid or expired (401), immediately log out
+      if (pRes?.error?.status === 401 || bRes?.error?.status === 401) {
+        if (onLogout) {
+          onLogout();
+          return;
+        }
+      }
+
       let gotServerData = false;
 
       if (pRes && pRes.success && pRes.data) {
@@ -75,6 +105,17 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           }
         } catch {}
 
+        // Preserve experience from localStorage if user updated offline or customized
+        try {
+          const rawExp = localStorage.getItem('portfolio_experience_override');
+          if (rawExp) {
+            const savedExp = JSON.parse(rawExp);
+            if (Array.isArray(savedExp) && savedExp.length > 0) {
+              pRes.data.experience = savedExp;
+            }
+          }
+        } catch {}
+
         // Preserve body_images and video_demo from localStorage if server dropped them
         try {
           const rawProj = localStorage.getItem('portfolio_projects_override');
@@ -82,17 +123,22 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             const savedProjects = JSON.parse(rawProj);
             if (Array.isArray(savedProjects)) {
               pRes.data.projects = pRes.data.projects.map((sp) => {
-                const match = savedProjects.find(
-                  (lp) => String(lp.id) === String(sp.id) || (lp.title && lp.title === sp.title)
-                );
+                const match = savedProjects.find((lp) => isProjectMatch(lp, sp.id, sp.title));
+
+                let resolvedBody = [];
+                if (match && Array.isArray(match.body_images)) {
+                  resolvedBody = match.body_images;
+                } else if (Array.isArray(sp.body_images)) {
+                  resolvedBody = sp.body_images;
+                } else if (match && Array.isArray(match.images)) {
+                  resolvedBody = match.images;
+                }
+
                 return {
                   ...sp,
-                  body_images:
-                    (Array.isArray(sp.body_images) && sp.body_images.length > 0)
-                      ? sp.body_images
-                      : (match?.body_images || []),
-                  video_demo: sp.video_demo || sp.video_url || match?.video_demo || '',
-                  video_url: sp.video_demo || sp.video_url || match?.video_demo || '',
+                  body_images: resolvedBody,
+                  video_demo: sp.video_demo || sp.video_url || match?.video_demo || match?.video_url || '',
+                  video_url: sp.video_demo || sp.video_url || match?.video_demo || match?.video_url || '',
                 };
               });
             }
@@ -106,6 +152,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           projects: contextProjects,
           skills: contextSkills,
           personal: contextPersonal,
+          experience: contextExperience,
         });
       }
 
@@ -131,6 +178,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         projects: contextProjects,
         skills: contextSkills,
         personal: contextPersonal,
+        experience: contextExperience,
       });
       setPostsData(contextPosts);
       if (isManual === true) {
@@ -139,7 +187,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     } finally {
       setLoading(false);
     }
-  }, [contextProjects, contextSkills, contextPersonal, contextPosts, showToast]);
+  }, [contextProjects, contextSkills, contextPersonal, contextPosts, contextExperience, showToast, onLogout]);
 
   useEffect(() => {
     fetchData();
@@ -167,6 +215,12 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
       label: 'Kỹ Năng & Stack',
       icon: Layers,
       count: portfolioData?.skills?.length || 0,
+    },
+    {
+      id: 'experience',
+      label: 'Hành Trình & About',
+      icon: Briefcase,
+      count: portfolioData?.experience?.length || 0,
     },
     {
       id: 'blog',
@@ -377,6 +431,14 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           {activeTab === 'skills' && (
             <SkillsTab
               skills={portfolioData?.skills || []}
+              onRefresh={fetchData}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'experience' && (
+            <ExperienceTab
+              experienceData={portfolioData?.experience || contextExperience || []}
               onRefresh={fetchData}
               showToast={showToast}
             />

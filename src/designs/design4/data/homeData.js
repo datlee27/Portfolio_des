@@ -19,6 +19,8 @@ export const siteMeta = {
   status: portfolioData.personal.status,
   coordinates: portfolioData.personal.coordinates,
   avatarUrl: portfolioData.personal.avatarUrl,
+  cvUrl: '/sample-cv.pdf',
+  cv_url: '/sample-cv.pdf',
 };
 
 export const heroData = {
@@ -222,6 +224,36 @@ export const clientsData = [
   },
 ];
 
-export const experienceData = portfolioData.experience;
+export const defaultJourney = [
+  {
+    id: 'exp-1',
+    place: 'fpt university, da nang',
+    company: 'FPT University, Da Nang',
+    role: 'software engineering student · distributed computing & web architecture',
+    title: 'Software Engineering Student',
+    period: '2022 — present',
+    description: 'Software Engineering, distributed computing & modern web architecture.',
+  },
+  {
+    id: 'exp-2',
+    place: 'phan chau trinh high school',
+    company: 'Phan Chau Trinh High School, Da Nang',
+    role: 'natural sciences & advanced mathematics honors',
+    title: 'High School Student',
+    period: '2020 — 2022',
+    description: 'Natural sciences & advanced mathematics honors.',
+  },
+  {
+    id: 'exp-3',
+    place: 'independent engineering craft & open source',
+    company: 'Independent Engineering Craft & Open Source',
+    role: 'fullstack web platforms, api design & design system authoring',
+    title: 'Fullstack Developer',
+    period: 'ongoing',
+    description: 'Fullstack web platforms, API design & design system authoring.',
+  },
+];
+
+export const experienceData = defaultJourney;
 export const blogPostsData = portfolioData.blogPosts;
 export const contactData = portfolioData.contact;
