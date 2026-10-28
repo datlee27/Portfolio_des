@@ -12,9 +12,9 @@ import React, { useMemo } from 'react';
 const LAYER_MIN = 1;
 const LAYER_MAX = 8;
 const QUALITY_LAYER_PRESETS = {
-  low: 2,
-  balanced: 3,
-  high: 4,
+  low: 1,
+  balanced: 2,
+  high: 3,
 };
 
 function clampLayerCount(value) {
@@ -23,7 +23,7 @@ function clampLayerCount(value) {
 
 function resolveLayerCount(quality, customLayers) {
   if (quality === 'custom') return clampLayerCount(customLayers);
-  return clampLayerCount(QUALITY_LAYER_PRESETS[quality] || 2);
+  return clampLayerCount(QUALITY_LAYER_PRESETS[quality] || 1);
 }
 
 function getMaskDirection(direction) {
@@ -47,7 +47,8 @@ function buildLayerStyle(direction, index, total, blur) {
     WebkitBackdropFilter: blurFilter,
     maskImage: buildLayerMask(direction, index, total),
     WebkitMaskImage: buildLayerMask(direction, index, total),
-    transform: 'translateZ(0)',
+    transform: 'translate3d(0, 0, 0)',
+    willChange: 'transform',
     pointerEvents: 'none',
   };
 }

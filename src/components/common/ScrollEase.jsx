@@ -26,9 +26,8 @@ export default function ScrollEase({
       : false;
     if (prefersReducedMotion) return;
 
-    // Scale duration based on intensity:
-    // intensity ~40 -> duration ~0.88s for responsive, natural gliding feel
-    const computedDuration = duration * (0.6 + (intensity / 100) * 0.7);
+    // Optimized duration: responsive 0.7s without floaty sluggish delay
+    const computedDuration = Math.min(0.8, Math.max(0.5, duration * (0.5 + (intensity / 100) * 0.4)));
 
     const lenis = new Lenis({
       duration: computedDuration,
@@ -36,8 +35,9 @@ export default function ScrollEase({
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: wheelMultiplier,
-      touchMultiplier: 1.0,
+      wheelMultiplier: 0.9,
+      touchMultiplier: 0, // Never hijack native touch/trackpad inertia (prevents Mac trackpad lag)
+      syncTouch: false,
       autoResize: true,
     });
 

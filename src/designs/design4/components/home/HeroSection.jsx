@@ -4,7 +4,6 @@ import NekoCat from './NekoCat';
 import PixelMonster from './PixelMonster';
 
 export default function HeroSection() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isCreativeMode, setIsCreativeMode] = useState(false);
   const heroRef = useRef(null);
 
@@ -82,7 +81,10 @@ export default function HeroSection() {
         const { innerWidth, innerHeight } = window;
         const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
         const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
-        setMousePos({ x, y });
+        if (heroRef.current) {
+          heroRef.current.style.setProperty('--mx', x.toFixed(3));
+          heroRef.current.style.setProperty('--my', y.toFixed(3));
+        }
         rafId = null;
       });
     };
@@ -128,7 +130,7 @@ export default function HeroSection() {
           background: 'radial-gradient(circle, rgba(147, 51, 234, 0.08) 0%, rgba(254, 60, 1, 0.04) 50%, transparent 70%)',
           filter: 'blur(50px)',
           pointerEvents: 'none',
-          transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)`,
+          transform: 'translate(calc(var(--mx, 0) * 20px), calc(var(--my, 0) * 20px))',
           transition: 'transform 0.2s ease-out',
         }}
       />
@@ -144,7 +146,7 @@ export default function HeroSection() {
           background: 'radial-gradient(circle, rgba(11, 29, 255, 0.07) 0%, rgba(0, 242, 254, 0.04) 50%, transparent 70%)',
           filter: 'blur(60px)',
           pointerEvents: 'none',
-          transform: `translate(${mousePos.x * -25}px, ${mousePos.y * -25}px)`,
+          transform: 'translate(calc(var(--mx, 0) * -25px), calc(var(--my, 0) * -25px))',
           transition: 'transform 0.2s ease-out',
         }}
       />
@@ -159,7 +161,7 @@ export default function HeroSection() {
         style={{
           cursor: isCreativeMode ? 'grab' : 'default',
           touchAction: 'none',
-          transform: `translate(${mousePos.x * 24 + dragPositions.statusHud.x}px, ${mousePos.y * 24 + dragPositions.statusHud.y}px)`,
+          transform: `translate(calc(var(--mx, 0) * 24px + ${dragPositions.statusHud.x}px), calc(var(--my, 0) * 24px + ${dragPositions.statusHud.y}px))`,
           transition: dragTargetRef.current?.key === 'statusHud' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
@@ -227,7 +229,7 @@ export default function HeroSection() {
         style={{
           cursor: isCreativeMode ? 'grab' : 'pointer',
           touchAction: 'none',
-          transform: `translate(${mousePos.x * -24 + dragPositions.avatarHud.x}px, ${mousePos.y * -24 + dragPositions.avatarHud.y}px)`,
+          transform: `translate(calc(var(--mx, 0) * -24px + ${dragPositions.avatarHud.x}px), calc(var(--my, 0) * -24px + ${dragPositions.avatarHud.y}px))`,
           transition: dragTargetRef.current?.key === 'avatarHud' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
@@ -398,7 +400,7 @@ export default function HeroSection() {
           outline: isCreativeMode ? '2px dashed rgba(254, 60, 1, 0.6)' : 'none',
           outlineOffset: 12,
           borderRadius: 24,
-          transform: `perspective(1000px) rotateX(${mousePos.y * -4}deg) rotateY(${mousePos.x * 4}deg) translate(${dragPositions.headline.x}px, ${dragPositions.headline.y}px)`,
+          transform: `perspective(1000px) rotateX(calc(var(--my, 0) * -4deg)) rotateY(calc(var(--mx, 0) * 4deg)) translate(${dragPositions.headline.x}px, ${dragPositions.headline.y}px)`,
           transition: dragTargetRef.current?.key === 'headline' ? 'none' : 'transform 0.15s ease-out',
         }}
       >
@@ -686,7 +688,7 @@ export default function HeroSection() {
           style={{
             cursor: isCreativeMode ? 'grab' : 'default',
             touchAction: 'none',
-            transform: `translate(${mousePos.x * 20 + dragPositions.techChip1.x}px, ${mousePos.y * 20 + dragPositions.techChip1.y}px)`,
+            transform: `translate(calc(var(--mx, 0) * 20px + ${dragPositions.techChip1.x}px), calc(var(--my, 0) * 20px + ${dragPositions.techChip1.y}px))`,
             transition: dragTargetRef.current?.key === 'techChip1' ? 'none' : 'transform 0.15s ease-out',
           }}
         >
@@ -727,7 +729,7 @@ export default function HeroSection() {
           style={{
             cursor: isCreativeMode ? 'grab' : 'default',
             touchAction: 'none',
-            transform: `translate(${mousePos.x * -20 + dragPositions.techChip2.x}px, ${mousePos.y * -20 + dragPositions.techChip2.y}px)`,
+            transform: `translate(calc(var(--mx, 0) * -20px + ${dragPositions.techChip2.x}px), calc(var(--my, 0) * -20px + ${dragPositions.techChip2.y}px))`,
             transition: dragTargetRef.current?.key === 'techChip2' ? 'none' : 'transform 0.15s ease-out',
           }}
         >

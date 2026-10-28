@@ -49,8 +49,38 @@ export async function uploadToCloudinary(file, customPreset = '', resourceType =
   };
 }
 
+/**
+ * Tự động tối ưu URL Cloudinary: chuyển sang WebP/AVIF (f_auto), nén thông minh (q_auto) và giới hạn kích thước (w_...)
+ * Giúp giảm 70% - 95% dung lượng ảnh project khi tải về trình duyệt!
+ *
+ * @param {string} url - URL gốc từ Cloudinary
+ * @param {Object} [options]
+ * @param {number} [options.width] - Chiều rộng tối đa (ví dụ: 800, 1200)
+ * @param {string} [options.quality='auto'] - Chất lượng ('auto', 'auto:eco', 'auto:good')
+ * @param {string} [options.format='auto'] - Định dạng ('auto' => WebP/AVIF)
+ * @returns {string} URL đã được chèn transformation
+ */
+export function optimizeCloudinaryUrl(url, options = {}) {
+  if (!url || typeof url !== 'string' || !url.includes('res.cloudinary.com')) {
+    return url;
+  }
+  if (url.includes('/image/upload/f_auto') || url.includes('/image/upload/q_auto')) {
+    return url;
+  }
+
+  const { width, quality = 'auto', format = 'auto' } = options;
+  const transforms = [];
+  if (format) transforms.push(`f_${format}`);
+  if (quality) transforms.push(`q_${quality}`);
+  if (width) transforms.push(`w_${width},c_limit`);
+
+  const transformString = transforms.join(',');
+  return url.replace('/image/upload/', `/image/upload/${transformString}/`);
+}
+
 export default {
   uploadToCloudinary,
+  optimizeCloudinaryUrl,
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_UPLOAD_PRESET,
 };

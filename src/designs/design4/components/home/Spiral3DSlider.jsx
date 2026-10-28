@@ -315,20 +315,26 @@ export default function Spiral3DSlider({
     );
     observer.observe(stage);
 
+    let scrollRafId = null;
     const handlePageScroll = () => {
-      const scrollY = window.scrollY;
-      const delta = scrollY - previousScroll.current;
-      previousScroll.current = scrollY;
-      if (visible.current && performance.now() - lastWheelTime.current > 80) {
-        lastInteraction.current = performance.now();
-        const boundedDelta = Math.sign(delta) * Math.min(Math.abs(delta), 160);
-        targetProgress.current += boundedDelta * scrollSensitivity;
-      }
+      if (scrollRafId) return;
+      scrollRafId = requestAnimationFrame(() => {
+        scrollRafId = null;
+        const scrollY = window.scrollY;
+        const delta = scrollY - previousScroll.current;
+        previousScroll.current = scrollY;
+        if (visible.current && performance.now() - lastWheelTime.current > 80) {
+          lastInteraction.current = performance.now();
+          const boundedDelta = Math.sign(delta) * Math.min(Math.abs(delta), 160);
+          targetProgress.current += boundedDelta * scrollSensitivity;
+        }
+      });
     };
     window.addEventListener('scroll', handlePageScroll, { passive: true });
 
     return () => {
       observer.disconnect();
+      if (scrollRafId) cancelAnimationFrame(scrollRafId);
       window.removeEventListener('scroll', handlePageScroll);
     };
   }, [scrollSensitivity]);

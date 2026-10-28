@@ -8,6 +8,7 @@ import PDFViewer from '../common/PDFViewer';
 import SkillsSection from './SkillsSection';
 import ProjectModalD4 from '../common/ProjectModalD4';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
+import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
 export default function WorkPage({ onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -241,10 +242,11 @@ export default function WorkPage({ onGoHome }) {
                       </div>
 
                       <img
-                        src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
+                        src={optimizeCloudinaryUrl(project.image || project.image_url, { width: 1000 }) || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
                         alt={project.title}
                         className="des4-work-card-img"
                         loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.currentTarget.onerror = null;
                           e.currentTarget.src = 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';

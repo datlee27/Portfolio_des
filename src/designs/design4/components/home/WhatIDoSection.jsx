@@ -1,6 +1,7 @@
 import React from 'react';
 import { whatIDoData } from '../../data/homeData';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
+import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
 export default function WhatIDoSection() {
   return (
@@ -70,8 +71,10 @@ export default function WhatIDoSection() {
               }}
             >
               <img
-                src="https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg"
+                src={optimizeCloudinaryUrl('https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775989709/IMG_6098_fuhsm3.jpg', { width: 800 })}
                 alt="datlee avatar"
+                loading="lazy"
+                decoding="async"
                 style={{
                   width: '100%',
                   height: '100%',

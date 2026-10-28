@@ -39,7 +39,7 @@ export function ScrollAnimation({
     <motion.div
       initial={getInitial()}
       whileInView={getAnimate()}
-      viewport={{ once: false, ...viewport }}
+      viewport={{ once: true, ...viewport }}
       transition={transition}
       className={className}
       style={style}

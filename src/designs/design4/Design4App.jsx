@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import './styles/design4.css';
 // Common / Shared Layout Components
 import CornerNav from './components/common/CornerNav';
@@ -12,11 +12,11 @@ import FeaturedProjectsSection from './components/home/FeaturedProjectsSection';
 import WhatIDoSection from './components/home/WhatIDoSection';
 import Spiral3DSlider from './components/home/Spiral3DSlider';
 
-// Dedicated Page Views
-import WorkPage from './components/work/WorkPage';
-import BlogPageRedesign from './components/blog/BlogPageRedesign';
-import AboutPage from './components/about/AboutPage';
-import LabPage from './components/lab/LabPage';
+// Dedicated Page Views (Lazy loaded for optimal initial bundle size)
+const WorkPage = lazy(() => import('./components/work/WorkPage'));
+const BlogPageRedesign = lazy(() => import('./components/blog/BlogPageRedesign'));
+const AboutPage = lazy(() => import('./components/about/AboutPage'));
+const LabPage = lazy(() => import('./components/lab/LabPage'));
 
 // Common Utilities
 import ScrollEase from '../../components/common/ScrollEase';
@@ -256,50 +256,44 @@ export default function Design4App() {
         </>
       )}
 
-      {activeView === 'work' ? (
-        /* Dedicated Work Page (/work) with 6 Projects & Footer */
-        <WorkPage onGoHome={() => navigateWithTransition('main', '/')} />
-      ) : activeView === 'blog' ? (
-        /* Dedicated Blog Page — "chạng vạng" redesign */
-        <BlogPageRedesign />
-      ) : activeView === 'about' ? (
-        /* Dedicated About Page (/about) */
-        <AboutPage onGoHome={() => navigateWithTransition('main', '/')} />
-      ) : activeView === 'lab' ? (
-        /* Lab View (/lab) */
-        <LabPage onBack={() => navigateWithTransition('main', '/')} />
-      ) : (
-        /* Main Des4 Flow (/) */
-        <>
-          {/* 1. Hero: the chaos of making sh*t real */}
-          <HeroSection />
+      <Suspense fallback={null}>
+        {activeView === 'work' ? (
+          /* Dedicated Work Page (/work) with 6 Projects & Footer */
+          <WorkPage onGoHome={() => navigateWithTransition('main', '/')} />
+        ) : activeView === 'blog' ? (
+          /* Dedicated Blog Page — "chạng vạng" redesign */
+          <BlogPageRedesign />
+        ) : activeView === 'about' ? (
+          /* Dedicated About Page (/about) */
+          <AboutPage onGoHome={() => navigateWithTransition('main', '/')} />
+        ) : activeView === 'lab' ? (
+          /* Lab View (/lab) */
+          <LabPage onBack={() => navigateWithTransition('main', '/')} />
+        ) : (
+          /* Main Des4 Flow (/) */
+          <>
+            {/* 1. Hero: the chaos of making sh*t real */}
+            <HeroSection />
 
-          {/* 2. Intro: Statement & Core Technical Pillars */}
-          <IntroSection />
+            {/* 2. Intro: Statement & Core Technical Pillars */}
+            <IntroSection />
 
-          {/* 3. Featured Work: Marquee + 6 Real Project Rows */}
-          <FeaturedProjectsSection
-            onOpenWork={() => navigateWithTransition('work', '/work')}
-          />
+            {/* 3. Featured Work: Marquee + 6 Real Project Rows */}
+            <FeaturedProjectsSection
+              onOpenWork={() => navigateWithTransition('work', '/work')}
+            />
 
-          {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
-          <WhatIDoSection />
+            {/* 5. What I Do: Vibrant Orange Section with 3D Blender Screen */}
+            <WhatIDoSection />
 
-          {/* 6. Interactive WebGL Spiral 3D Gallery (Experience & Visual Archive) */}
-          <Spiral3DSlider />
+            {/* 6. Interactive WebGL Spiral 3D Gallery (Experience & Visual Archive) */}
+            <Spiral3DSlider />
 
-          {/* 7. Articles & Journal / Blog Section (Tạm thời ẩn) */}
-          {/* <BlogSection
-            onOpenBlog={(post) => {
-              const targetHash = post?.slug || (post?.id ? `post-${post.id}` : '');
-              navigateWithTransition('blog', '/blog', targetHash);
-            }}
-          /> */}
-
-          {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
-          <FooterSection />
-        </>
-      )}
+            {/* 8. Footer: Let's talk & Giant DL* /26 Emblem */}
+            <FooterSection />
+          </>
+        )}
+      </Suspense>
     </div>
   );
 }

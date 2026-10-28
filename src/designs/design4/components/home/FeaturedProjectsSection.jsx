@@ -6,6 +6,7 @@ import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../../data/homeData';
 import { usePortfolio } from '@/context/PortfolioContext';
 import ProjectModalD4 from '../common/ProjectModalD4';
+import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
 export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -118,8 +119,10 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
                 )}
 
                 <img
-                  src={project.image || project.image_url || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
+                  src={optimizeCloudinaryUrl(project.image || project.image_url, { width: 1000 }) || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80'}
                   alt={project.title}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
                     e.currentTarget.onerror = null;

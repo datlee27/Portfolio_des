@@ -6,7 +6,7 @@ const DEFAULT_PHOTOS = [
     id: 1,
     title: 'Post-it Brainstorm',
     subtitle: 'Iterative prototypes & messy ideation',
-    src: '/images/clothesline/photo1.png',
+    src: '/images/clothesline/photo1.webp',
     fallbackSrc: 'https://framerusercontent.com/images/C6p09vLh49q0WPgOef4V7TUBgEg.png?width=1200&height=600',
     t: 0.12, // 12% along the wire
   },
@@ -14,7 +14,7 @@ const DEFAULT_PHOTOS = [
     id: 2,
     title: 'In The Elements',
     subtitle: 'Observation, texture, and field research',
-    src: '/images/clothesline/photo2.png',
+    src: '/images/clothesline/photo2.webp',
     fallbackSrc: 'https://framerusercontent.com/images/AqWlfbJga6pA8kddv07uVzPsqdE.png?width=900&height=1200',
     t: 0.31, // 31% along the wire
   },
@@ -22,7 +22,7 @@ const DEFAULT_PHOTOS = [
     id: 3,
     title: 'Artisan Workshop',
     subtitle: 'Where digital engineering meets tactile craft',
-    src: '/images/clothesline/photo3.png',
+    src: '/images/clothesline/photo3.webp',
     fallbackSrc: 'https://framerusercontent.com/images/8ntZg49nxKYsJnGQ66vctVPaPo.png?width=1200&height=1200',
     t: 0.50, // 50% dead center
   },
@@ -30,7 +30,7 @@ const DEFAULT_PHOTOS = [
     id: 4,
     title: 'Denim & Architecture',
     subtitle: 'Raw materiality and spatial proportion',
-    src: '/images/clothesline/photo4.png',
+    src: '/images/clothesline/photo4.webp',
     fallbackSrc: 'https://framerusercontent.com/images/SdEmNHumLS0EHWsG6x8g0CWHxKw.png?width=899&height=1199',
     t: 0.69, // 69% along the wire
   },
@@ -38,13 +38,13 @@ const DEFAULT_PHOTOS = [
     id: 5,
     title: 'Light & Shadows',
     subtitle: 'Quiet contrasts and atmospheric stillness',
-    src: '/images/clothesline/photo5.jpg',
+    src: '/images/clothesline/photo5.webp',
     fallbackSrc: 'https://framerusercontent.com/images/tiketPH2eVOgFb1uzQG4NawdMGo.jpg?width=906&height=1200',
     t: 0.88, // 88% along the wire
   },
 ];
 
-const BINDER_CLIP_LOCAL = '/images/clothesline/clip.png';
+const BINDER_CLIP_LOCAL = '/images/clothesline/clip.webp';
 const BINDER_CLIP_FALLBACK = 'https://framerusercontent.com/images/U9eXOl3LNm2e6HGQ8jzhLdIn8BM.png?width=736&height=736';
 
 export default function ClotheslineGallery({

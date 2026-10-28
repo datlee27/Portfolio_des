@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import GlobalStyles from './styles/GlobalStyles';
 import Design4App from './designs/design4/Design4App';
-import AdminApp from './admin/AdminApp';
-import ErrorPage from './components/common/ErrorPage';
 import GlobalErrorBoundary from './components/common/GlobalErrorBoundary';
 import OfflineIndicator from './components/common/OfflineIndicator';
 import { PortfolioProvider } from './context/PortfolioContext';
+
+const AdminApp = lazy(() => import('./admin/AdminApp'));
+const ErrorPage = lazy(() => import('./components/common/ErrorPage'));
 
 function getRouteInfo(pathname) {
   const cleanPath = (pathname || '/').trim();
@@ -66,13 +67,17 @@ export default function App() {
         <GlobalStyles />
         <OfflineIndicator />
         {routeInfo.route === 'admin' ? (
-          <AdminApp onGoHome={() => handleNavigate('/')} />
+          <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0e0f12' }} />}>
+            <AdminApp onGoHome={() => handleNavigate('/')} />
+          </Suspense>
         ) : routeInfo.route === 'error' ? (
-          <ErrorPage
-            code={routeInfo.code}
-            onGoHome={() => handleNavigate('/')}
-            onRetry={() => window.location.reload()}
-          />
+          <Suspense fallback={null}>
+            <ErrorPage
+              code={routeInfo.code}
+              onGoHome={() => handleNavigate('/')}
+              onRetry={() => window.location.reload()}
+            />
+          </Suspense>
         ) : (
           <Design4App />
         )}
