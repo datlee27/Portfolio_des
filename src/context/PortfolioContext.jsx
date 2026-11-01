@@ -50,6 +50,21 @@ export function isProjectMatch(p, targetId, targetTitle) {
   return false;
 }
 
+// Kiểm tra trạng thái hiển thị công khai (Public) của dự án
+export function isProjectPublic(p) {
+  if (!p) return false;
+  if (p.is_public === false || p.is_public === 0 || p.is_public === '0' || p.is_public === 'false') {
+    return false;
+  }
+  if (p.is_published === false || p.is_published === 0 || p.is_published === '0' || p.is_published === 'false') {
+    return false;
+  }
+  if (p.visible === false || p.visible === 0 || p.visible === '0' || p.visible === 'false') {
+    return false;
+  }
+  return true;
+}
+
 // Map API project object to frontend project object
 export function mapApiProject(p, idx = 0) {
   const tags = Array.isArray(p.tags) ? p.tags : (p.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
@@ -97,6 +112,7 @@ export function mapApiProject(p, idx = 0) {
     .slice(0, 6);
 
   const videoDemo = (p.video_demo || p.video_url || p.video || '').trim();
+  const isPublic = isProjectPublic(p);
 
   return {
     id: p.id || String(idx + 1),
@@ -112,6 +128,8 @@ export function mapApiProject(p, idx = 0) {
     deploy: p.deploy_url || p.deploy || '',
     deploy_url: p.deploy_url || p.deploy || '',
     status: p.status || 'Latest',
+    is_public: isPublic,
+    sort_order: p.sort_order !== undefined ? Number(p.sort_order) : idx + 1,
     image: finalImage,
     image_url: finalImage,
     body_images: bodyImages,

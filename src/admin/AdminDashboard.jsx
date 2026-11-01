@@ -17,7 +17,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import api from '../services/api';
-import { usePortfolio, isProjectMatch } from '../context/PortfolioContext';
+import { usePortfolio, isProjectMatch, mapApiPost } from '../context/PortfolioContext';
 import OverviewTab from './tabs/OverviewTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import BlogTab from './tabs/BlogTab';
@@ -116,34 +116,18 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
           }
         } catch {}
 
-        // Preserve body_images and video_demo from localStorage if server dropped them
+        // Preserve projects customizations from localStorage (is_public, sort_order, order)
         try {
           const rawProj = localStorage.getItem('portfolio_projects_override');
-          if (rawProj && Array.isArray(pRes.data.projects)) {
+          if (rawProj) {
             const savedProjects = JSON.parse(rawProj);
-            if (Array.isArray(savedProjects)) {
-              pRes.data.projects = pRes.data.projects.map((sp) => {
-                const match = savedProjects.find((lp) => isProjectMatch(lp, sp.id, sp.title));
-
-                let resolvedBody = [];
-                if (match && Array.isArray(match.body_images)) {
-                  resolvedBody = match.body_images;
-                } else if (Array.isArray(sp.body_images)) {
-                  resolvedBody = sp.body_images;
-                } else if (match && Array.isArray(match.images)) {
-                  resolvedBody = match.images;
-                }
-
-                return {
-                  ...sp,
-                  body_images: resolvedBody,
-                  video_demo: sp.video_demo || sp.video_url || match?.video_demo || match?.video_url || '',
-                  video_url: sp.video_demo || sp.video_url || match?.video_demo || match?.video_url || '',
-                };
-              });
+            if (Array.isArray(savedProjects) && savedProjects.length > 0) {
+              pRes.data.projects = savedProjects;
             }
           }
-        } catch {}
+        } catch (e) {
+          console.warn('Lỗi đọc portfolio_projects_override:', e);
+        }
 
         setPortfolioData(pRes.data);
       } else {
@@ -158,7 +142,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
 
       if (bRes && bRes.success && Array.isArray(bRes.data)) {
         gotServerData = true;
-        setPostsData(bRes.data);
+        setPostsData(bRes.data.map((p, idx) => mapApiPost(p, idx)));
       } else {
         // Fallback to local posts data
         setPostsData(contextPosts);

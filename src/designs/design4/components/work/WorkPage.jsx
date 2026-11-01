@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { featuredProjects } from '../../data/homeData';
-import { usePortfolio } from '@/context/PortfolioContext';
+import { usePortfolio, isProjectPublic } from '@/context/PortfolioContext';
 import FooterSection from '../common/FooterSection';
 import PDFViewer from '../common/PDFViewer';
 import SkillsSection from './SkillsSection';
@@ -23,7 +23,9 @@ export default function WorkPage({ onGoHome }) {
   });
   const [selectedProject, setSelectedProject] = useState(null);
   const { projects, personal } = usePortfolio();
-  const allProjects = projects && projects.length > 0 ? projects : featuredProjects;
+  const rawProjects = projects && projects.length > 0 ? projects : featuredProjects;
+  // Chỉ hiển thị các dự án ở trạng thái Công khai (Public)
+  const allProjects = rawProjects.filter(isProjectPublic);
 
   useEffect(() => {
     if (window.lenis) {
@@ -212,10 +214,11 @@ export default function WorkPage({ onGoHome }) {
                   key={project.id}
                   direction={idx % 2 === 0 ? 'left' : 'right'}
                   viewport={{ amount: 0.25, margin: '0px 0px -40px 0px' }}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', height: '100%', display: 'flex' }}
                 >
                   <article
                     className="des4-work-card"
+                    style={{ width: '100%', height: '100%' }}
                   >
                     {/* Media Container */}
                     <div
@@ -270,7 +273,11 @@ export default function WorkPage({ onGoHome }) {
                         >
                           {project.title}
                         </h3>
-                        <p className="des4-work-card-desc">
+                        <p
+                          className="des4-work-card-desc"
+                          data-lenis-prevent="true"
+                          onWheel={(e) => e.stopPropagation()}
+                        >
                           {project.description}
                         </p>
                       </div>

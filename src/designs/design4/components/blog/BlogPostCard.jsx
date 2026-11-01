@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import BlogMediaThumb from './BlogMediaThumb';
 import { IconMessageCircle } from './BlogIcons';
 import BlogEmojiLikeButton from './BlogEmojiLikeButton';
 import { formatDate } from './blogData';
+import { getCommentsForPost } from '../../../../services/commentsService';
 
 export default function BlogPostCard({
   post,
@@ -12,10 +13,16 @@ export default function BlogPostCard({
   onToggleLike,
   onSelect,
 }) {
-  const commentsList = Array.isArray(post.comments) ? post.comments : [];
-  const commentCount = commentsList.length > 0
-    ? commentsList.length
-    : (parseInt(post.total_comments, 10) || 0);
+  const [commentCount, setCommentCount] = useState(() => getCommentsForPost(post).length);
+
+  useEffect(() => {
+    setCommentCount(getCommentsForPost(post).length);
+    const handleSync = () => {
+      setCommentCount(getCommentsForPost(post).length);
+    };
+    window.addEventListener('portfolio_comments_changed', handleSync);
+    return () => window.removeEventListener('portfolio_comments_changed', handleSync);
+  }, [post]);
 
   const rawLikes = typeof post.likes === 'number' && !isNaN(post.likes)
     ? post.likes

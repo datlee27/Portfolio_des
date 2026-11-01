@@ -23,8 +23,6 @@ export default function BlogPageRedesign() {
   const [query, setQuery] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
   const [likedPosts, setLikedPosts] = useState({});
-  const [extraComments, setExtraComments] = useState({});
-  const [commentDraft, setCommentDraft] = useState('');
 
   const theme = isDark ? THEMES.dark : THEMES.light;
 
@@ -83,16 +81,6 @@ export default function BlogPageRedesign() {
     setLikedPosts((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  function submitComment(id) {
-    const text = commentDraft.trim();
-    if (!text) return;
-    setExtraComments((prev) => ({
-      ...prev,
-      [id]: [...(prev[id] || []), { name: 'bạn', text }],
-    }));
-    setCommentDraft('');
-  }
-
   /* ── Render ─────────────────────────────────────────────────────── */
   return (
     <div
@@ -140,12 +128,9 @@ export default function BlogPageRedesign() {
         post={selectedPost}
         theme={theme}
         likedPosts={likedPosts}
-        extraComments={extraComments}
-        commentDraft={commentDraft}
         onClose={() => setSelectedPost(null)}
         onToggleLike={toggleLike}
-        onCommentDraftChange={setCommentDraft}
-        onSubmitComment={submitComment}
+        isAdmin={false}
       />
     </div>
   );

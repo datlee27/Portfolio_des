@@ -291,13 +291,18 @@ export default function OverviewTab({
             {posts.slice(0, 4).map((b) => (
               <div
                 key={b.id || b.post_id}
+                onClick={() => onNavigateTab('blog')}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '12px 18px',
                   borderBottom: '1px solid var(--admin-border-subtle)',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease',
                 }}
+                className="admin-hover-row"
+                title="Xem chi tiết tại Tab Blog & Threads"
               >
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--admin-text)' }}>

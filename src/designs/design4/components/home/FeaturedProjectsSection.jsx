@@ -4,14 +4,16 @@ import { SiGithub } from 'react-icons/si';
 import ScrollBaseAnimation from '@/components/ui/scroll-text-marque';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../../data/homeData';
-import { usePortfolio } from '@/context/PortfolioContext';
+import { usePortfolio, isProjectPublic } from '@/context/PortfolioContext';
 import ProjectModalD4 from '../common/ProjectModalD4';
 import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
 export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const { projects } = usePortfolio();
-  const displayProjects = projects && projects.length > 0 ? projects : featuredProjects;
+  const rawProjects = projects && projects.length > 0 ? projects : featuredProjects;
+  // Chỉ hiển thị các dự án ở trạng thái Công khai (Public)
+  const displayProjects = rawProjects.filter(isProjectPublic);
   return (
     <section
       id="d4-work"
@@ -166,12 +168,20 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
                   </div>
 
                   <p
+                    data-lenis-prevent="true"
+                    onWheel={(e) => e.stopPropagation()}
                     style={{
                       fontFamily: 'var(--font-inter)',
                       fontSize: 14,
                       lineHeight: 1.6,
                       color: '#444444',
                       margin: '8px 0 16px 0',
+                      height: 68,
+                      overflowY: 'auto',
+                      paddingRight: 6,
+                      overscrollBehavior: 'contain',
+                      WebkitOverflowScrolling: 'touch',
+                      touchAction: 'pan-y',
                     }}
                   >
                     {project.description}

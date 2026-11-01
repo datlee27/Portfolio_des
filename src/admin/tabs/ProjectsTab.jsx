@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Plus,
   Pencil,
@@ -7,21 +7,26 @@ import {
   Image as ImageIcon,
   X,
   Search,
-  AlertTriangle,
   Upload,
   Loader2,
   Video,
   Film,
   RefreshCw,
+  ArrowUp,
+  ArrowDown,
+  GripVertical,
 } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import api from '../../services/api';
 import { uploadToCloudinary } from '../../services/cloudinary';
-import { usePortfolio, isProjectMatch } from '../../context/PortfolioContext';
+import { usePortfolio, isProjectMatch, isProjectPublic } from '../../context/PortfolioContext';
 import AdminMacModal from '../components/AdminMacModal';
 
 export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   const { updateProjects: contextUpdateProjects, projects: ctxProjects } = usePortfolio();
+
+  // Track if user has made local mutations (toggle, reorder) — prevents context sync from overwriting
+  const hasLocalMutation = useRef(false);
 
   const [localProjects, setLocalProjects] = useState(() => {
     if (projects && projects.length > 0) return projects;
@@ -29,12 +34,28 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   });
 
   useEffect(() => {
+    // Only sync from props/context on initial load, not after user mutations
+    if (hasLocalMutation.current) return;
     if (projects && projects.length > 0) {
       setLocalProjects(projects);
     } else if (ctxProjects && ctxProjects.length > 0) {
       setLocalProjects(ctxProjects);
     }
   }, [projects, ctxProjects]);
+
+  // Helper: persist list to localStorage + context (without re-mapping)
+  const persistProjects = useCallback((updatedList) => {
+    hasLocalMutation.current = true;
+    setLocalProjects(updatedList);
+    try {
+      localStorage.setItem('portfolio_projects_override', JSON.stringify(updatedList));
+    } catch (e) {
+      console.warn('Lỗi lưu projects:', e);
+    }
+    if (contextUpdateProjects) {
+      contextUpdateProjects(updatedList);
+    }
+  }, [contextUpdateProjects]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -59,6 +80,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
     github_url: '',
     deploy_url: '',
     status: 'Latest',
+    is_public: true,
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -87,6 +109,10 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   const [selectedVideoFile, setSelectedVideoFile] = useState(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
   const videoFileInputRef = useRef(null);
+
+  // Drag & Drop reorder state
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -243,7 +269,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
     if (videoFileInputRef.current) videoFileInputRef.current.value = '';
 
     const nextCode = String(localProjects.length + 1).padStart(2, '0');
-    setFormData({ ...initialFormState, project_code: nextCode });
+    setFormData({ ...initialFormState, project_code: nextCode, is_public: true });
     setModalOpen(true);
   };
 
@@ -340,6 +366,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       github_url: project.github_url || project.github || '',
       deploy_url: project.deploy_url || project.deploy || '',
       status: project.status || 'Latest',
+      is_public: project.is_public !== false,
     });
     setModalOpen(true);
   };
@@ -433,6 +460,10 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         github_url: formData.github_url,
         deploy: formData.deploy_url,
         deploy_url: formData.deploy_url,
+        is_public: formData.is_public !== false,
+        sort_order: isEditing
+          ? (localProjects.find((p) => isProjectMatch(p, currentId))?.sort_order ?? 1)
+          : localProjects.length + 1,
         code: `(${String(formData.project_code || '01').padStart(2, '0')})`,
         client: tagsArray.slice(0, 2).join(' / ') || 'Production App',
         hasCaseStudy: Boolean(formData.deploy_url || formData.github_url),
@@ -457,16 +488,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         video_demo: item.video_demo || item.video_url || '',
       }));
 
-      setLocalProjects(updatedList);
-      try {
-        localStorage.setItem('portfolio_projects_override', JSON.stringify(updatedList));
-      } catch (e) {
-        console.warn('Failed to cache projects in localStorage:', e);
-      }
-      if (contextUpdateProjects) {
-        contextUpdateProjects(updatedList);
-      }
-
+      persistProjects(updatedList);
       setModalOpen(false);
       if (onRefresh) onRefresh();
     } catch (err) {
@@ -484,16 +506,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       await api.deleteProject(id);
 
       const updatedList = localProjects.filter((p) => !isProjectMatch(p, id));
-      setLocalProjects(updatedList);
-      try {
-        localStorage.setItem('portfolio_projects_override', JSON.stringify(updatedList));
-      } catch (e) {
-        console.warn('Failed to cache projects in localStorage:', e);
-      }
-      if (contextUpdateProjects) {
-        contextUpdateProjects(updatedList);
-      }
-
+      persistProjects(updatedList);
       showToast('Đã xóa dự án thành công!', 'success');
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
@@ -502,6 +515,102 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       showToast(err.message || 'Lỗi khi xóa dự án.', 'error');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  // ─── Toggle Hiển thị Công khai (Public) / Ẩn (Private) ───
+  const handleToggleVisibility = async (project) => {
+    const isCurrentlyPublic = isProjectPublic(project);
+    const newIsPublic = !isCurrentlyPublic;
+    const updatedList = localProjects.map((p) =>
+      isProjectMatch(p, project.id, project.title) ? { ...p, is_public: newIsPublic } : p
+    );
+    persistProjects(updatedList);
+    showToast(
+      newIsPublic
+        ? `Đã bật hiển thị: "${project.title}" (Public)`
+        : `Đã tắt hiển thị: "${project.title}" (Ẩn khỏi /work)`,
+      'success'
+    );
+    try {
+      await api.updateProject(project.id, { is_public: newIsPublic ? 1 : 0 });
+    } catch (e) {
+      console.warn('Lỗi cập nhật is_public lên máy chủ:', e);
+    }
+  };
+
+  // ─── Di chuyển dự án đến vị trí chỉ định (1-based) ───
+  const handleMoveToPosition = async (projectId, newPos) => {
+    const total = localProjects.length;
+    const clampedPos = Math.max(1, Math.min(total, newPos));
+    const currentIndex = localProjects.findIndex((p) => isProjectMatch(p, projectId));
+    if (currentIndex === -1) return;
+    const targetIndex = clampedPos - 1;
+    if (targetIndex === currentIndex) return;
+
+    const newList = [...localProjects];
+    const [movedItem] = newList.splice(currentIndex, 1);
+    newList.splice(targetIndex, 0, movedItem);
+
+    const updatedWithOrder = newList.map((item, idx) => ({
+      ...item,
+      sort_order: idx + 1,
+    }));
+
+    persistProjects(updatedWithOrder);
+    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${clampedPos}!`, 'success');
+    try {
+      api.updateProject(movedItem.id, { sort_order: clampedPos }).catch(() => {});
+    } catch (e) {
+      console.warn('Lỗi đồng bộ sort_order:', e);
+    }
+  };
+
+  // ─── Drag & Drop Sắp xếp Thứ tự Dự án ───
+  const handleDragStart = (e, idx) => {
+    setDraggedIndex(idx);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(idx));
+  };
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIndex !== idx) {
+      setDragOverIndex(idx);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e, targetIdx) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIdx) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    const newList = [...localProjects];
+    const [movedItem] = newList.splice(draggedIndex, 1);
+    newList.splice(targetIdx, 0, movedItem);
+
+    const updatedWithOrder = newList.map((item, idx) => ({
+      ...item,
+      sort_order: idx + 1,
+    }));
+
+    persistProjects(updatedWithOrder);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${targetIdx + 1}!`, 'success');
+
+    try {
+      api.updateProject(movedItem.id, { sort_order: targetIdx + 1 }).catch(() => {});
+    } catch (err) {
+      console.warn('Lỗi đồng bộ drag drop order:', err);
     }
   };
 
@@ -549,27 +658,124 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
         <table className="admin-table">
           <thead>
             <tr>
-              <th style={{ width: 70 }}>Mã</th>
-              <th style={{ width: 90 }}>Ảnh</th>
+              <th style={{ width: 110, textAlign: 'center' }}>Thứ Tự</th>
+              <th style={{ width: 65 }}>Mã</th>
+              <th style={{ width: 85 }}>Ảnh</th>
               <th>Tên Dự Án & Mô Tả</th>
-              <th>Công Nghệ (Tags)</th>
-              <th style={{ width: 100 }}>Trạng Thái</th>
-              <th style={{ width: 100 }}>Liên Kết</th>
-              <th style={{ width: 110, textAlign: 'right' }}>Thao Tác</th>
+              <th style={{ width: 110 }}>Trạng Thái</th>
+              <th style={{ width: 110, textAlign: 'center' }}>Hiển Thị</th>
+              <th style={{ width: 90 }}>Liên Kết</th>
+              <th style={{ width: 100, textAlign: 'right' }}>Thao Tác</th>
             </tr>
           </thead>
           <tbody>
             {filteredProjects.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--admin-text-muted)' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--admin-text-muted)' }}>
                   Không tìm thấy dự án nào phù hợp.
                 </td>
               </tr>
             ) : (
-              filteredProjects.map((p) => {
-                const tagsList = Array.isArray(p.tags) ? p.tags : (p.tags || '').split(',').map((t) => t.trim());
+              filteredProjects.map((p, idx) => {
+                const isPublic = isProjectPublic(p);
                 return (
-                  <tr key={p.id}>
+                  <tr
+                    key={p.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDragEnd={handleDragEnd}
+                    onDrop={(e) => handleDrop(e, idx)}
+                    style={{
+                      opacity: draggedIndex === idx ? 0.35 : 1,
+                      backgroundColor: dragOverIndex === idx && draggedIndex !== idx ? '#fff7ed' : undefined,
+                      borderTop: dragOverIndex === idx && draggedIndex !== idx ? '2px solid var(--admin-accent)' : undefined,
+                      transition: 'background-color 0.15s ease, opacity 0.15s ease',
+                    }}
+                  >
+                    {/* Thứ Tự (Kéo thả + Dropdown chọn vị trí + Nút di chuyển) */}
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <div
+                          title="Giữ và kéo thả hàng để đổi vị trí"
+                          style={{
+                            cursor: 'grab',
+                            color: '#94a3b8',
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '2px',
+                          }}
+                        >
+                          <GripVertical size={15} />
+                        </div>
+
+                        <select
+                          value={idx + 1}
+                          onChange={(e) => handleMoveToPosition(p.id, Number(e.target.value))}
+                          title="Bấm để chọn vị trí hiển thị mới"
+                          style={{
+                            height: 28,
+                            padding: '0 4px',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            fontFamily: 'monospace',
+                            color: 'var(--admin-accent)',
+                            background: '#fff',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            outline: 'none',
+                          }}
+                        >
+                          {filteredProjects.map((_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              #{i + 1}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveToPosition(p.id, idx)}
+                            disabled={idx === 0}
+                            title="Lên 1 vị trí"
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                              opacity: idx === 0 ? 0.25 : 0.75,
+                              padding: 0,
+                              display: 'flex',
+                              lineHeight: 1,
+                              color: 'var(--admin-text)',
+                            }}
+                          >
+                            <ArrowUp size={11} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveToPosition(p.id, idx + 2)}
+                            disabled={idx === filteredProjects.length - 1}
+                            title="Xuống 1 vị trí"
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: idx === filteredProjects.length - 1 ? 'not-allowed' : 'pointer',
+                              opacity: idx === filteredProjects.length - 1 ? 0.25 : 0.75,
+                              padding: 0,
+                              display: 'flex',
+                              lineHeight: 1,
+                              color: 'var(--admin-text)',
+                            }}
+                          >
+                            <ArrowDown size={11} />
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+
                     {/* Project Code */}
                     <td style={{ fontWeight: 800, color: 'var(--admin-accent)', fontFamily: 'var(--font-outfit)' }}>
                       {p.project_code || '—'}
@@ -655,7 +861,7 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
                           fontSize: 12,
                           color: 'var(--admin-text-muted)',
                           marginTop: 3,
-                          maxWidth: 380,
+                          maxWidth: 420,
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -666,22 +872,66 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
                       </div>
                     </td>
 
-                    {/* Tags */}
-                    <td>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, maxWidth: 220 }}>
-                        {tagsList.map((tag, i) => (
-                          <span key={i} className="admin-tag-pill">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-
                     {/* Status Badge */}
                     <td>
                       <span className={`admin-badge ${p.status === 'Latest' ? 'admin-badge-orange' : 'admin-badge-green'}`}>
                         {p.status || 'Active'}
                       </span>
+                    </td>
+
+                    {/* Visibility Toggle / Hiển thị (Switch iOS Style) */}
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={isPublic}
+                          onClick={() => handleToggleVisibility(p)}
+                          title={
+                            isPublic
+                              ? 'Đang BẬT công khai (Public) - Bấm để chuyển sang Ẩn'
+                              : 'Đang TẮT (Ẩn/Private) - Bấm để chuyển sang Công khai'
+                          }
+                          style={{
+                            position: 'relative',
+                            width: 44,
+                            height: 24,
+                            borderRadius: 24,
+                            background: isPublic ? '#10b981' : '#cbd5e1',
+                            border: 'none',
+                            cursor: 'pointer',
+                            outline: 'none',
+                            padding: 0,
+                            transition: 'background-color 0.25s ease, box-shadow 0.25s ease',
+                            boxShadow: isPublic ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none',
+                          }}
+                        >
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: 3,
+                              left: isPublic ? 23 : 3,
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              background: '#ffffff',
+                              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
+                              transition: 'left 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
+                            }}
+                          />
+                        </button>
+                        <span
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            color: isPublic ? '#059669' : '#64748b',
+                            letterSpacing: '0.02em',
+                            userSelect: 'none',
+                          }}
+                        >
+                          {isPublic ? 'Public' : 'Private'}
+                        </span>
+                      </div>
                     </td>
 
                     {/* Links */}
@@ -765,17 +1015,71 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-form-label">Trạng thái</label>
+                <label className="admin-form-label">Trạng thái tiến độ</label>
                 <select
                   className="admin-select"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 >
-                  <option value="Latest">Mới nhất</option>
-                  <option value="Completed">Hoàn thành</option>
-                  <option value="In Progress">Đang thực hiện</option>
-                  <option value="Archived">Lưu trữ</option>
+                  <option value="Latest">Mới nhất (Latest)</option>
+                  <option value="Completed">Hoàn thành (Completed)</option>
+                  <option value="In Progress">Đang thực hiện (In Progress)</option>
+                  <option value="Archived">Lưu trữ (Archived)</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Visibility Mode Switch */}
+            <div className="admin-form-group" style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--admin-text)' }}>
+                    Chế độ hiển thị:{' '}
+                    <span style={{ color: formData.is_public ? '#059669' : '#64748b' }}>
+                      {formData.is_public ? '🌐 Public (Công khai)' : '🔒 Private (Ẩn)'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'var(--admin-text-muted)', marginTop: 2 }}>
+                    {formData.is_public
+                      ? 'Dự án sẽ xuất hiện trên trang /work và Showcase trang chủ.'
+                      : 'Dự án chỉ lưu trữ nội bộ và xem trong trang Admin.'}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formData.is_public}
+                  onClick={() => setFormData({ ...formData, is_public: !formData.is_public })}
+                  style={{
+                    position: 'relative',
+                    width: 46,
+                    height: 26,
+                    borderRadius: 26,
+                    background: formData.is_public ? '#10b981' : '#cbd5e1',
+                    border: 'none',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    padding: 0,
+                    transition: 'background-color 0.25s ease, box-shadow 0.25s ease',
+                    boxShadow: formData.is_public ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none',
+                    flexShrink: 0,
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: 3,
+                      left: formData.is_public ? 23 : 3,
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      background: '#ffffff',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
+                      transition: 'left 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                  />
+                </button>
               </div>
             </div>
 

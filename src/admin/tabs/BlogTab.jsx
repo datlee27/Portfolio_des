@@ -9,7 +9,6 @@ import {
   User,
   X,
   Search,
-  AlertTriangle,
   Upload,
   Loader2,
 } from 'lucide-react';
@@ -17,6 +16,10 @@ import api from '../../services/api';
 import { uploadToCloudinary } from '../../services/cloudinary';
 import { usePortfolio } from '../../context/PortfolioContext';
 import AdminMacModal from '../components/AdminMacModal';
+import BlogDrawer from '../../designs/design4/components/blog/BlogDrawer';
+import { THEMES } from '../../designs/design4/components/blog/blogData';
+import { getCommentsForPost } from '../../services/commentsService';
+import '../../designs/design4/components/blog/blog.css';
 
 // Helper to generate SEO-friendly slug
 function generateSlug(text) {
@@ -53,6 +56,17 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Xem bài viết và quản lý bình luận dạng drawer trượt bên phải
+  const [viewingPost, setViewingPost] = useState(null);
+
+  // Đồng bộ số lượng bình luận theo thời gian thực
+  const [, setCommentsTick] = useState(0);
+  useEffect(() => {
+    const handleSync = () => setCommentsTick((t) => t + 1);
+    window.addEventListener('portfolio_comments_changed', handleSync);
+    return () => window.removeEventListener('portfolio_comments_changed', handleSync);
+  }, []);
 
   // Delete confirmation
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -310,7 +324,7 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
                 return (
                   <tr key={postId}>
                     {/* Thumbnail */}
-                    <td>
+                    <td onClick={() => setViewingPost(p)} style={{ cursor: 'pointer' }} title="Bấm để xem bài viết">
                       <div
                         style={{
                           width: 60,
@@ -337,11 +351,29 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
 
                     {/* Title & Slug */}
                     <td>
-                      <div style={{ fontWeight: 600, color: 'var(--admin-text)', fontSize: 13.5 }}>
+                      <div
+                        onClick={() => setViewingPost(p)}
+                        style={{
+                          fontWeight: 600,
+                          color: 'var(--admin-text)',
+                          fontSize: 13.5,
+                          cursor: 'pointer',
+                          display: 'inline-block',
+                          transition: 'color 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--admin-accent)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--admin-text)')}
+                        title="Bấm để xem bài viết & trả lời bình luận (Drawer)"
+                      >
                         {p.title}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--admin-accent)', marginTop: 2, fontFamily: 'monospace' }}>
-                        /{p.slug || 'post'}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 3 }}>
+                        <span style={{ fontSize: 11, color: 'var(--admin-text-muted)', fontFamily: 'monospace' }}>
+                          /{p.slug || 'post'}
+                        </span>
+                        <span style={{ fontSize: 11, color: 'var(--admin-accent)', fontWeight: 500 }}>
+                          💬 {getCommentsForPost(p).length}
+                        </span>
                       </div>
                     </td>
 
@@ -698,6 +730,16 @@ export default function BlogTab({ posts = [], onRefresh, showToast }) {
           </div>
         </div>
       </AdminMacModal>
+
+      {/* Slide-out Drawer xem bài viết và quản lý/trả lời bình luận y hệt như tại /blog */}
+      {viewingPost && (
+        <BlogDrawer
+          post={viewingPost}
+          theme={THEMES.light}
+          isAdmin={true}
+          onClose={() => setViewingPost(null)}
+        />
+      )}
     </div>
   );
 }

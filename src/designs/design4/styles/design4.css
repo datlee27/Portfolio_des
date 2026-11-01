@@ -1242,6 +1242,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
+  height: 100%;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
@@ -1331,9 +1332,12 @@
   letter-spacing: -0.02em;
   color: #0f172a;
   margin: 0 0 12px 0;
-  line-height: 1.2;
+  line-height: 1.25;
   cursor: pointer;
   transition: color 0.2s ease;
+  min-height: 2.5em;
+  display: flex;
+  align-items: flex-start;
 }
 
 .des4-work-card-title:hover,
@@ -1344,14 +1348,45 @@
 .des4-work-card-desc {
   font-family: var(--font-inter);
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.6;
   color: #475569;
   margin: 0;
+  height: 68px; /* Cố định chuẩn 3 dòng: 14px * 1.6 * 3 = 67.2px */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  word-break: break-word;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.des4-work-card-desc::-webkit-scrollbar {
+  width: 5px;
+}
+
+.des4-work-card-desc::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+}
+
+.des4-work-card-desc::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.des4-work-card-desc::-webkit-scrollbar-thumb:hover,
+.des4-work-card:hover .des4-work-card-desc::-webkit-scrollbar-thumb {
+  background: #94a3b8;
 }
 
 .des4-work-card-bottom-info {
   border-top: 1px solid #f1f5f9;
   padding-top: 20px;
+  margin-top: auto;
 }
 
 .des4-work-tags-list {
@@ -1359,6 +1394,8 @@
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 20px;
+  min-height: 56px;
+  align-content: flex-start;
 }
 
 .des4-work-tag-pill {

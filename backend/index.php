@@ -131,8 +131,13 @@ if ($endpoint === 'setup-portfolio') {
             video_demo TEXT,
             status VARCHAR(100) DEFAULT 'Latest',
             sort_order INT DEFAULT 0,
+            is_public TINYINT(1) DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
+
+        try {
+            $pdo->exec("ALTER TABLE projects ADD COLUMN is_public TINYINT(1) DEFAULT 1");
+        } catch (Exception $e) {}
 
         // Bảng skills
         $pdo->exec("CREATE TABLE IF NOT EXISTS skills (
@@ -255,7 +260,8 @@ if ($endpoint === 'portfolio') {
         // Thêm Project
         if ($type === 'project') {
             $tagsJson = is_array($body['tags'] ?? null) ? json_encode($body['tags'], JSON_UNESCAPED_UNICODE) : ($body['tags'] ?? '');
-            $stmt = $pdo->prepare("INSERT INTO projects (project_code, title, description, image_url, tags, github_url, deploy_url, video_demo, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $isPublicVal = isset($body['is_public']) ? ((int)$body['is_public'] === 0 || $body['is_public'] === false || $body['is_public'] === '0' ? 0 : 1) : 1;
+            $stmt = $pdo->prepare("INSERT INTO projects (project_code, title, description, image_url, tags, github_url, deploy_url, video_demo, status, sort_order, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $body['project_code'] ?? '01',
                 $body['title'] ?? 'Dự án mới',
@@ -267,6 +273,7 @@ if ($endpoint === 'portfolio') {
                 $body['video_demo'] ?? ($body['video_url'] ?? ''),
                 $body['status'] ?? 'Latest',
                 $body['sort_order'] ?? 0,
+                $isPublicVal,
             ]);
             $newId = (string)$pdo->lastInsertId();
             http_response_code(201);
@@ -375,19 +382,33 @@ if ($endpoint === 'portfolio') {
         // Cập nhật Project
         if ($type === 'project' && $id) {
             $tagsJson = is_array($body['tags'] ?? null) ? json_encode($body['tags'], JSON_UNESCAPED_UNICODE) : ($body['tags'] ?? '');
-            $stmt = $pdo->prepare("UPDATE projects SET project_code = ?, title = ?, description = ?, image_url = ?, tags = ?, github_url = ?, deploy_url = ?, video_demo = ?, status = ? WHERE id = ?");
-            $stmt->execute([
-                $body['project_code'] ?? '01',
-                $body['title'] ?? '',
-                $body['description'] ?? '',
-                $body['image_url'] ?? '',
-                $tagsJson,
-                $body['github_url'] ?? '',
-                $body['deploy_url'] ?? '',
-                $body['video_demo'] ?? ($body['video_url'] ?? ''),
-                $body['status'] ?? 'Latest',
-                $id,
-            ]);
+            
+            // Hỗ trợ cập nhật sort_order hoặc is_public riêng lẻ hoặc đầy đủ
+            if (isset($body['sort_order']) && !isset($body['title'])) {
+                $stmt = $pdo->prepare("UPDATE projects SET sort_order = ? WHERE id = ?");
+                $stmt->execute([(int)$body['sort_order'], $id]);
+            } else if (isset($body['is_public']) && !isset($body['title'])) {
+                $stmt = $pdo->prepare("UPDATE projects SET is_public = ? WHERE id = ?");
+                $stmt->execute([(int)$body['is_public'], $id]);
+            } else {
+                $isPublicVal = isset($body['is_public']) ? (int)$body['is_public'] : 1;
+                $sortOrderVal = isset($body['sort_order']) ? (int)$body['sort_order'] : 0;
+                $stmt = $pdo->prepare("UPDATE projects SET project_code = ?, title = ?, description = ?, image_url = ?, tags = ?, github_url = ?, deploy_url = ?, video_demo = ?, status = ?, sort_order = ?, is_public = ? WHERE id = ?");
+                $stmt->execute([
+                    $body['project_code'] ?? '01',
+                    $body['title'] ?? '',
+                    $body['description'] ?? '',
+                    $body['image_url'] ?? '',
+                    $tagsJson,
+                    $body['github_url'] ?? '',
+                    $body['deploy_url'] ?? '',
+                    $body['video_demo'] ?? ($body['video_url'] ?? ''),
+                    $body['status'] ?? 'Latest',
+                    $sortOrderVal,
+                    $isPublicVal,
+                    $id,
+                ]);
+            }
             echo json_encode([
                 'success'   => true,
                 'data'      => [],
