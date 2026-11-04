@@ -26,16 +26,16 @@ export default function ScrollEase({
       : false;
     if (prefersReducedMotion) return;
 
-    // Optimized duration: responsive 0.7s without floaty sluggish delay
-    const computedDuration = Math.min(0.8, Math.max(0.5, duration * (0.5 + (intensity / 100) * 0.4)));
+    // Buttery smooth inertia glide: 1.15s duration with gentle exponential decay
+    const computedDuration = Math.min(1.35, Math.max(0.95, duration * (0.75 + (intensity / 100) * 0.4)));
 
     const lenis = new Lenis({
       duration: computedDuration,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential gliding curve
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -7 * t)), // Silky, progressive momentum decay
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.9,
+      wheelMultiplier: 0.85, // Smooth glide without aggressive jumps
       touchMultiplier: 0, // Never hijack native touch/trackpad inertia (prevents Mac trackpad lag)
       syncTouch: false,
       autoResize: true,

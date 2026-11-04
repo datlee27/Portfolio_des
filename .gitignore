@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Sensitive config - KHÔNG commit lên Git!
+backend/config.php
+build_production.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

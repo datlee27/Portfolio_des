@@ -12,8 +12,8 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const { projects } = usePortfolio();
   const rawProjects = projects && projects.length > 0 ? projects : featuredProjects;
-  // Chỉ hiển thị các dự án ở trạng thái Công khai (Public)
-  const displayProjects = rawProjects.filter(isProjectPublic);
+  // Chỉ hiển thị 4 dự án đầu tiên ở trạng thái Công khai (Public) trên trang chủ (khớp thứ tự trên /work)
+  const displayProjects = rawProjects.filter(isProjectPublic).slice(0, 4);
   return (
     <section
       id="d4-work"
@@ -72,8 +72,6 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
             <ScrollAnimation
               key={project.id}
               direction={idx % 2 === 0 ? 'left' : 'right'}
-              viewport={{ amount: 0.2, margin: '0px 0px -40px 0px' }}
-              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               style={{ width: '100%' }}
             >
               <div className="des4-project-row">

@@ -26,7 +26,12 @@
         "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775904892/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.52.52_cb9myu.png",
         "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1764500651/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2025-11-30_lu%CC%81c_18.03.15_drt2kr.png"
       ],
-      "tags": ["React", "TypeScript", "Vite", "Tailwind CSS"],
+      "tags": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS"
+      ],
       "github": "https://github.com/datlee27/dev-roadmap",
       "deploy": "https://dev-roadmap-brown.vercel.app/",
       "status": "Latest"
@@ -40,67 +45,169 @@
         "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1775903083/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2026-04-11_lu%CC%81c_17.23.35_z4qpji.png",
         "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80"
       ],
-      "tags": ["React", "TypeScript", "Tailwind CSS", "Educational"],
+      "tags": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "Educational"
+      ],
       "github": "https://github.com/datlee27/Practice-ielts-writing-typing-react",
       "status": "Latest"
     },
     {
       "id": "03",
-      "title": "P2P Electric EV Rental",
-      "description": "Comprehensive P2P electric vehicle rental system with PayOS, OCR, and AI Assistant. A revolutionary approach to urban mobility and sustainable transport.",
-      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1764500651/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2025-11-30_lu%CC%81c_18.03.15_drt2kr.png",
-      "tags": ["Spring Boot", "MySQL", "AI", "FullStack"],
-      "github": "https://github.com/datlee27/ecodanav2",
-      "status": "2025"
+      "title": "NetFit",
+      "description": "AI-powered fitness platform that generates personalized home workout plans based on fitness goals, target muscle groups, and available time. Supports equipment-free workouts with customizable sets, reps, and rest periods.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774637/mzdnktgolwfwbilytyk6.png",
+      "body_images": [
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774648/kwha4p7n8ovcsp4na5ye.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774651/ttjw40gijhs1itm7pasf.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774653/k0eik8znydinxglj29te.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774656/daakh9daezatigqegjr1.png"
+      ],
+      "tags": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "AI Integration",
+        "Vercel",
+        "Git"
+      ],
+      "github": "https://github.com/datlee27/NetFit",
+      "deploy": "https://net-fit-rho.vercel.app",
+      "status": "Latest"
     },
     {
       "id": "04",
-      "title": "AI-Integrated LMS",
-      "description": "Full-stack Learning Management System built to modernize digital course management. Integrates advanced AI logic for personalized student recommendations.",
-      "image": "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80",
-      "tags": ["Java", "MySQL", "AI", "FullStack"],
-      "github": "https://github.com/datlee27/LearningWebsite-1",
+      "title": "P2P Electric EV Rental",
+      "description": "Comprehensive P2P electric vehicle rental system with PayOS, OCR, and AI Assistant. A revolutionary approach to urban mobility and sustainable transport.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1764500651/A%CC%89nh_ma%CC%80n_hi%CC%80nh_2025-11-30_lu%CC%81c_18.03.15_drt2kr.png",
+      "tags": [
+        "Spring Boot",
+        "MySQL",
+        "AI",
+        "FullStack"
+      ],
+      "github": "https://github.com/datlee27/ecodanav2",
+      "deploy": "https://ecodana-fullstack.vercel.app",
       "status": "2025"
     },
     {
       "id": "05",
-      "title": "Smart Recycle Bin",
-      "description": "IoT-enabled smart recycle bin using Arduino. Features hybrid sensor arrays and mechanical waste sorting for sustainable urban environments.",
-      "image": "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
-      "tags": ["Arduino", "IoT", "Sensors"],
-      "github": "https://github.com/datlee27/iot102-smart-recycle-bin",
+      "title": "Learning Management System (LMS) with AI Assistant",
+      "description": "Full-stack Learning Management System built to modernize digital course management. Integrates advanced AI logic for personalized student recommendations, grading system, and role-based access control.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774699/wxukwdzsktbdp9kplzc6.png",
+      "body_images": [
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774710/d7b4ahyqg6ftf811rxip.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774712/zfea8fppbbtezpqvqxs2.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774715/zadcodpqrbnllojjjqdk.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774717/qiq6mbv6d3gad9wnbdsd.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793774720/ddkn9pqhfmgfl9uxebag.png"
+      ],
+      "tags": [
+        "Java",
+        "JSP",
+        "MySQL",
+        "JavaScript",
+        "AI"
+      ],
+      "github": "https://github.com/datlee27/LearningWebsite",
       "status": "2025"
     },
     {
       "id": "06",
+      "title": "Smart Recycle Bin",
+      "description": "IoT-enabled smart recycle bin using Arduino. Features hybrid sensor arrays and mechanical waste sorting for sustainable urban environments.",
+      "image": "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80",
+      "tags": [
+        "Arduino",
+        "IoT",
+        "Sensors"
+      ],
+      "github": "https://github.com/datlee27/iot102-smart-recycle-bin",
+      "status": "2025"
+    },
+    {
+      "id": "07",
       "title": "Fruit Shop Web App",
       "description": "E-commerce platform for high-traffic fruit marketplaces. Features complex cart logic and session management built for speed and reliability.",
       "image": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=1200&q=80",
-      "tags": ["Java Servlets", "JSP", "SQL"],
+      "tags": [
+        "Java Servlets",
+        "JSP",
+        "SQL"
+      ],
       "github": "https://github.com/datlee27/FruitShopOnline",
       "status": "2025"
+    },
+    {
+      "id": "08",
+      "code": "(08)",
+      "title": "3Darchtech – Corporate Website|Frontend Developer",
+      "description": "Developed the frontend of the official 3D ArchTech corporate website during my internship and professional experience.\n\nWorked on building user interfaces, implementing responsive layouts, and developing frontend features to deliver a consistent user experience across different devices.",
+      "image": "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793776673/u9p6icisygphcoi3ke2a.png",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Git",
+        "Vercel",
+        "Chakra UI"
+      ],
+      "github": "",
+      "deploy": "https://3d-archtech-studio.vercel.app/",
+      "status": "Latest",
+      "is_public": true,
+      "body_images": [
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793776674/iiz7pnrgn2zvuhzovxvw.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793776675/snsztpazltivoapfy8s3.png",
+        "https://res.cloudinary.com/ddwt6nl7s/image/upload/v1793776676/upkcfhknmbeezclu5tl5.png"
+      ]
     }
   ],
   "skills": [
     {
       "category": "WEB DEV",
-      "items": ["JAVA", "JS", "HTML5", "CSS3", "SPRING", "TYPESCRIPT", "C#"]
+      "items": [
+        "JAVA",
+        "JS",
+        "HTML5",
+        "CSS3",
+        "SPRING",
+        "TYPESCRIPT",
+        "C#"
+      ]
     },
     {
       "category": "DATA & API",
-      "items": ["SQL", "RESTFUL", "SWAGGER"]
+      "items": [
+        "SQL",
+        "RESTFUL",
+        "SWAGGER"
+      ]
     },
     {
       "category": "AI & DESIGN",
-      "items": ["LM STUDIO", "FIGMA"]
+      "items": [
+        "LM STUDIO",
+        "FIGMA"
+      ]
     },
     {
       "category": "HARDWARE (IOT)",
-      "items": ["ARDUINO", "SENSORS", "MOTORS"]
+      "items": [
+        "ARDUINO",
+        "SENSORS",
+        "MOTORS"
+      ]
     },
     {
       "category": "TOOLS",
-      "items": ["GIT", "BOOTSTRAP", "VITE"]
+      "items": [
+        "GIT",
+        "BOOTSTRAP",
+        "VITE"
+      ]
     }
   ],
   "experience": [

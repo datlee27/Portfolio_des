@@ -6,6 +6,37 @@ import api from '../services/api';
 
 const defaultSkills = staticPortfolioData?.skills || [];
 
+const REALTIME_CHANNEL_NAME = 'portfolio_realtime_sync_channel';
+
+// Singleton BroadcastChannel reference for cross-tab realtime synchronization
+let syncChannel = null;
+if (typeof window !== 'undefined' && typeof window.BroadcastChannel === 'function') {
+  try {
+    syncChannel = new BroadcastChannel(REALTIME_CHANNEL_NAME);
+  } catch (e) {
+    console.warn('[RealtimeSync] BroadcastChannel not supported:', e);
+  }
+}
+
+/**
+ * Dispatch realtime sync event across all browser tabs and in-process subscribers
+ */
+export function notifyRealtimeSync(type, data) {
+  const payload = { type, data, timestamp: Date.now() };
+  if (syncChannel) {
+    try {
+      syncChannel.postMessage(payload);
+    } catch (e) {
+      console.warn('[RealtimeSync] BroadcastChannel postMessage error:', e);
+    }
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      window.dispatchEvent(new CustomEvent('portfolio_realtime_event', { detail: payload }));
+    } catch {}
+  }
+}
+
 const PortfolioContext = createContext({
   projects: defaultProjects,
   personal: defaultSiteMeta,
@@ -116,9 +147,9 @@ export function mapApiProject(p, idx = 0) {
 
   return {
     id: p.id || String(idx + 1),
-    project_code: p.project_code || `0${idx + 1}`,
-    code: p.project_code ? `(${String(p.project_code).padStart(2, '0')})` : `(0${idx + 1})`,
-    title: p.title,
+    project_code: (p.project_code && String(p.project_code).trim()) || `0${idx + 1}`,
+    code: (p.project_code && String(p.project_code).trim()) ? `(${String(p.project_code).padStart(2, '0')})` : `(0${idx + 1})`,
+    title: (p.title && p.title.trim()) || defaultProjects[idx % defaultProjects.length]?.title || `Dự án ${idx + 1}`,
     description: p.description || '',
     client: tags.slice(0, 2).join(' / ') || 'Production App',
     clientCode: `(PR0${idx + 1})`,
@@ -283,7 +314,7 @@ export function PortfolioProvider({ children }) {
     };
   }, []);
 
-  // Setters with persistent offline storage
+  // Setters with persistent offline storage & cross-tab realtime dispatch
   const updateProjects = useCallback((newProjects) => {
     const normalized = (newProjects || []).map((p, idx) => mapApiProject(p, idx));
     setProjects(normalized);
@@ -292,6 +323,7 @@ export function PortfolioProvider({ children }) {
     } catch (e) {
       console.warn('Failed to cache projects in localStorage:', e);
     }
+    notifyRealtimeSync('projects', normalized);
   }, []);
 
   const updatePersonal = useCallback((newPersonal) => {
@@ -302,6 +334,7 @@ export function PortfolioProvider({ children }) {
       } catch (e) {
         console.warn('Failed to cache personal in localStorage:', e);
       }
+      notifyRealtimeSync('personal', merged);
       return merged;
     });
   }, []);
@@ -314,6 +347,7 @@ export function PortfolioProvider({ children }) {
     } catch (e) {
       console.warn('Failed to cache posts in localStorage:', e);
     }
+    notifyRealtimeSync('posts', normalized);
   }, []);
 
   const updateSkills = useCallback((newSkills) => {
@@ -323,6 +357,7 @@ export function PortfolioProvider({ children }) {
     } catch (e) {
       console.warn('Failed to cache skills in localStorage:', e);
     }
+    notifyRealtimeSync('skills', newSkills);
   }, []);
 
   const updateExperience = useCallback((newExperience) => {
@@ -341,6 +376,7 @@ export function PortfolioProvider({ children }) {
     } catch (e) {
       console.warn('Failed to cache experience in localStorage:', e);
     }
+    notifyRealtimeSync('experience', normalized);
   }, []);
 
   // Revert back to original hardcoded files
@@ -352,12 +388,150 @@ export function PortfolioProvider({ children }) {
       localStorage.removeItem('portfolio_skills_override');
       localStorage.removeItem('portfolio_experience_override');
     } catch {}
-    setProjects(defaultProjects);
+    const defaultNormProjects = defaultProjects.map((p, idx) => mapApiProject(p, idx));
+    setProjects(defaultNormProjects);
     setPersonal(defaultSiteMeta);
     setPosts(defaultPosts);
     setSkills(defaultSkills);
     setExperience(defaultJourney);
+    notifyRealtimeSync('reset', null);
   }, []);
+
+  // Rehydrate state from localStorage overrides
+  const syncFromLocalStorage = useCallback(() => {
+    try {
+      // 1. Projects
+      const savedProj = localStorage.getItem('portfolio_projects_override');
+      if (savedProj) {
+        const parsed = JSON.parse(savedProj);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProjects(parsed.map((p, idx) => mapApiProject(p, idx)));
+        }
+      }
+
+      // 2. Personal
+      const savedPersonal = localStorage.getItem('portfolio_personal_override');
+      if (savedPersonal) {
+        const parsed = JSON.parse(savedPersonal);
+        if (parsed && typeof parsed === 'object') {
+          setPersonal((prev) => ({ ...defaultSiteMeta, ...prev, ...parsed }));
+        }
+      }
+
+      // 3. Posts
+      const savedPosts = localStorage.getItem('portfolio_posts_override');
+      if (savedPosts) {
+        const parsed = JSON.parse(savedPosts);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPosts(parsed.map((p, idx) => mapApiPost(p, idx)));
+        }
+      }
+
+      // 4. Skills
+      const savedSkills = localStorage.getItem('portfolio_skills_override');
+      if (savedSkills) {
+        const parsed = JSON.parse(savedSkills);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSkills(parsed);
+        }
+      }
+
+      // 5. Experience
+      const savedExp = localStorage.getItem('portfolio_experience_override');
+      if (savedExp) {
+        const parsed = JSON.parse(savedExp);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setExperience(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('[RealtimeSync] Failed to rehydrate from localStorage:', e);
+    }
+  }, []);
+
+  // Realtime multi-channel subscriber (BroadcastChannel + StorageEvent + WindowEvent + Tab Focus)
+  useEffect(() => {
+    const handleSyncMessage = (msg) => {
+      if (!msg) return;
+      const { type, data } = msg;
+      if (type === 'projects') {
+        if (Array.isArray(data)) {
+          setProjects(data.map((p, idx) => mapApiProject(p, idx)));
+        } else {
+          syncFromLocalStorage();
+        }
+      } else if (type === 'personal') {
+        if (data && typeof data === 'object') {
+          setPersonal((prev) => ({ ...defaultSiteMeta, ...prev, ...data }));
+        } else {
+          syncFromLocalStorage();
+        }
+      } else if (type === 'posts') {
+        if (Array.isArray(data)) {
+          setPosts(data.map((p, idx) => mapApiPost(p, idx)));
+        } else {
+          syncFromLocalStorage();
+        }
+      } else if (type === 'skills') {
+        if (Array.isArray(data)) {
+          setSkills(data);
+        } else {
+          syncFromLocalStorage();
+        }
+      } else if (type === 'experience') {
+        if (Array.isArray(data)) {
+          setExperience(data);
+        } else {
+          syncFromLocalStorage();
+        }
+      } else if (type === 'reset') {
+        setProjects(defaultProjects.map((p, idx) => mapApiProject(p, idx)));
+        setPersonal(defaultSiteMeta);
+        setPosts(defaultPosts);
+        setSkills(defaultSkills);
+        setExperience(defaultJourney);
+      } else {
+        syncFromLocalStorage();
+      }
+    };
+
+    // 1. BroadcastChannel (Cross-Tab instant sync < 1ms)
+    if (syncChannel) {
+      syncChannel.onmessage = (event) => {
+        handleSyncMessage(event?.data);
+      };
+    }
+
+    // 2. Storage event listener (other tabs fallback)
+    const handleStorage = (e) => {
+      if (!e.key || e.key.startsWith('portfolio_')) {
+        syncFromLocalStorage();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // 3. Custom window event (same-tab in-process dispatch)
+    const handleCustomSync = (e) => {
+      handleSyncMessage(e?.detail);
+    };
+    window.addEventListener('portfolio_realtime_event', handleCustomSync);
+
+    // 4. Tab visibility change & focus (when user switches back to portfolio tab)
+    const handleVisibility = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        syncFromLocalStorage();
+      }
+    };
+    window.addEventListener('focus', syncFromLocalStorage);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('portfolio_realtime_event', handleCustomSync);
+      window.removeEventListener('focus', syncFromLocalStorage);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [syncFromLocalStorage]);
 
   // Fetch live API data with graceful offline/hardcoded fallback
   const fetchLivePortfolio = useCallback(async () => {
@@ -374,20 +548,29 @@ export function PortfolioProvider({ children }) {
       if (portRes && portRes.success && portRes.data) {
         apiSuccess = true;
 
-        // Check if user has explicit local override
-        const hasProjectOverride = Boolean(localStorage.getItem('portfolio_projects_override'));
-        if (!hasProjectOverride && Array.isArray(portRes.data.projects) && portRes.data.projects.length > 0) {
-          setProjects(portRes.data.projects.map(mapApiProject));
+        // When API succeeds, live database is the single source of truth
+        if (Array.isArray(portRes.data.projects) && portRes.data.projects.length > 0) {
+          const validProjects = portRes.data.projects.filter(
+            (p) => p && typeof p.title === 'string' && p.title.trim().length > 0
+          );
+          if (validProjects.length > 0) {
+            const mapped = validProjects.map(mapApiProject);
+            setProjects(mapped);
+            try {
+              localStorage.setItem('portfolio_projects_override', JSON.stringify(mapped));
+            } catch {}
+          }
         }
 
-        const hasSkillOverride = Boolean(localStorage.getItem('portfolio_skills_override'));
-        if (!hasSkillOverride && Array.isArray(portRes.data.skills) && portRes.data.skills.length > 0) {
+        if (Array.isArray(portRes.data.skills) && portRes.data.skills.length > 0) {
           setSkills(portRes.data.skills);
+          try {
+            localStorage.setItem('portfolio_skills_override', JSON.stringify(portRes.data.skills));
+          } catch {}
         }
 
-        const hasExpOverride = Boolean(localStorage.getItem('portfolio_experience_override'));
-        if (!hasExpOverride && Array.isArray(portRes.data.experience) && portRes.data.experience.length > 0) {
-          setExperience(portRes.data.experience.map((exp, idx) => ({
+        if (Array.isArray(portRes.data.experience) && portRes.data.experience.length > 0) {
+          const mappedExp = portRes.data.experience.map((exp, idx) => ({
             id: exp.id || `exp-${idx + 1}`,
             place: exp.company || exp.place || '',
             company: exp.company || exp.place || '',
@@ -395,25 +578,34 @@ export function PortfolioProvider({ children }) {
             title: exp.title || exp.role || '',
             period: exp.period || '',
             description: exp.description || '',
-          })));
+          }));
+          setExperience(mappedExp);
+          try {
+            localStorage.setItem('portfolio_experience_override', JSON.stringify(mappedExp));
+          } catch {}
         }
 
-        const hasPersonalOverride = Boolean(localStorage.getItem('portfolio_personal_override'));
-        if (!hasPersonalOverride && portRes.data.personal) {
-          setPersonal((prev) => ({
-            ...prev,
-            ...portRes.data.personal,
-            name: portRes.data.personal.name || prev.name,
-            title: portRes.data.personal.title || prev.title,
-            bio: portRes.data.personal.bio || prev.bio,
-            identityStatement: portRes.data.personal.identity_statement || prev.identityStatement,
-            tagline: portRes.data.personal.hero_subtext || prev.tagline,
-            coordinates: portRes.data.personal.coordinates || prev.coordinates,
-            status: portRes.data.personal.status || prev.status,
-            avatarUrl: portRes.data.personal.avatar_url || prev.avatarUrl,
-            cvUrl: portRes.data.personal.cv_url || prev.cvUrl || prev.cv_url,
-            cv_url: portRes.data.personal.cv_url || prev.cv_url || prev.cvUrl,
-          }));
+        if (portRes.data.personal) {
+          setPersonal((prev) => {
+            const merged = {
+              ...prev,
+              ...portRes.data.personal,
+              name: portRes.data.personal.name || prev.name,
+              title: portRes.data.personal.title || prev.title,
+              bio: portRes.data.personal.bio || prev.bio,
+              identityStatement: portRes.data.personal.identity_statement || prev.identityStatement,
+              tagline: portRes.data.personal.hero_subtext || prev.tagline,
+              coordinates: portRes.data.personal.coordinates || prev.coordinates,
+              status: portRes.data.personal.status || prev.status,
+              avatarUrl: portRes.data.personal.avatar_url || prev.avatarUrl,
+              cvUrl: portRes.data.personal.cv_url || prev.cvUrl || prev.cv_url,
+              cv_url: portRes.data.personal.cv_url || prev.cv_url || prev.cvUrl,
+            };
+            try {
+              localStorage.setItem('portfolio_personal_override', JSON.stringify(merged));
+            } catch {}
+            return merged;
+          });
         }
       }
 

@@ -47,6 +47,35 @@ const GlobalStyles = createGlobalStyle`
     max-width: 100%;
     display: block;
   }
+
+  /* ─── Global Scrollbar — mỏng 5px, thanh lịch, đồng nhất mọi trang ─── */
+  html, body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 99px;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 `;
 
 export default GlobalStyles;

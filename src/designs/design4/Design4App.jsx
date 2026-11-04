@@ -185,19 +185,66 @@ export default function Design4App() {
   // Update document title and ensure body scroll is unlocked based on current view
   useEffect(() => {
     document.body.style.overflow = '';
+    const updateThemeColor = (color) => {
+      document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+        meta.setAttribute('content', color);
+      });
+      document.documentElement.style.backgroundColor = color;
+      document.body.style.backgroundColor = color;
+    };
+
     if (activeView === 'blog') {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.title = 'Blog – Tech Notes';
+      updateThemeColor('#0E0F12');
     } else if (activeView === 'work') {
       document.title = 'Work – Projects';
+      updateThemeColor('#F6F4EF');
     } else if (activeView === 'about') {
       document.title = 'About – Dat Lee';
+      updateThemeColor('#F6F4EF');
     } else if (activeView === 'lab') {
       document.title = 'Lab – Design Experiments';
+      updateThemeColor('#FFFFFF');
     } else {
-      document.title = 'DatLee | Portfolio';
+      document.title = 'Dat Lee | Fullstack Developer & Technical Artisan';
+      updateThemeColor('#F6F4EF');
     }
   }, [activeView]);
+
+  // Global asset preloader: Pre-cache critical visual assets during idle time to eliminate scroll jank
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const criticalMedia = [
+      '/assets/gallery/pin-13.jpg',
+      '/assets/gallery/pin-3.jpg',
+      '/assets/gallery/pin-4.jpg',
+      '/assets/gallery/pin-5.jpg',
+      '/assets/gallery/pin-11.jpg',
+      '/assets/gallery/pin-12.jpg',
+      '/assets/gallery/pin-2.jpg',
+      '/images/clothesline/photo1.webp',
+      '/images/clothesline/photo3.webp',
+      '/images/clothesline/photo4.webp',
+      '/images/clothesline/photo5.webp',
+      '/assets/lab/me.jpg',
+      '/assets/lab/photo.jpg',
+    ];
+
+    const preload = () => {
+      criticalMedia.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    };
+
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(preload, { timeout: 1800 });
+    } else {
+      setTimeout(preload, 300);
+    }
+  }, []);
 
   return (
     <div className="des4-root">
@@ -223,7 +270,7 @@ export default function Design4App() {
       {/* Smooth inertia scroll with snappy response (intensity 40) */}
       {(activeView === 'main' || activeView === 'work' || activeView === 'about') && <ScrollEase intensity={40} />}
 
-      {/* Lightweight progressive edge blur on Home page (2-layer GPU accelerated) */}
+      {/* Zero-jank progressive edge feather gradient on Home page (GPU-free, 120 FPS constant) */}
       {activeView === 'main' && (
         <>
           <div
@@ -232,27 +279,24 @@ export default function Design4App() {
               top: 0,
               left: 0,
               right: 0,
-              height: '70px',
+              height: '48px',
+              background: 'linear-gradient(to bottom, #F6F4EF 0%, rgba(246, 244, 239, 0) 100%)',
               zIndex: 90,
               pointerEvents: 'none',
             }}
-          >
-            <ScrollBlurByAki direction="top" blur={8} quality="low" />
-          </div>
-
+          />
           <div
             style={{
               position: 'fixed',
               bottom: 0,
               left: 0,
               right: 0,
-              height: '70px',
+              height: '48px',
+              background: 'linear-gradient(to top, #F6F4EF 0%, rgba(246, 244, 239, 0) 100%)',
               zIndex: 90,
               pointerEvents: 'none',
             }}
-          >
-            <ScrollBlurByAki direction="bottom" blur={8} quality="low" />
-          </div>
+          />
         </>
       )}
 

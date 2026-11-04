@@ -90,6 +90,13 @@ export const api = {
     });
   },
 
+  async reorderProjects(orders) {
+    return request('/index.php?endpoint=portfolio&type=reorder-projects', {
+      method: 'PUT',
+      body: JSON.stringify({ orders }),
+    });
+  },
+
   async deleteProject(id) {
     return request(`/index.php?endpoint=portfolio&type=project&id=${id}`, {
       method: 'DELETE',

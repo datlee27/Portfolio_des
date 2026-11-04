@@ -57,7 +57,7 @@ export default function FooterSection() {
           }}
         >
           {/* Left Column: Dispatch & CTA */}
-          <ScrollAnimation direction="left" viewport={{ amount: 0.3 }} style={{ maxWidth: '520px' }}>
+          <ScrollAnimation direction="left" style={{ maxWidth: '520px' }}>
             <span
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
@@ -137,7 +137,7 @@ export default function FooterSection() {
           </ScrollAnimation>
 
           {/* Right Column: Social Links & Local Time */}
-          <ScrollAnimation direction="up" viewport={{ amount: 0.3 }} style={{ textAlign: 'left' }}>
+          <ScrollAnimation direction="up" delay={0.08} style={{ textAlign: 'left' }}>
             <div
               style={{
                 display: 'flex',
@@ -220,7 +220,7 @@ export default function FooterSection() {
         </div>
 
         {/* Giant quiet watermark / monogram */}
-        <ScrollAnimation direction="up" viewport={{ amount: 0.2 }}>
+        <ScrollAnimation direction="up">
           <div
             style={{
               paddingTop: '40px',

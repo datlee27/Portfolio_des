@@ -1,0 +1,481 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Personal Portfolio & Blog API",
+    "description": "Hệ thống RESTful API hoàn chỉnh quản lý Portfolio (Projects, Personal Info, Skills, Experience) và Blog (Posts, Views, Interactions). Tương thích hoàn toàn với WordPress/Hosting PHP & MySQL.",
+    "version": "1.1.0",
+    "contact": {
+      "name": "Lê Văn Đạt",
+      "email": "lvd27012004@gmail.com",
+      "url": "https://datdoc.id.vn"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://datdoc.id.vn/api",
+      "description": "Production Server (cPanel / WordPress Host)"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local Development (Vite Proxy)"
+    }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Xác thực phiên làm việc Quản trị viên (Admin)" },
+    { "name": "Portfolio", "description": "Dữ liệu tổng quan Portfolio, Dự án, Kỹ năng, Kinh nghiệm & Cá nhân" },
+    { "name": "Blog", "description": "Quản lý Bài viết Blog, Nội dung, Lượt xem & Lượt thích" },
+    { "name": "System", "description": "Cấu hình hệ thống, tạo bảng CSDL và tài liệu OpenAPI" }
+  ],
+  "paths": {
+    "/auth.php": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Đăng nhập Quản trị viên (Admin Login)",
+        "parameters": [
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "login" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": { "type": "string", "example": "admin" },
+                  "password": { "type": "string", "example": "admin123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng nhập thành công, session cookie được cấp phát" },
+          "401": { "description": "Sai tài khoản hoặc mật khẩu" }
+        }
+      },
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Kiểm tra phiên đăng nhập (check) hoặc Đăng xuất (logout)",
+        "parameters": [
+          {
+            "name": "endpoint",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "enum": ["check", "logout"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trả về trạng thái phiên làm việc hoặc đăng xuất thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": { "logged_in": true, "username": "admin" },
+                  "message": "Authenticated",
+                  "timestamp": 1793554289
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/index.php?endpoint=portfolio": {
+      "get": {
+        "tags": ["Portfolio"],
+        "summary": "Lấy toàn bộ dữ liệu Portfolio (Cá nhân, Dự án, Kỹ năng, Hành trình)",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "personal": {
+                      "name": "Lê Văn Đạt",
+                      "short_name": "Dat Lee",
+                      "title": "Software Engineer",
+                      "role": "Fullstack Developer",
+                      "bio": "Crafting digital experiences...",
+                      "identity_statement": "Fullstack Software Engineer & Technical Artisan.",
+                      "hero_subtext": "Focused on frontend craft, high-performance web systems...",
+                      "status": "Available for opportunities",
+                      "coordinates": "16°04'N 108°13'E · Da Nang, Vietnam",
+                      "avatar_url": "https://...",
+                      "cv_url": "https://..."
+                    },
+                    "projects": [
+                      {
+                        "id": 1,
+                        "project_code": "01",
+                        "title": "Learning Management System (LMS) with AI Assistant",
+                        "description": "Web-based LMS with personalized learning paths...",
+                        "image_url": "https://...",
+                        "body_images": ["https://...", "https://..."],
+                        "tags": ["Java", "JSP", "MySQL", "JavaScript"],
+                        "github_url": "https://github.com/...",
+                        "deploy_url": "https://...",
+                        "video_demo": "https://youtube.com/...",
+                        "status": "Completed",
+                        "sort_order": 1,
+                        "is_public": true
+                      }
+                    ],
+                    "skills": [
+                      {
+                        "id": 1,
+                        "category": "FRONTEND",
+                        "items": ["React", "TypeScript", "Next.js", "Tailwind CSS", "GSAP"]
+                      }
+                    ],
+                    "experience": [
+                      {
+                        "id": 1,
+                        "title": "Software Engineer",
+                        "company": "Tech Corp",
+                        "period": "2024 - Present",
+                        "description": "Architected modern microfrontends..."
+                      }
+                    ]
+                  },
+                  "message": "Portfolio data retrieved successfully",
+                  "timestamp": 1793554289
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/index.php?endpoint=portfolio&type=project": {
+      "post": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Thêm dự án mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "project_code": { "type": "string", "example": "01" },
+                  "title": { "type": "string", "example": "NetFit AI Fitness" },
+                  "description": { "type": "string", "example": "AI-powered workout generator..." },
+                  "image_url": { "type": "string", "example": "https://res.cloudinary.com/..." },
+                  "body_images": { "type": "array", "items": { "type": "string" }, "example": ["https://res.cloudinary.com/..."] },
+                  "tags": { "type": "array", "items": { "type": "string" }, "example": ["React", "TypeScript"] },
+                  "github_url": { "type": "string", "example": "https://github.com/..." },
+                  "deploy_url": { "type": "string", "example": "https://..." },
+                  "video_demo": { "type": "string", "example": "https://youtu.be/..." },
+                  "status": { "type": "string", "example": "Latest" },
+                  "sort_order": { "type": "integer", "example": 1 },
+                  "is_public": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Tạo dự án thành công" },
+          "401": { "description": "Chưa xác thực Admin" }
+        }
+      },
+      "put": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Cập nhật dự án (hoặc cập nhật nhanh trạng thái hiển thị / thứ tự sắp xếp)",
+        "parameters": [
+          { "name": "id", "in": "query", "required": true, "schema": { "type": "integer", "example": 1 } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project_code": { "type": "string" },
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "image_url": { "type": "string" },
+                  "body_images": { "type": "array", "items": { "type": "string" } },
+                  "tags": { "type": "array", "items": { "type": "string" } },
+                  "github_url": { "type": "string" },
+                  "deploy_url": { "type": "string" },
+                  "video_demo": { "type": "string" },
+                  "status": { "type": "string" },
+                  "sort_order": { "type": "integer" },
+                  "is_public": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Cập nhật dự án thành công" },
+          "401": { "description": "Chưa xác thực Admin" }
+        }
+      },
+      "delete": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Xóa dự án theo ID",
+        "parameters": [
+          { "name": "id", "in": "query", "required": true, "schema": { "type": "integer", "example": 1 } }
+        ],
+        "responses": {
+          "200": { "description": "Xóa dự án thành công" },
+          "401": { "description": "Chưa xác thực Admin" }
+        }
+      }
+    },
+    "/index.php?endpoint=portfolio&type=personal": {
+      "put": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Cập nhật thông tin cá nhân và liên hệ",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Lê Văn Đạt" },
+                  "short_name": { "type": "string", "example": "Dat Lee" },
+                  "title": { "type": "string", "example": "Software Engineer" },
+                  "role": { "type": "string", "example": "Fullstack Developer" },
+                  "bio": { "type": "string" },
+                  "identity_statement": { "type": "string" },
+                  "hero_subtext": { "type": "string" },
+                  "status": { "type": "string" },
+                  "coordinates": { "type": "string" },
+                  "avatar_url": { "type": "string" },
+                  "cv_url": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Cập nhật thành công" },
+          "401": { "description": "Chưa xác thực Admin" }
+        }
+      }
+    },
+    "/index.php?endpoint=portfolio&type=skills": {
+      "put": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Đồng bộ danh sách tất cả các nhóm kỹ năng",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "category": { "type": "string", "example": "FRONTEND" },
+                    "items": { "type": "array", "items": { "type": "string" }, "example": ["React", "TypeScript"] }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Đồng bộ kỹ năng thành công" } }
+      }
+    },
+    "/index.php?endpoint=portfolio&type=experience": {
+      "post": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Thêm mốc hành trình / kinh nghiệm mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "company"],
+                "properties": {
+                  "title": { "type": "string", "example": "Software Engineer" },
+                  "company": { "type": "string", "example": "Tech Studio" },
+                  "period": { "type": "string", "example": "2025 - Present" },
+                  "description": { "type": "string", "example": "Leading frontend development..." }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Thêm kinh nghiệm thành công" } }
+      },
+      "put": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Cập nhật mốc kinh nghiệm theo ID hoặc đồng bộ toàn bộ danh sách",
+        "parameters": [
+          { "name": "id", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "company": { "type": "string" },
+                  "period": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Cập nhật thành công" } }
+      },
+      "delete": {
+        "tags": ["Portfolio"],
+        "summary": "[Admin] Xóa mốc kinh nghiệm theo ID",
+        "parameters": [
+          { "name": "id", "in": "query", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Xóa thành công" } }
+      }
+    },
+    "/index.php?endpoint=posts": {
+      "get": {
+        "tags": ["Blog"],
+        "summary": "Lấy danh sách tất cả các bài viết Blog",
+        "responses": {
+          "200": {
+            "description": "Trả về danh sách bài viết",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "post_id": "post-1",
+                      "title": "một năm dùng react server components",
+                      "slug": "mot-nam-dung-react-server-components",
+                      "excerpt": "Sau một năm dùng RSC trong dự án thật...",
+                      "content": "<p>Nội dung chi tiết...</p>",
+                      "author": "Lê Văn Đạt",
+                      "published_date": "2026-08-12",
+                      "read_time": 5,
+                      "image_url": "https://...",
+                      "tag": "công nghệ",
+                      "total_views": 150,
+                      "total_likes": 31,
+                      "total_comments": 2
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Blog"],
+        "summary": "[Admin] Tạo bài viết Blog mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "post_id": { "type": "string", "example": "post-171829" },
+                  "title": { "type": "string", "example": "Kiến trúc Minimalist UI cho Portfolio" },
+                  "slug": { "type": "string", "example": "kien-truc-minimalist-ui" },
+                  "excerpt": { "type": "string", "example": "Tóm tắt ngắn gọn..." },
+                  "content": { "type": "string", "example": "<p>Nội dung bài viết...</p>" },
+                  "author": { "type": "string", "example": "Lê Văn Đạt" },
+                  "published_date": { "type": "string", "example": "2026-11-01" },
+                  "read_time": { "type": "integer", "example": 5 },
+                  "image_url": { "type": "string", "example": "https://..." },
+                  "tag": { "type": "string", "example": "suy ngẫm" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Tạo bài viết thành công" } }
+      }
+    },
+    "/index.php?endpoint=post": {
+      "get": {
+        "tags": ["Blog"],
+        "summary": "Lấy chi tiết 1 bài viết Blog",
+        "parameters": [
+          { "name": "post_id", "in": "query", "required": false, "schema": { "type": "string", "example": "post-1" } },
+          { "name": "id", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Trả về chi tiết bài viết" } }
+      },
+      "put": {
+        "tags": ["Blog"],
+        "summary": "[Admin] Cập nhật bài viết Blog",
+        "parameters": [
+          { "name": "post_id", "in": "query", "required": false, "schema": { "type": "string", "example": "post-1" } },
+          { "name": "id", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "slug": { "type": "string" },
+                  "excerpt": { "type": "string" },
+                  "content": { "type": "string" },
+                  "author": { "type": "string" },
+                  "published_date": { "type": "string" },
+                  "read_time": { "type": "integer" },
+                  "image_url": { "type": "string" },
+                  "tag": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Cập nhật bài viết thành công" } }
+      },
+      "delete": {
+        "tags": ["Blog"],
+        "summary": "[Admin] Xóa bài viết Blog",
+        "parameters": [
+          { "name": "post_id", "in": "query", "required": false, "schema": { "type": "string", "example": "post-1" } },
+          { "name": "id", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Xóa bài viết thành công" } }
+      }
+    },
+    "/index.php?endpoint=setup-portfolio": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Tự động tạo các bảng MySQL và cập nhật cấu trúc schema mới nhất",
+        "responses": { "200": { "description": "Tạo bảng và cập nhật cấu trúc thành công" } }
+      }
+    },
+    "/index.php?endpoint=swagger": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Xuất OpenAPI 3.0.3 JSON Specification",
+        "responses": { "200": { "description": "Trả về OpenAPI Specification JSON" } }
+      }
+    }
+  }
+}

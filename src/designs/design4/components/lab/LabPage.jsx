@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import meJpg from '/assets/lab/me.jpg';
+import photoJpg from '/assets/lab/photo.jpg';
 import styled from 'styled-components';
 import {
   motion,
@@ -32,6 +34,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { featuredProjects, siteMeta } from '../../data/homeData';
+import { usePortfolio, isProjectPublic } from '../../../../context/PortfolioContext';
 import ProjectModalD4 from '../common/ProjectModalD4';
 import NotesModalContent from './NotesModalContent';
 import HoverBloomCanvas from './HoverBloomCanvas';
@@ -55,8 +58,8 @@ const DESKTOP_ITEMS = [
     id: 'me-photo',
     name: 'me.jpg',
     type: 'image',
-    src: '/assets/lab/me.jpg',
-    thumb: '/assets/lab/me.jpg',
+    src: meJpg,
+    thumb: meJpg,
     title: 'me.jpg',
     category: 'Personal Photo',
     defaultPos: { x: 45, y: 200 },
@@ -65,8 +68,8 @@ const DESKTOP_ITEMS = [
     id: 'coffee-photo',
     name: 'photo.jpg',
     type: 'image',
-    src: '/assets/lab/photo.jpg',
-    thumb: '/assets/lab/photo.jpg',
+    src: photoJpg,
+    thumb: photoJpg,
     title: 'photo.jpg',
     category: 'Workspace & Coffee',
     defaultPos: { x: 45, y: 345 },
@@ -77,14 +80,14 @@ const DESKTOP_ITEMS = [
 /* ─── macOS Battery Indicator ─── */
 function MacOSBattery({ percentage = 100 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#1f2937' }}>
       <span>{percentage}%</span>
       <div
         style={{
           width: 22,
           height: 11,
           borderRadius: 3,
-          border: '1px solid rgba(255, 255, 255, 0.75)',
+          border: '1px solid rgba(0, 0, 0, 0.45)',
           padding: 1,
           display: 'flex',
           alignItems: 'center',
@@ -95,7 +98,7 @@ function MacOSBattery({ percentage = 100 }) {
           style={{
             width: `${percentage}%`,
             height: '100%',
-            background: '#22c55e',
+            background: '#16a34a',
             borderRadius: 1.5,
           }}
         />
@@ -106,7 +109,7 @@ function MacOSBattery({ percentage = 100 }) {
             top: 2.5,
             width: 1.5,
             height: 4,
-            background: 'rgba(255, 255, 255, 0.75)',
+            background: 'rgba(0, 0, 0, 0.45)',
             borderRadius: '0 1px 1px 0',
           }}
         />
@@ -216,17 +219,31 @@ function DockItem({
 /* ─── STYLED COMPONENTS ─── */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const Wrapper = styled.div`
-  position: relative;
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('/assets/hero-background.png');
+  min-height: 100dvh;
+  background-image: url('/assets/lab/wallpaper-desktop.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+  background-color: #ffffff;
   overflow: hidden;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter',
     sans-serif;
-  color: #ffffff;
+  color: #111111;
+
+  @media (max-width: 768px) {
+    background-image: url('/assets/lab/wallpaper-mobile.jpg');
+    background-size: cover;
+    background-position: center;
+  }
 `;
 
 const MenuBar = styled.header`
@@ -235,19 +252,22 @@ const MenuBar = styled.header`
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 28px;
-  background: rgba(18, 22, 32, 0.45);
+  height: calc(30px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(35px) saturate(200%);
   -webkit-backdrop-filter: blur(35px) saturate(200%);
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  box-sizing: border-box;
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 `;
 
 const MenuBarLeft = styled.div`
@@ -261,12 +281,13 @@ const MenuBarRight = styled.div`
   align-items: center;
   gap: 14px;
   font-size: 12px;
+  color: #374151;
 `;
 
 const MenuButton = styled.button`
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.95);
+  color: #1f2937;
   font-size: 13px;
   font-weight: ${props => (props.$bold ? '700' : '500')};
   cursor: pointer;
@@ -279,14 +300,14 @@ const MenuButton = styled.button`
   font-family: inherit;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.08);
   }
 `;
 
 /* ─── Desktop Canvas for Draggable Items ─── */
 const DesktopCanvas = styled.div`
   position: absolute;
-  top: 30px;
+  top: calc(30px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
   bottom: 80px;
@@ -456,12 +477,12 @@ const DockContainer = styled(motion.nav)`
   height: 64px;
   padding: 8px 12px;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.76);
   backdrop-filter: blur(40px) saturate(190%);
   -webkit-backdrop-filter: blur(40px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
 
   & .dock-item-wrapper {
     display: flex;
@@ -475,7 +496,7 @@ const DockContainer = styled(motion.nav)`
   & .dock-divider {
     width: 1px;
     height: 36px;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.15);
     margin: 0 4px;
     align-self: center;
   }
@@ -493,7 +514,7 @@ const DockIconImageWrapper = styled.div`
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+    filter: none;
     pointer-events: none;
     image-rendering: -webkit-optimize-contrast;
   }
@@ -566,6 +587,7 @@ const WindowTitleBar = styled.div`
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
+  touch-action: none;
 
   &:active {
     cursor: grabbing;
@@ -616,6 +638,17 @@ const TrafficDots = styled.div`
 export default function LabPage({ onBack }) {
   const containerRef = useRef(null);
 
+  // Dynamic portfolio data from PortfolioContext
+  const {
+    projects: contextProjects,
+    personal: contextPersonal,
+    skills: contextSkills,
+  } = usePortfolio();
+
+  const allProjects = contextProjects && contextProjects.length > 0 ? contextProjects : featuredProjects;
+  const publicProjects = allProjects.filter(isProjectPublic);
+  const currentPersonal = contextPersonal || siteMeta;
+
   // Active window state
   const [activeWindow, setActiveWindow] = useState(null); // Clean desktop by default (Finder closed)
   const [windowZIndex, setWindowZIndex] = useState(150);
@@ -626,6 +659,39 @@ export default function LabPage({ onBack }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [bouncingApp, setBouncingApp] = useState(null);
+
+  // Responsive screen size tracking for Mobile (< 768px) and Tablet (< 1024px)
+  const [windowWidth, setWindowWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+  const isSmallScreen = windowWidth < 1024;
+
+  const currentOpenTitle = selectedMedia
+    ? selectedMedia.name
+    : activeWindow === 'finder'
+      ? 'Finder'
+      : activeWindow === 'notes'
+        ? 'Notes'
+        : activeWindow === 'photos'
+          ? 'Photos'
+          : activeWindow === 'mail'
+            ? 'Mail'
+            : activeWindow === 'terminal'
+              ? 'Terminal'
+              : activeWindow === 'art'
+                ? 'Art.canvas'
+                : activeWindow === 'about-mac'
+                  ? 'About Mac'
+                  : 'Portfolio';
 
   // Art Studio Canvas State
   const artCanvasRef = useRef(null);
@@ -685,6 +751,46 @@ export default function LabPage({ onBack }) {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Lock mobile body & html to prevent pull-to-refresh / rubber banding gap
+  useEffect(() => {
+    const prevOverflowHtml = document.documentElement.style.overflow;
+    const prevOverscrollHtml = document.documentElement.style.overscrollBehavior;
+    const prevOverflowBody = document.body.style.overflow;
+    const prevPositionBody = document.body.style.position;
+    const prevTouchActionBody = document.body.style.touchAction;
+    const prevOverscrollBody = document.body.style.overscrollBehavior;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    document.body.style.overscrollBehavior = 'none';
+    document.body.style.touchAction = 'none';
+
+    const handleTouchMove = (e) => {
+      const isScrollable = e.target.closest('.mac-scrollable, .modal-scroll-body, textarea, pre, input');
+      if (!isScrollable) {
+        if (e.cancelable) e.preventDefault();
+      }
+    };
+
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      document.documentElement.style.overflow = prevOverflowHtml;
+      document.documentElement.style.overscrollBehavior = prevOverscrollHtml;
+      document.body.style.overflow = prevOverflowBody;
+      document.body.style.position = prevPositionBody;
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.overscrollBehavior = prevOverscrollBody;
+      document.body.style.touchAction = prevTouchActionBody;
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   // Keyboard dismiss listener for macOS Alert Dialog (Enter / Esc / Space)
@@ -748,15 +854,20 @@ export default function LabPage({ onBack }) {
     if (cmd === 'help') {
       response = 'Available commands: about, skills, projects, contact, clear, whoami, date, exit';
     } else if (cmd === 'about') {
-      response = `Dat Le (Lê Văn Đạt) - Fullstack Software Engineer & Technical Artisan.`;
+      response = currentPersonal.identityStatement || currentPersonal.bio || `${currentPersonal.name || 'Dat Le'} - ${currentPersonal.title || 'Fullstack Software Engineer'}.`;
     } else if (cmd === 'skills') {
-      response = 'Core Stack: React 19, TypeScript, Vite, Spring Boot, Java, Node.js, Tailwind, Docker, MySQL, Redis.';
+      const skillSummary =
+        contextSkills && contextSkills.length > 0
+          ? contextSkills.map((c) => (Array.isArray(c.items) ? `${c.category}: ${c.items.join(', ')}` : c.category || c.name || c.title)).slice(0, 4).join(' | ')
+          : 'React 19, TypeScript, Vite, Spring Boot, Java, Node.js, Tailwind, Docker, MySQL, Redis.';
+      response = `Core Stack: ${skillSummary}`;
     } else if (cmd === 'projects') {
-      response = `Total Projects: ${featuredProjects.length}. Featured: Dev Roadmap Tracker, IELTS Writing Practice, AI IoT Lab.`;
+      const topProjects = publicProjects.slice(0, 3).map((p) => p.title).join(', ');
+      response = `Total Projects: ${publicProjects.length}. Featured: ${topProjects || 'Dev Roadmap Tracker, IELTS Writing Practice'}.`;
     } else if (cmd === 'contact') {
-      response = `Email: ${siteMeta.email} | GitHub: ${siteMeta.github}`;
+      response = `Email: ${currentPersonal.email || siteMeta.email} | GitHub: ${currentPersonal.github || siteMeta.github}`;
     } else if (cmd === 'whoami') {
-      response = 'datle (admin/architect)';
+      response = `${currentPersonal.short_name || 'datle'} (admin/architect)`;
     } else if (cmd === 'date') {
       response = new Date().toString();
     } else if (cmd === 'clear') {
@@ -784,75 +895,101 @@ export default function LabPage({ onBack }) {
       {/* ─── macOS Top Menu Bar ─── */}
       <MenuBar onClick={(e) => e.stopPropagation()}>
         <MenuBarLeft>
-          {/* Exit Lab Menu Item (plain text like File/Edit) */}
+          {/* Exit Lab Menu Item */}
           <MenuButton
             onClick={onBack}
             title="Exit Lab & Return to Overview"
-            style={{ fontWeight: 500, padding: '2px 8px' }}
+            style={{
+              fontWeight: 600,
+              padding: isMobile ? '3px 10px' : '2px 8px',
+              background: isMobile ? 'rgba(0, 0, 0, 0.06)' : 'none',
+              borderRadius: isMobile ? 6 : 4,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              color: '#111827',
+            }}
           >
-            Exit Lab
+            <span></span> Exit Lab
           </MenuButton>
 
-          {/* Active App Name (Bold) */}
-          <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff', letterSpacing: '-0.01em', marginLeft: 2 }}>
-            {activeWindow === 'finder'
-              ? 'Finder'
-              : activeWindow === 'notes'
-                ? 'Notes'
-                : activeWindow === 'photos'
-                  ? 'Photos'
-                  : activeWindow === 'mail'
-                    ? 'Mail'
-                    : activeWindow === 'terminal'
-                      ? 'Terminal'
-                      : activeWindow === 'art'
-                        ? 'Art.canvas'
-                        : 'Portfolio'}
+          {/* Active Card / App Name (Bold) */}
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 13,
+              color: '#111827',
+              letterSpacing: '-0.01em',
+              marginLeft: isMobile ? 6 : 2,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              maxWidth: isMobile ? '160px' : '280px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {isSmallScreen && <span style={{ opacity: 0.45, fontWeight: 400 }}></span>}
+            {currentOpenTitle}
           </span>
 
-          {/* Menus */}
-          <MenuButton onClick={() => handleAppLaunch('finder')}>File</MenuButton>
-          <MenuButton onClick={() => handleAppLaunch('notes')}>Edit</MenuButton>
-          <MenuButton onClick={() => handleAppLaunch('photos')}>View</MenuButton>
-          {/* <MenuButton onClick={() => onBack()} title="Return to Overview">
-            Go
-          </MenuButton> */}
-          <MenuButton onClick={() => handleAppLaunch('terminal')}>Window</MenuButton>
-          <MenuButton onClick={() => handleAppLaunch('about-mac')}>Help</MenuButton>
+          {/* Menus (File, Edit, View, Window, Help) — Ẩn hoàn toàn trên mobile/tablet để giao diện gọn gàng */}
+          {!isSmallScreen && (
+            <>
+              <MenuButton onClick={() => handleAppLaunch('finder')}>File</MenuButton>
+              <MenuButton onClick={() => handleAppLaunch('notes')}>Edit</MenuButton>
+              <MenuButton onClick={() => handleAppLaunch('photos')}>View</MenuButton>
+              <MenuButton onClick={() => handleAppLaunch('terminal')}>Window</MenuButton>
+              <MenuButton onClick={() => handleAppLaunch('about-mac')}>Help</MenuButton>
+            </>
+          )}
         </MenuBarLeft>
 
         <MenuBarRight>
-          {/* Battery Status */}
-          <MacOSBattery percentage={100} />
+          {!isSmallScreen ? (
+            <>
+              {/* Battery Status */}
+              <MacOSBattery percentage={100} />
 
-          {/* Wi-Fi Icon */}
-          <Wifi size={14} style={{ cursor: 'pointer', opacity: 0.9 }} title="Wi-Fi: Connected (Da Nang 5G)" />
+              {/* Wi-Fi Icon */}
+              <Wifi size={14} style={{ cursor: 'pointer', opacity: 0.9 }} title="Wi-Fi: Connected (Da Nang 5G)" />
 
-          {/* Spotlight Search Icon */}
-          <Search
-            size={13.5}
-            style={{ cursor: 'pointer', opacity: 0.9 }}
-            onClick={() => setSpotlightOpen(!spotlightOpen)}
-            title="Spotlight Search (Cmd+Space)"
-          />
+              {/* Spotlight Search Icon */}
+              <Search
+                size={13.5}
+                style={{ cursor: 'pointer', opacity: 0.9 }}
+                onClick={() => setSpotlightOpen(!spotlightOpen)}
+                title="Spotlight Search (Cmd+Space)"
+              />
 
-          {/* Control Center Toggle */}
-          <div
-            id="des4-control-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              setControlCenterOpen(!controlCenterOpen);
-            }}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            title="Control Center"
-          >
-            <SlidersHorizontal size={13.5} style={{ opacity: 0.9 }} />
-          </div>
+              {/* Control Center Toggle */}
+              <div
+                id="des4-control-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setControlCenterOpen(!controlCenterOpen);
+                }}
+                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                title="Control Center"
+              >
+                <SlidersHorizontal size={13.5} style={{ opacity: 0.9 }} />
+              </div>
 
-          {/* Real Live Time */}
-          <span style={{ fontWeight: 600, letterSpacing: '0.01em', cursor: 'default' }}>
-            {currentTime || 'Tue Sep 8  3:20 PM'}
-          </span>
+              {/* Real Live Time */}
+              <span style={{ fontWeight: 600, letterSpacing: '0.01em', cursor: 'default' }}>
+                {currentTime || 'Tue Sep 8  3:20 PM'}
+              </span>
+            </>
+          ) : (
+            <>
+              {/* Compact Status for Mobile & Tablet */}
+              {!isMobile && <MacOSBattery percentage={100} />}
+              <span style={{ fontWeight: 600, fontSize: 12, letterSpacing: '0.01em', cursor: 'default', opacity: 0.9 }}>
+                {currentTime ? currentTime.split('  ')[1] || currentTime : '3:20 PM'}
+              </span>
+            </>
+          )}
         </MenuBarRight>
       </MenuBar>
 
@@ -907,17 +1044,37 @@ export default function LabPage({ onBack }) {
               }}
             >
               <CardThumbnail $selected={isSelected}>
-                <img
-                  src={item.thumb}
-                  alt={item.name}
-                  draggable={false}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
+                {item.isArtApp ? (
+                  <img
+                    src={item.thumb}
+                    alt={item.name}
+                    draggable={false}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                ) : (
+                  <img
+                    src={item.thumb}
+                    alt={item.name}
+                    draggable={false}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent && !parent.querySelector('.img-broken-placeholder')) {
+                        const ph = document.createElement('div');
+                        ph.className = 'img-broken-placeholder';
+                        ph.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1e1e2e;color:#6b7280;font-size:11px;flex-direction:column;gap:4px;';
+                        ph.innerHTML = '<span style="font-size:20px">🖼️</span><span>' + item.name + '</span>';
+                        parent.appendChild(ph);
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                )}
                 {item.type === 'video' && (
                   <div className="play-btn">
                     <Play size={12} fill="#ffffff" style={{ marginLeft: 1 }} />
@@ -952,10 +1109,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="820px"
+            $width={isMobile ? '94vw' : isTablet ? '720px' : '820px'}
             style={{
-              top: '12%',
-              left: 'calc(50% - 410px)',
+              top: isMobile ? '6%' : '12%',
+              left: isMobile ? '3vw' : isTablet ? 'calc(50% - 360px)' : 'calc(50% - 410px)',
             }}
             onClick={bringToFront}
           >
@@ -1003,7 +1160,7 @@ export default function LabPage({ onBack }) {
                     }}
                   >
                     <Folder size={14} fill={finderTab === 'projects' ? '#007aff' : 'none'} color={finderTab === 'projects' ? '#007aff' : '#6b7280'} />
-                    <span>Projects ({featuredProjects.length})</span>
+                    <span>Projects ({publicProjects.length})</span>
                   </div>
                   <div
                     onClick={() => setFinderTab('shots')}
@@ -1052,13 +1209,13 @@ export default function LabPage({ onBack }) {
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                       <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#111827' }}>
-                        Selected Works ({featuredProjects.length} items)
+                        Selected Works ({publicProjects.length} items)
                       </h3>
                       <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Double-click to view project</span>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-                      {featuredProjects.map((project) => (
+                      {publicProjects.map((project) => (
                         <motion.div
                           key={project.id}
                           whileHover={{ scale: 1.02, y: -3 }}
@@ -1074,7 +1231,7 @@ export default function LabPage({ onBack }) {
                           }}
                         >
                           <img
-                            src={project.image}
+                            src={project.image || project.image_url}
                             alt={project.title}
                             style={{ width: '100%', height: 120, objectFit: 'cover' }}
                           />
@@ -1214,10 +1371,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="740px"
+            $width={isMobile ? '94vw' : isTablet ? '700px' : '740px'}
             style={{
-              top: '14%',
-              left: 'calc(50% - 370px)',
+              top: isMobile ? '7%' : '14%',
+              left: isMobile ? '3vw' : isTablet ? 'calc(50% - 350px)' : 'calc(50% - 370px)',
             }}
             onClick={bringToFront}
           >
@@ -1245,10 +1402,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="780px"
+            $width={isMobile ? '94vw' : isTablet ? '720px' : '780px'}
             style={{
-              top: '16%',
-              left: 'calc(50% - 390px)',
+              top: isMobile ? '8%' : '16%',
+              left: isMobile ? '3vw' : isTablet ? 'calc(50% - 360px)' : 'calc(50% - 390px)',
             }}
             onClick={bringToFront}
           >
@@ -1372,10 +1529,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="640px"
+            $width={isMobile ? '94vw' : '640px'}
             style={{
-              top: '15%',
-              left: 'calc(50% - 320px)',
+              top: isMobile ? '8%' : '15%',
+              left: isMobile ? '3vw' : 'calc(50% - 320px)',
             }}
             onClick={bringToFront}
           >
@@ -1501,10 +1658,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="680px"
+            $width={isMobile ? '94vw' : '680px'}
             style={{
-              top: '18%',
-              left: 'calc(50% - 340px)',
+              top: isMobile ? '8%' : '18%',
+              left: isMobile ? '3vw' : 'calc(50% - 340px)',
               background: '#18181b',
               color: '#f4f4f5',
             }}
@@ -1568,10 +1725,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="460px"
+            $width={isMobile ? '92vw' : '460px'}
             style={{
-              top: '22%',
-              left: 'calc(50% - 230px)',
+              top: isMobile ? '12%' : '22%',
+              left: isMobile ? '4vw' : 'calc(50% - 230px)',
               textAlign: 'center',
             }}
             onClick={bringToFront}
@@ -1627,10 +1784,10 @@ export default function LabPage({ onBack }) {
             exit={{ opacity: 0, scale: 0.92, y: 10 }}
             transition={{ type: 'spring', damping: 26, stiffness: 360 }}
             $zIndex={windowZIndex}
-            $width="880px"
+            $width={isMobile ? '94vw' : isTablet ? '740px' : '880px'}
             style={{
-              top: '5%',
-              left: 'calc(50% - 440px)',
+              top: isMobile ? '5%' : '5%',
+              left: isMobile ? '3vw' : isTablet ? 'calc(50% - 370px)' : 'calc(50% - 440px)',
             }}
             onClick={bringToFront}
           >
@@ -1761,51 +1918,76 @@ export default function LabPage({ onBack }) {
       </AnimatePresence>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      {/* ─── QUICK LOOK / MEDIA LIGHTBOX VIEWER (LIGHT THEME) ─── */}
+      {/* ─── QUICK LOOK / MEDIA LIGHTBOX VIEWER (DRAGGABLE CARD WINDOW) ─── */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <AnimatePresence>
         {selectedMedia && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedMedia(null)}
+          <div
             style={{
               position: 'fixed',
               inset: 0,
               zIndex: 2500,
-              background: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(16px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 24,
+              pointerEvents: 'none',
             }}
           >
+            {/* Clickable Backdrop to close */}
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 15 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedMedia(null)}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0, 0, 0, 0.4)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                pointerEvents: 'auto',
+              }}
+            />
+
+            {/* Draggable Media Card Window on Mobile & Desktop */}
+            <motion.div
+              drag
+              dragMomentum={false}
+              dragElastic={0.06}
+              dragConstraints={containerRef}
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 10 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              exit={{ scale: 0.92, opacity: 0, y: 10 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 360 }}
               onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'relative',
-                maxWidth: 860,
-                width: '100%',
+                position: 'fixed',
+                top: isMobile ? '8%' : isTablet ? '10%' : '12%',
+                left: isMobile ? '4%' : isTablet ? 'calc(50% - 340px)' : 'calc(50% - 390px)',
+                width: isMobile ? '92vw' : isTablet ? '680px' : '780px',
+                maxWidth: '94vw',
+                maxHeight: '84vh',
                 background: '#ffffff',
                 borderRadius: 16,
                 overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 25px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                pointerEvents: 'auto',
+                touchAction: 'none',
+                zIndex: 2510,
               }}
             >
+              {/* Draggable TitleBar Handle */}
               <div
                 style={{
                   padding: '12px 18px',
                   background: '#f3f4f6',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'flex-start',
+                  justifyContent: 'space-between',
                   borderBottom: '1px solid #e5e7eb',
+                  cursor: 'grab',
+                  touchAction: 'none',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -1816,12 +1998,22 @@ export default function LabPage({ onBack }) {
                 </div>
               </div>
 
-              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#ffffff' }}>
+              <div
+                style={{
+                  padding: isMobile ? '14px 14px 18px' : '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  background: '#ffffff',
+                  overflowY: 'auto',
+                  maxHeight: 'calc(84vh - 46px)',
+                }}
+              >
                 <div
                   style={{
                     width: '100%',
-                    minHeight: 380,
-                    maxHeight: '60vh',
+                    minHeight: isMobile ? 220 : 360,
+                    maxHeight: isMobile ? '42vh' : '54vh',
                     background: '#f8fafc',
                     borderRadius: 12,
                     border: '1px solid #e2e8f0',
@@ -1837,8 +2029,8 @@ export default function LabPage({ onBack }) {
                     src={selectedMedia.src}
                     alt={selectedMedia.name}
                     style={{
-                      maxWidth: '92%',
-                      maxHeight: '56vh',
+                      maxWidth: '94%',
+                      maxHeight: isMobile ? '40vh' : '50vh',
                       borderRadius: 8,
                       objectFit: 'contain',
                       imageRendering: '-webkit-optimize-contrast',
@@ -1849,7 +2041,7 @@ export default function LabPage({ onBack }) {
 
                 <div
                   style={{
-                    marginTop: 18,
+                    marginTop: 14,
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
@@ -1859,18 +2051,18 @@ export default function LabPage({ onBack }) {
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>
+                    <div style={{ fontSize: isMobile ? 14 : 16, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>
                       {selectedMedia.title}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
                       <span
                         style={{
-                          fontSize: 11,
+                          fontSize: 10.5,
                           fontWeight: 700,
                           background: '#f1f5f9',
                           color: '#475569',
                           border: '1px solid #e2e8f0',
-                          padding: '3px 8px',
+                          padding: '2px 7px',
                           borderRadius: 5,
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
@@ -1879,11 +2071,11 @@ export default function LabPage({ onBack }) {
                         {selectedMedia.category}
                       </span>
                       <span style={{ fontSize: 11, color: '#9ca3af' }}>•</span>
-                      <span style={{ fontSize: 12, color: '#6b7280' }}>
+                      <span style={{ fontSize: 11.5, color: '#6b7280' }}>
                         File: <strong style={{ color: '#111827' }}>{selectedMedia.name}</strong>
                       </span>
                       <span style={{ fontSize: 11, color: '#9ca3af' }}>•</span>
-                      <span style={{ fontSize: 12, color: '#6b7280' }}>
+                      <span style={{ fontSize: 11.5, color: '#6b7280' }}>
                         Type: <strong style={{ color: '#111827' }}>{selectedMedia.type.toUpperCase()}</strong>
                       </span>
                     </div>
@@ -1894,7 +2086,7 @@ export default function LabPage({ onBack }) {
                       type="button"
                       onClick={() => {
                         setSelectedMedia(null);
-                        setSelectedProject(featuredProjects[0]);
+                        setSelectedProject(publicProjects[0] || featuredProjects[0]);
                       }}
                       style={{
                         background: '#007aff',
@@ -1918,7 +2110,7 @@ export default function LabPage({ onBack }) {
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

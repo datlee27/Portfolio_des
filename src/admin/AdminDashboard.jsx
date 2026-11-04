@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -34,6 +34,10 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     experience: contextExperience,
     isOffline,
     resetToDefaults,
+    updateProjects,
+    updateSkills,
+    updatePersonal,
+    updateExperience,
   } = usePortfolio();
 
   const [activeTab, setActiveTab] = useState(() => {
@@ -68,6 +72,25 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
   const [toast, setToast] = useState(null);
   const [isServerReachable, setIsServerReachable] = useState(true);
 
+  // Giữ tham chiếu ổn định đến fallback data của context để không gây re-render loop
+  const contextFallbackRef = useRef({
+    projects: contextProjects,
+    skills: contextSkills,
+    personal: contextPersonal,
+    experience: contextExperience,
+    posts: contextPosts,
+  });
+
+  useEffect(() => {
+    contextFallbackRef.current = {
+      projects: contextProjects,
+      skills: contextSkills,
+      personal: contextPersonal,
+      experience: contextExperience,
+      posts: contextPosts,
+    };
+  }, [contextProjects, contextSkills, contextPersonal, contextExperience, contextPosts]);
+
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => {
@@ -95,48 +118,28 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
 
       if (pRes && pRes.success && pRes.data) {
         gotServerData = true;
-        try {
-          const raw = localStorage.getItem('portfolio_skills_override');
-          if (raw) {
-            const savedSkills = JSON.parse(raw);
-            if (Array.isArray(savedSkills) && savedSkills.length > 0) {
-              pRes.data.skills = savedSkills;
-            }
-          }
-        } catch {}
-
-        // Preserve experience from localStorage if user updated offline or customized
-        try {
-          const rawExp = localStorage.getItem('portfolio_experience_override');
-          if (rawExp) {
-            const savedExp = JSON.parse(rawExp);
-            if (Array.isArray(savedExp) && savedExp.length > 0) {
-              pRes.data.experience = savedExp;
-            }
-          }
-        } catch {}
-
-        // Preserve projects customizations from localStorage (is_public, sort_order, order)
-        try {
-          const rawProj = localStorage.getItem('portfolio_projects_override');
-          if (rawProj) {
-            const savedProjects = JSON.parse(rawProj);
-            if (Array.isArray(savedProjects) && savedProjects.length > 0) {
-              pRes.data.projects = savedProjects;
-            }
-          }
-        } catch (e) {
-          console.warn('Lỗi đọc portfolio_projects_override:', e);
-        }
-
         setPortfolioData(pRes.data);
+
+        // Synchronize context & cache to localStorage
+        if (Array.isArray(pRes.data.projects) && pRes.data.projects.length > 0) {
+          updateProjects(pRes.data.projects);
+        }
+        if (Array.isArray(pRes.data.skills) && pRes.data.skills.length > 0) {
+          updateSkills(pRes.data.skills);
+        }
+        if (Array.isArray(pRes.data.experience) && pRes.data.experience.length > 0) {
+          updateExperience(pRes.data.experience);
+        }
+        if (pRes.data.personal) {
+          updatePersonal(pRes.data.personal);
+        }
       } else {
         // Fallback to local context data
         setPortfolioData({
-          projects: contextProjects,
-          skills: contextSkills,
-          personal: contextPersonal,
-          experience: contextExperience,
+          projects: contextFallbackRef.current.projects,
+          skills: contextFallbackRef.current.skills,
+          personal: contextFallbackRef.current.personal,
+          experience: contextFallbackRef.current.experience,
         });
       }
 
@@ -145,7 +148,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
         setPostsData(bRes.data.map((p, idx) => mapApiPost(p, idx)));
       } else {
         // Fallback to local posts data
-        setPostsData(contextPosts);
+        setPostsData(contextFallbackRef.current.posts);
       }
 
       setIsServerReachable(gotServerData);
@@ -159,23 +162,32 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
     } catch {
       setIsServerReachable(false);
       setPortfolioData({
-        projects: contextProjects,
-        skills: contextSkills,
-        personal: contextPersonal,
-        experience: contextExperience,
+        projects: contextFallbackRef.current.projects,
+        skills: contextFallbackRef.current.skills,
+        personal: contextFallbackRef.current.personal,
+        experience: contextFallbackRef.current.experience,
       });
-      setPostsData(contextPosts);
+      setPostsData(contextFallbackRef.current.posts);
       if (isManual === true) {
         showToast('Đang hoạt động trên bộ nhớ đệm cục bộ.', 'error');
       }
     } finally {
       setLoading(false);
     }
-  }, [contextProjects, contextSkills, contextPersonal, contextPosts, contextExperience, showToast, onLogout]);
+  }, [showToast, onLogout, updateProjects, updateSkills, updateExperience, updatePersonal]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Khi người dùng lưu thứ tự dự án trong ProjectsTab, cập nhật tức thì cả Admin và Context
+  const handleProjectsReordered = useCallback((newProjects) => {
+    setPortfolioData((prev) => ({
+      ...prev,
+      projects: newProjects,
+    }));
+    updateProjects(newProjects);
+  }, [updateProjects]);
 
   const handleLogout = async () => {
     try {
@@ -408,6 +420,7 @@ export default function AdminDashboard({ onLogout, onGoHome, user }) {
             <ProjectsTab
               projects={portfolioData?.projects || []}
               onRefresh={fetchData}
+              onProjectsReordered={handleProjectsReordered}
               showToast={showToast}
             />
           )}

@@ -18,7 +18,7 @@ export default function WhatIDoSection() {
     >
       <div className="des4-container">
         {/* Title & Subtitle */}
-        <ScrollAnimation direction="left" viewport={{ amount: 0.4 }}>
+        <ScrollAnimation direction="up">
           <h2
             style={{
               fontFamily: 'var(--font-sans, "Inter", sans-serif)',
@@ -55,7 +55,7 @@ export default function WhatIDoSection() {
           {/* Left: 3D Workspace Screen */}
           <ScrollAnimation
             direction="left"
-            viewport={{ amount: 0.3, margin: '0px 0px -40px 0px' }}
+            delay={0.06}
             style={{ width: '100%' }}
           >
             <div
@@ -89,7 +89,7 @@ export default function WhatIDoSection() {
           {/* Right: 3 Interactive Capability Blocks */}
           <ScrollAnimation
             direction="right"
-            viewport={{ amount: 0.3, margin: '0px 0px -40px 0px' }}
+            delay={0.12}
             style={{ width: '100%' }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>

@@ -27,9 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 3. Cấu hình Kết nối Database MySQL
-// (LƯU Ý: Nếu trên hosting bạn có file db.php hoặc config.php riêng, bạn có thể require_once 'db.php';
-//  hoặc điều chỉnh 4 biến bên dưới cho đúng với Database trên cPanel của bạn)
+// 3. Nạp file cấu hình kết nối Database MySQL
+if (file_exists(__DIR__ . '/config.php')) {
+    require_once __DIR__ . '/config.php';
+} elseif (file_exists(__DIR__ . '/../config.php')) {
+    require_once __DIR__ . '/../config.php';
+} elseif (file_exists(__DIR__ . '/db.php')) {
+    require_once __DIR__ . '/db.php';
+}
+
 $dbHost = defined('DB_HOST') ? DB_HOST : 'localhost';
 $dbName = defined('DB_NAME') ? DB_NAME : 'datdoc_portfolio'; 
 $dbUser = defined('DB_USER') ? DB_USER : 'datdoc_user';
@@ -37,13 +43,6 @@ $dbPass = defined('DB_PASS') ? DB_PASS : '';
 
 // Kết nối PDO
 try {
-    // Nếu có file cấu hình kết nối database riêng cùng thư mục
-    if (file_exists(__DIR__ . '/db.php')) {
-        require_once __DIR__ . '/db.php';
-    } elseif (file_exists(__DIR__ . '/config.php')) {
-        require_once __DIR__ . '/config.php';
-    }
-
     if (!isset($pdo)) {
         $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";
         $pdo = new PDO($dsn, $dbUser, $dbPass, [
@@ -125,6 +124,7 @@ if ($endpoint === 'setup-portfolio') {
             title VARCHAR(255) NOT NULL,
             description TEXT,
             image_url TEXT,
+            body_images TEXT,
             tags TEXT,
             github_url TEXT,
             deploy_url TEXT,
@@ -137,6 +137,12 @@ if ($endpoint === 'setup-portfolio') {
 
         try {
             $pdo->exec("ALTER TABLE projects ADD COLUMN is_public TINYINT(1) DEFAULT 1");
+        } catch (Exception $e) {}
+        try {
+            $pdo->exec("ALTER TABLE projects ADD COLUMN body_images TEXT AFTER image_url");
+        } catch (Exception $e) {}
+        try {
+            $pdo->exec("ALTER TABLE projects ADD COLUMN video_demo TEXT AFTER deploy_url");
         } catch (Exception $e) {}
 
         // Bảng skills
@@ -153,6 +159,25 @@ if ($endpoint === 'setup-portfolio') {
             company VARCHAR(255) NOT NULL,
             period VARCHAR(100) NOT NULL,
             description TEXT
+        )");
+
+        // Bảng posts (Bài viết Blog)
+        $pdo->exec("CREATE TABLE IF NOT EXISTS posts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            post_id VARCHAR(100),
+            title VARCHAR(255) NOT NULL,
+            slug VARCHAR(255) NOT NULL,
+            excerpt TEXT,
+            content LONGTEXT,
+            author VARCHAR(100) DEFAULT 'Admin',
+            published_date VARCHAR(50),
+            read_time INT DEFAULT 5,
+            image_url TEXT,
+            tag VARCHAR(100) DEFAULT 'suy ngẫm',
+            total_views INT DEFAULT 0,
+            total_likes INT DEFAULT 0,
+            total_comments INT DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
 
         echo json_encode([
@@ -191,13 +216,30 @@ if ($endpoint === 'portfolio') {
     // [GET] Lấy toàn bộ dữ liệu Portfolio
     if ($method === 'GET') {
         try {
-            // Lấy Personal
-            $stmt = $pdo->query("SELECT * FROM personal ORDER BY id DESC LIMIT 1");
-            $personal = $stmt->fetch() ?: (object)[];
+            // Lấy Personal (hỗ trợ cả tên bảng 'personal' hoặc 'personal_info')
+            $personal = (object)[];
+            try {
+                $stmt = $pdo->query("SELECT * FROM personal ORDER BY id DESC LIMIT 1");
+                $personal = $stmt->fetch() ?: (object)[];
+            } catch (Exception $pe) {
+                try {
+                    $stmt = $pdo->query("SELECT * FROM personal_info ORDER BY id DESC LIMIT 1");
+                    $personal = $stmt->fetch() ?: (object)[];
+                } catch (Exception $pe2) {}
+            }
 
-            // Lấy Projects
-            $stmt = $pdo->query("SELECT * FROM projects ORDER BY sort_order ASC, id DESC");
-            $projectsRaw = $stmt->fetchAll();
+            // Lấy Projects (hỗ trợ cả có sort_order hoặc chưa có sort_order)
+            $projectsRaw = [];
+            try {
+                $stmt = $pdo->query("SELECT * FROM projects ORDER BY sort_order ASC, id DESC");
+                $projectsRaw = $stmt->fetchAll() ?: [];
+            } catch (Exception $pre) {
+                try {
+                    $stmt = $pdo->query("SELECT * FROM projects ORDER BY id DESC");
+                    $projectsRaw = $stmt->fetchAll() ?: [];
+                } catch (Exception $pre2) {}
+            }
+
             $projects = array_map(function($p) {
                 // Parse tags if JSON string or comma-separated
                 if (!empty($p['tags'])) {
@@ -206,12 +248,25 @@ if ($endpoint === 'portfolio') {
                 } else {
                     $p['tags'] = [];
                 }
+                // Parse body_images if JSON string or comma-separated
+                if (!empty($p['body_images'])) {
+                    $decodedImgs = json_decode($p['body_images'], true);
+                    $p['body_images'] = is_array($decodedImgs) ? $decodedImgs : array_map('trim', explode(',', $p['body_images']));
+                } else {
+                    $p['body_images'] = [];
+                }
+                $p['is_public'] = isset($p['is_public']) ? ((int)$p['is_public'] === 1 || $p['is_public'] === true || $p['is_public'] === '1') : true;
+                $p['sort_order'] = isset($p['sort_order']) ? (int)$p['sort_order'] : 0;
                 return $p;
             }, $projectsRaw);
 
             // Lấy Skills
-            $stmt = $pdo->query("SELECT * FROM skills ORDER BY id ASC");
-            $skillsRaw = $stmt->fetchAll();
+            $skillsRaw = [];
+            try {
+                $stmt = $pdo->query("SELECT * FROM skills ORDER BY id ASC");
+                $skillsRaw = $stmt->fetchAll() ?: [];
+            } catch (Exception $se) {}
+
             $skills = array_map(function($s) {
                 if (!empty($s['items'])) {
                     $decoded = json_decode($s['items'], true);
@@ -222,9 +277,17 @@ if ($endpoint === 'portfolio') {
                 return $s;
             }, $skillsRaw);
 
-            // Lấy Experience
-            $stmt = $pdo->query("SELECT * FROM experience ORDER BY id DESC");
-            $experience = $stmt->fetchAll();
+            // Lấy Experience (hỗ trợ cả 'experience' và 'experiences')
+            $experience = [];
+            try {
+                $stmt = $pdo->query("SELECT * FROM experience ORDER BY id DESC");
+                $experience = $stmt->fetchAll() ?: [];
+            } catch (Exception $ee) {
+                try {
+                    $stmt = $pdo->query("SELECT * FROM experiences ORDER BY id DESC");
+                    $experience = $stmt->fetchAll() ?: [];
+                } catch (Exception $ee2) {}
+            }
 
             echo json_encode([
                 'success'   => true,
@@ -260,19 +323,22 @@ if ($endpoint === 'portfolio') {
         // Thêm Project
         if ($type === 'project') {
             $tagsJson = is_array($body['tags'] ?? null) ? json_encode($body['tags'], JSON_UNESCAPED_UNICODE) : ($body['tags'] ?? '');
-            $isPublicVal = isset($body['is_public']) ? ((int)$body['is_public'] === 0 || $body['is_public'] === false || $body['is_public'] === '0' ? 0 : 1) : 1;
-            $stmt = $pdo->prepare("INSERT INTO projects (project_code, title, description, image_url, tags, github_url, deploy_url, video_demo, status, sort_order, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $bodyImagesJson = is_array($body['body_images'] ?? null) ? json_encode($body['body_images'], JSON_UNESCAPED_UNICODE) : ($body['body_images'] ?? '');
+            $isPublicVal = isset($body['is_public']) ? (((int)$body['is_public'] === 0 || $body['is_public'] === false || $body['is_public'] === '0') ? 0 : 1) : 1;
+            $sortOrderVal = isset($body['sort_order']) ? (int)$body['sort_order'] : 0;
+            $stmt = $pdo->prepare("INSERT INTO projects (project_code, title, description, image_url, body_images, tags, github_url, deploy_url, video_demo, status, sort_order, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $body['project_code'] ?? '01',
                 $body['title'] ?? 'Dự án mới',
                 $body['description'] ?? '',
                 $body['image_url'] ?? '',
+                $bodyImagesJson,
                 $tagsJson,
                 $body['github_url'] ?? '',
                 $body['deploy_url'] ?? '',
                 $body['video_demo'] ?? ($body['video_url'] ?? ''),
                 $body['status'] ?? 'Latest',
-                $body['sort_order'] ?? 0,
+                $sortOrderVal,
                 $isPublicVal,
             ]);
             $newId = (string)$pdo->lastInsertId();
@@ -379,26 +445,70 @@ if ($endpoint === 'portfolio') {
             exit;
         }
 
+        // Cập nhật Thứ Tự Dự Án Hàng Loạt (Batch Reorder Projects)
+        if ($type === 'reorder-projects' || $type === 'projects-order') {
+            $orders = $body['orders'] ?? (is_array($body) ? $body : []);
+            if (!empty($orders) && is_array($orders)) {
+                $pdo->beginTransaction();
+                try {
+                    $stmt = $pdo->prepare("UPDATE projects SET sort_order = ? WHERE id = ?");
+                    foreach ($orders as $index => $item) {
+                        $pId = $item['id'] ?? null;
+                        $sOrder = isset($item['sort_order']) ? (int)$item['sort_order'] : ($index + 1);
+                        if ($pId !== null && $pId !== '') {
+                            $stmt->execute([$sOrder, $pId]);
+                        }
+                    }
+                    $pdo->commit();
+                    echo json_encode([
+                        'success'   => true,
+                        'data'      => [],
+                        'message'   => 'Projects reordered successfully',
+                        'timestamp' => time(),
+                    ]);
+                    exit;
+                } catch (Exception $reorderErr) {
+                    $pdo->rollBack();
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Lỗi cập nhật thứ tự: ' . $reorderErr->getMessage(),
+                    ]);
+                    exit;
+                }
+            } else {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Danh sách orders không hợp lệ',
+                ]);
+                exit;
+            }
+        }
+
         // Cập nhật Project
         if ($type === 'project' && $id) {
             $tagsJson = is_array($body['tags'] ?? null) ? json_encode($body['tags'], JSON_UNESCAPED_UNICODE) : ($body['tags'] ?? '');
+            $bodyImagesJson = is_array($body['body_images'] ?? null) ? json_encode($body['body_images'], JSON_UNESCAPED_UNICODE) : ($body['body_images'] ?? '');
             
             // Hỗ trợ cập nhật sort_order hoặc is_public riêng lẻ hoặc đầy đủ
             if (isset($body['sort_order']) && !isset($body['title'])) {
                 $stmt = $pdo->prepare("UPDATE projects SET sort_order = ? WHERE id = ?");
                 $stmt->execute([(int)$body['sort_order'], $id]);
             } else if (isset($body['is_public']) && !isset($body['title'])) {
+                $isPublicVal = (((int)$body['is_public'] === 0 || $body['is_public'] === false || $body['is_public'] === '0') ? 0 : 1);
                 $stmt = $pdo->prepare("UPDATE projects SET is_public = ? WHERE id = ?");
-                $stmt->execute([(int)$body['is_public'], $id]);
+                $stmt->execute([$isPublicVal, $id]);
             } else {
-                $isPublicVal = isset($body['is_public']) ? (int)$body['is_public'] : 1;
+                $isPublicVal = isset($body['is_public']) ? (((int)$body['is_public'] === 0 || $body['is_public'] === false || $body['is_public'] === '0') ? 0 : 1) : 1;
                 $sortOrderVal = isset($body['sort_order']) ? (int)$body['sort_order'] : 0;
-                $stmt = $pdo->prepare("UPDATE projects SET project_code = ?, title = ?, description = ?, image_url = ?, tags = ?, github_url = ?, deploy_url = ?, video_demo = ?, status = ?, sort_order = ?, is_public = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE projects SET project_code = ?, title = ?, description = ?, image_url = ?, body_images = ?, tags = ?, github_url = ?, deploy_url = ?, video_demo = ?, status = ?, sort_order = ?, is_public = ? WHERE id = ?");
                 $stmt->execute([
                     $body['project_code'] ?? '01',
                     $body['title'] ?? '',
                     $body['description'] ?? '',
                     $body['image_url'] ?? '',
+                    $bodyImagesJson,
                     $tagsJson,
                     $body['github_url'] ?? '',
                     $body['deploy_url'] ?? '',
@@ -545,8 +655,12 @@ if ($endpoint === 'portfolio') {
 if ($endpoint === 'posts') {
     // [GET] Danh sách bài viết
     if ($method === 'GET') {
-        $stmt = $pdo->query("SELECT * FROM posts ORDER BY id DESC");
-        $posts = $stmt->fetchAll();
+        try {
+            $stmt = $pdo->query("SELECT * FROM posts ORDER BY id DESC");
+            $posts = $stmt->fetchAll() ?: [];
+        } catch (Exception $e) {
+            $posts = [];
+        }
         echo json_encode([
             'success'   => true,
             'data'      => $posts,
@@ -560,23 +674,134 @@ if ($endpoint === 'posts') {
     checkAdminAuth();
 
     if ($method === 'POST') {
-        $stmt = $pdo->prepare("INSERT INTO posts (title, slug, excerpt, content, author, published_date, read_time, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $postId = $body['post_id'] ?? ('post-' . time());
+        $slug = $body['slug'] ?? ('post-' . time());
+        $stmt = $pdo->prepare("INSERT INTO posts (post_id, title, slug, excerpt, content, author, published_date, read_time, image_url, tag, total_views, total_likes, total_comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)");
         $stmt->execute([
+            $postId,
             $body['title'] ?? 'Bài viết mới',
-            $body['slug'] ?? ('post-' . time()),
+            $slug,
             $body['excerpt'] ?? '',
             $body['content'] ?? '',
-            $body['author'] ?? 'Admin',
+            $body['author'] ?? 'Lê Văn Đạt',
             $body['published_date'] ?? date('Y-m-d'),
             $body['read_time'] ?? 5,
             $body['image_url'] ?? '',
+            $body['tag'] ?? 'suy ngẫm',
         ]);
         $newId = (string)$pdo->lastInsertId();
         http_response_code(201);
         echo json_encode([
             'success'   => true,
-            'data'      => ['id' => $newId],
+            'data'      => ['id' => $newId, 'post_id' => $postId],
             'message'   => 'Post created successfully',
+            'timestamp' => time(),
+        ]);
+        exit;
+    }
+}
+
+// ─── 5. Endpoint: post (Chi tiết, Cập nhật, Xóa bài viết Blog) ───
+if ($endpoint === 'post') {
+    $targetId = $_GET['post_id'] ?? ($_GET['id'] ?? null);
+
+    // [GET] Chi tiết bài viết theo post_id, id hoặc slug
+    if ($method === 'GET') {
+        if (!$targetId) {
+            http_response_code(400);
+            echo json_encode([
+                'success'   => false,
+                'data'      => null,
+                'message'   => 'Missing post_id or id parameter',
+                'timestamp' => time(),
+            ]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ? OR post_id = ? OR slug = ? LIMIT 1");
+        $stmt->execute([$targetId, $targetId, $targetId]);
+        $post = $stmt->fetch();
+
+        if ($post) {
+            echo json_encode([
+                'success'   => true,
+                'data'      => $post,
+                'message'   => 'Post retrieved successfully',
+                'timestamp' => time(),
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode([
+                'success'   => false,
+                'data'      => null,
+                'message'   => 'Post not found',
+                'timestamp' => time(),
+            ]);
+        }
+        exit;
+    }
+
+    // Yêu cầu quyền Admin cho các thao tác ghi dữ liệu (PUT, DELETE)
+    checkAdminAuth();
+
+    // [PUT] Cập nhật bài viết
+    if ($method === 'PUT') {
+        if (!$targetId) {
+            http_response_code(400);
+            echo json_encode([
+                'success'   => false,
+                'data'      => null,
+                'message'   => 'Missing post_id or id parameter',
+                'timestamp' => time(),
+            ]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("UPDATE posts SET title = ?, slug = ?, excerpt = ?, content = ?, author = ?, published_date = ?, read_time = ?, image_url = ?, tag = ? WHERE id = ? OR post_id = ? OR slug = ?");
+        $stmt->execute([
+            $body['title'] ?? '',
+            $body['slug'] ?? '',
+            $body['excerpt'] ?? '',
+            $body['content'] ?? '',
+            $body['author'] ?? 'Lê Văn Đạt',
+            $body['published_date'] ?? date('Y-m-d'),
+            $body['read_time'] ?? 5,
+            $body['image_url'] ?? '',
+            $body['tag'] ?? 'suy ngẫm',
+            $targetId,
+            $targetId,
+            $targetId,
+        ]);
+
+        echo json_encode([
+            'success'   => true,
+            'data'      => [],
+            'message'   => 'Post updated successfully',
+            'timestamp' => time(),
+        ]);
+        exit;
+    }
+
+    // [DELETE] Xóa bài viết
+    if ($method === 'DELETE') {
+        if (!$targetId) {
+            http_response_code(400);
+            echo json_encode([
+                'success'   => false,
+                'data'      => null,
+                'message'   => 'Missing post_id or id parameter',
+                'timestamp' => time(),
+            ]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("DELETE FROM posts WHERE id = ? OR post_id = ? OR slug = ?");
+        $stmt->execute([$targetId, $targetId, $targetId]);
+
+        echo json_encode([
+            'success'   => true,
+            'data'      => [],
+            'message'   => 'Post deleted successfully',
             'timestamp' => time(),
         ]);
         exit;

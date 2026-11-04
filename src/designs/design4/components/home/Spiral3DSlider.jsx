@@ -169,11 +169,11 @@ function SpiralScene({
     });
   }, [gl, textures]);
 
+  // Continuous smooth auto-rotation when user is idle
   useFrame((_state, delta) => {
-    // Continuous smooth auto-rotation
     const timeSinceInteraction = performance.now() - lastInteraction.current;
-    if (autoRotate && timeSinceInteraction > 250) {
-      targetProgress.current += autoSpeed * Math.min(delta, 0.05);
+    if (autoRotate && timeSinceInteraction > 1200) {
+      targetProgress.current += autoSpeed * 0.35 * Math.min(delta, 0.05);
     }
 
     const frameScale = Math.min(delta * 60, 3);
@@ -194,7 +194,8 @@ function SpiralScene({
     const gap = isMobile
       ? viewport.height * 0.092
       : Math.min(verticalGap / factor, viewport.height * 0.082);
-    const activeBend = isMobile ? 0.12 : bend;
+    // Subtle, gentle curvature (reduced from 0.17 to 0.035 to eliminate heavy image warping)
+    const activeBend = isMobile ? 0.025 : bend;
     const count = sceneItems.length;
 
     meshes.current.forEach((mesh, index) => {
@@ -267,13 +268,14 @@ export default function Spiral3DSlider({
   scrollSensitivity = 0.0024,
   smoothing = 0.065,
   blurStrength = 1.65,
-  bend = 0.17,
+  bend = 0.035,
   fov = 44,
   ariaLabel = 'Interactive Spiral 3D Gallery',
 }) {
+  const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const targetProgress = useRef(0);
-  const previousScroll = useRef(0);
+  const dragOffset = useRef(0);
   const lastWheelTime = useRef(0);
   const lastInteraction = useRef(0);
   const visible = useRef(false);
@@ -300,50 +302,81 @@ export default function Spiral3DSlider({
   const dragStartRef = useRef({ x: 0, y: 0 });
   const isHorizontalSwipeRef = useRef(false);
 
+  // Early preload of slide textures into browser cache to avoid jank on scroll arrival
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
+    if (typeof window === 'undefined') return;
+    const preloadImages = () => {
+      items.forEach((item) => {
+        if (!item?.src) return;
+        const img = new Image();
+        img.src = item.src;
+      });
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(preloadImages, { timeout: 1500 });
+    } else {
+      setTimeout(preloadImages, 300);
+    }
+  }, [items]);
 
-    previousScroll.current = window.scrollY;
+  // Scroll listener tracking progress through the sticky section
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    // Generous rootMargin (900px) warms up Canvas & shaders early before user scrolls in
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isInter = Boolean(entry?.isIntersecting);
         visible.current = isInter;
         setIsCanvasVisible(isInter);
       },
-      { rootMargin: '250px 0px', threshold: 0 }
+      { rootMargin: '900px 0px', threshold: 0 }
     );
-    observer.observe(stage);
+    observer.observe(section);
 
     let scrollRafId = null;
     const handlePageScroll = () => {
       if (scrollRafId) return;
       scrollRafId = requestAnimationFrame(() => {
         scrollRafId = null;
-        const scrollY = window.scrollY;
-        const delta = scrollY - previousScroll.current;
-        previousScroll.current = scrollY;
-        if (visible.current && performance.now() - lastWheelTime.current > 80) {
+        if (!sectionRef.current) return;
+
+        const rect = sectionRef.current.getBoundingClientRect();
+        const windowH = window.innerHeight;
+        const totalScrollDistance = sectionRef.current.offsetHeight - windowH;
+
+        if (totalScrollDistance <= 0) return;
+
+        const scrolled = -rect.top;
+        const ratio = Math.max(0, Math.min(1, scrolled / totalScrollDistance));
+
+        // Map scroll ratio to smooth rotation across all items (gives ~1.05 full cycles for natural pace)
+        const totalRotations = items.length * 1.05;
+        targetProgress.current = ratio * totalRotations + dragOffset.current;
+
+        if (visible.current) {
           lastInteraction.current = performance.now();
-          const boundedDelta = Math.sign(delta) * Math.min(Math.abs(delta), 160);
-          targetProgress.current += boundedDelta * scrollSensitivity;
         }
       });
     };
+
     window.addEventListener('scroll', handlePageScroll, { passive: true });
+    handlePageScroll();
 
     return () => {
       observer.disconnect();
       if (scrollRafId) cancelAnimationFrame(scrollRafId);
       window.removeEventListener('scroll', handlePageScroll);
     };
-  }, [scrollSensitivity]);
+  }, [items.length]);
 
   const handleWheel = (event) => {
     lastWheelTime.current = performance.now();
     lastInteraction.current = lastWheelTime.current;
-    const delta = Math.sign(event.deltaY) * Math.min(Math.abs(event.deltaY), 160);
-    targetProgress.current += delta * scrollSensitivity;
+    const delta = Math.sign(event.deltaY) * Math.min(Math.abs(event.deltaY), 120);
+    dragOffset.current += delta * scrollSensitivity * 0.45;
+    targetProgress.current += delta * scrollSensitivity * 0.45;
   };
 
   // Drag handlers with smart gesture detection (allows vertical scroll on mobile)
@@ -371,6 +404,7 @@ export default function Spiral3DSlider({
 
     if (isHorizontalSwipeRef.current) {
       const delta = -dx * 0.0055;
+      dragOffset.current += delta;
       targetProgress.current += delta;
       dragStartRef.current = { x: e.clientX, y: e.clientY };
       lastInteraction.current = performance.now();
@@ -394,31 +428,56 @@ export default function Spiral3DSlider({
 
   return (
     <section
+      ref={sectionRef}
       id="d4-spiral-gallery"
       className={`des4-spiral-section ${className}`}
       style={{
         position: 'relative',
+        height: isMobileScreen ? '135vh' : '170vh',
         background: '#0E0F12',
         color: '#ffffff',
-        padding: isMobileScreen ? '60px 0 50px' : '96px 0 80px',
-        overflow: 'hidden',
-        userSelect: 'none',
         borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        boxSizing: 'border-box',
       }}
     >
-      <div className="des4-container" style={{ position: 'relative', zIndex: 10, pointerEvents: 'none' }}>
-        {/* Section Header */}
-        <div style={{ marginBottom: 32 }}>
+      {/* Sticky 100vh Full Viewport Frame */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
+          maxHeight: '100dvh',
+          width: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: isMobileScreen ? '24px 20px 24px' : '44px 56px 36px',
+          boxSizing: 'border-box',
+          userSelect: 'none',
+        }}
+      >
+        {/* 1. Header Row (Top Left) */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 15,
+            pointerEvents: 'none',
+            maxWidth: '1200px',
+            width: '100%',
+            margin: '0 auto',
+          }}
+        >
           <h2
             style={{
               fontFamily: 'var(--font-sans, "Inter", sans-serif)',
-              fontSize: 'clamp(34px, 8vw, 110px)',
+              fontSize: 'clamp(32px, 6vw, 84px)',
               fontWeight: 500,
               lineHeight: 0.95,
               letterSpacing: '-0.04em',
               color: '#ffffff',
-              margin: '0 0 16px 0',
+              margin: '0 0 10px 0',
               textTransform: 'lowercase',
             }}
           >
@@ -427,11 +486,11 @@ export default function Spiral3DSlider({
           <p
             style={{
               fontFamily: 'var(--font-sans, "Inter", sans-serif)',
-              fontSize: isMobileScreen ? 13.5 : 14,
+              fontSize: isMobileScreen ? 12.5 : 13.5,
               fontWeight: 400,
               color: 'rgba(255, 255, 255, 0.65)',
-              maxWidth: 500,
-              lineHeight: 1.6,
+              maxWidth: 480,
+              lineHeight: 1.5,
               margin: 0,
             }}
           >
@@ -439,66 +498,65 @@ export default function Spiral3DSlider({
             tactile prototypes, interactive experiments, and creative visual archive.
           </p>
         </div>
-      </div>
 
-      {/* 3D WebGL Canvas Stage */}
-      <div
-        ref={stageRef}
-        role="region"
-        aria-label={ariaLabel}
-        onWheel={handleWheel}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: isMobileScreen ? '480px' : '620px',
-          minHeight: isMobileScreen ? '28rem' : '38rem',
-          cursor: isPointerDragging ? 'grabbing' : 'grab',
-          touchAction: 'pan-y',
-        }}
-      >
-        <WebGLErrorBoundary fallback={<WebGLFallback className="des4-webgl-fallback" />}>
-          <div style={{ position: 'absolute', inset: 0 }}>
-            <Canvas
-              frameloop={isCanvasVisible ? 'always' : 'never'}
-              dpr={[1, 1.5]}
-              camera={{
-                position: [0, 0, isMobileScreen ? 11 : 10],
-                fov: isMobileScreen ? 48 : fov,
-                near: 0.1,
-                far: 100,
-              }}
-              gl={{
-                alpha: true,
-                antialias: true,
-                powerPreference: 'high-performance',
-              }}
-            >
-              <Suspense fallback={null}>
-                <SpiralScene
-                  items={items}
-                  targetProgress={targetProgress}
-                  radius={radius}
-                  verticalGap={verticalGap}
-                  cardWidth={cardWidth}
-                  cardAspectRatio={isMobileScreen ? 1.4 : cardAspectRatio}
-                  autoRotate={autoRotate}
-                  autoSpeed={autoSpeed}
-                  smoothing={smoothing}
-                  blurStrength={blurStrength}
-                  bend={bend}
-                  reducedMotion={{ current: prefersReducedMotion }}
-                  lastInteraction={lastInteraction}
-                />
-              </Suspense>
-            </Canvas>
-          </div>
-        </WebGLErrorBoundary>
-
-        {/* Canvas stage */}
+        {/* 2. 3D WebGL Canvas Stage (Full Background Viewport) */}
+        <div
+          ref={stageRef}
+          role="region"
+          aria-label={ariaLabel}
+          onWheel={handleWheel}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            cursor: isPointerDragging ? 'grabbing' : 'grab',
+            touchAction: 'pan-y',
+            zIndex: 5,
+          }}
+        >
+          <WebGLErrorBoundary fallback={<WebGLFallback className="des4-webgl-fallback" />}>
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <Canvas
+                frameloop={isCanvasVisible ? 'always' : 'never'}
+                dpr={[1, 1.5]}
+                camera={{
+                  position: [0, 0, isMobileScreen ? 11 : 9.6],
+                  fov: isMobileScreen ? 48 : fov,
+                  near: 0.1,
+                  far: 100,
+                }}
+                gl={{
+                  alpha: true,
+                  antialias: true,
+                  powerPreference: 'high-performance',
+                }}
+              >
+                <Suspense fallback={null}>
+                  <SpiralScene
+                    items={items}
+                    targetProgress={targetProgress}
+                    radius={radius}
+                    verticalGap={verticalGap}
+                    cardWidth={cardWidth}
+                    cardAspectRatio={isMobileScreen ? 1.4 : cardAspectRatio}
+                    autoRotate={autoRotate}
+                    autoSpeed={autoSpeed}
+                    smoothing={smoothing}
+                    blurStrength={blurStrength}
+                    bend={bend}
+                    reducedMotion={{ current: prefersReducedMotion }}
+                    lastInteraction={lastInteraction}
+                  />
+                </Suspense>
+              </Canvas>
+            </div>
+          </WebGLErrorBoundary>
+        </div>
       </div>
     </section>
   );

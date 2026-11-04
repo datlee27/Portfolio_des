@@ -34,8 +34,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
         }}
         style={{
           position: 'fixed',
-          top: 'clamp(16px, 3.5vw, 32px)',
-          left: 'clamp(16px, 4vw, 36px)',
+          top: 'calc(clamp(16px, 3.5vw, 32px) + env(safe-area-inset-top, 0px))',
+          left: 'calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-left, 0px))',
           zIndex: 99999,
           fontFamily: 'var(--font-outfit)',
           fontSize: 'clamp(18px, 4vw, 24px)',
@@ -57,8 +57,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
         className="des4-corner-group"
         style={{
           position: 'fixed',
-          top: 'clamp(16px, 3.5vw, 32px)',
-          right: 'clamp(16px, 4vw, 36px)',
+          top: 'calc(clamp(16px, 3.5vw, 32px) + env(safe-area-inset-top, 0px))',
+          right: 'calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-right, 0px))',
           zIndex: 99999,
           display: 'flex',
           alignItems: 'center',
@@ -149,8 +149,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
           }}
           style={{
             position: 'fixed',
-            bottom: 'clamp(16px, 3.5vw, 32px)',
-            left: 'clamp(16px, 4vw, 36px)',
+            bottom: 'calc(clamp(16px, 3.5vw, 32px) + env(safe-area-inset-bottom, 0px))',
+            left: 'calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-left, 0px))',
             zIndex: 99999,
             fontFamily: 'var(--font-outfit)',
             fontSize: 'clamp(14px, 3.5vw, 18px)',
@@ -183,8 +183,8 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
           }}
           style={{
             position: 'fixed',
-            bottom: 'clamp(16px, 3.5vw, 32px)',
-            right: 'clamp(16px, 4vw, 36px)',
+            bottom: 'calc(clamp(16px, 3.5vw, 32px) + env(safe-area-inset-bottom, 0px))',
+            right: 'calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-right, 0px))',
             zIndex: 99999,
             fontFamily: 'var(--font-outfit)',
             fontSize: 'clamp(14px, 3.5vw, 18px)',

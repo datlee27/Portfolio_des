@@ -244,7 +244,7 @@ export default function OverviewTab({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <img
-                    src={p.image_url}
+                    src={p.image_url || p.image}
                     alt={p.title}
                     style={{ width: 44, height: 32, borderRadius: 4, objectFit: 'cover', background: '#f1f5f9', border: '1px solid var(--admin-card-border)' }}
                   />

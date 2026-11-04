@@ -213,7 +213,6 @@ export default function WorkPage({ onGoHome }) {
                 <ScrollAnimation
                   key={project.id}
                   direction={idx % 2 === 0 ? 'left' : 'right'}
-                  viewport={{ amount: 0.25, margin: '0px 0px -40px 0px' }}
                   style={{ width: '100%', height: '100%', display: 'flex' }}
                 >
                   <article

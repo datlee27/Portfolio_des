@@ -51,7 +51,7 @@ const ERROR_CONFIGS = {
 export default function ErrorPage({
   code = 404,
   title,
-  description,
+  description: _description,
   onRetry,
   onGoHome,
 }) {
@@ -64,7 +64,6 @@ export default function ErrorPage({
     (typeof code === 'number' && code >= 500 ? ERROR_CONFIGS[500] : ERROR_CONFIGS.crash);
 
   const displayTitle = title || config.title;
-  const displayDesc = description || config.description;
 
   // Live Da Nang Clock (GMT+7)
   useEffect(() => {
@@ -109,7 +108,6 @@ export default function ErrorPage({
       style={{
         backgroundColor: '#F6F4EF',
         color: '#111111',
-        height: '100vh',
         height: '100dvh',
         maxHeight: '100dvh',
         width: '100%',
@@ -258,179 +256,146 @@ export default function ErrorPage({
         </div>
       </header>
 
-      {/* ─── 2. Main Content (Centered & Compact) ─── */}
+      {/* ─── 2. Main Content (Centered, Minimal, High-Impact Mascot) ─── */}
       <section
         style={{
           width: '100%',
-          maxWidth: '1200px',
+          maxWidth: '720px',
           margin: '0 auto',
           flex: '1 1 auto',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
           justifyContent: 'center',
+          textAlign: 'center',
           minHeight: 0,
+          padding: '20px 0',
         }}
       >
+        {/* Centered Large Pixel Mascot */}
+        <div style={{ marginBottom: '18px' }}>
+          <PixelMascot mood={config.mood} size={165} />
+        </div>
+
+        {/* State Tag */}
         <div
-          className="error-main-grid"
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: '11px',
+            color: 'rgba(17, 17, 17, 0.55)',
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            userSelect: 'none',
+            marginBottom: '14px',
+          }}
+        >
+          <span
+            style={{
+              width: '5px',
+              height: '5px',
+              borderRadius: '50%',
+              backgroundColor: '#fe3c01',
+              display: 'inline-block',
+            }}
+          />
+          STATE // {config.codeText}
+        </div>
+
+        {/* Title */}
+        <h1
+          style={{
+            fontFamily: "var(--font-sans, 'Inter', sans-serif)",
+            fontSize: 'clamp(42px, 6.8vw, 76px)',
+            fontWeight: 500,
+            letterSpacing: '-0.04em',
+            lineHeight: 1.05,
+            color: '#111111',
+            textTransform: 'lowercase',
+            margin: '0 0 28px 0',
+          }}
+        >
+          {displayTitle}
+        </h1>
+
+        {/* Action Buttons */}
+        <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '36px',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
           }}
         >
-          {/* Left: Headline & Actions */}
-          <div style={{ maxWidth: '580px', flex: '1 1 auto' }}>
-            <h1
-              style={{
-                fontFamily: "var(--font-sans, 'Inter', sans-serif)",
-                fontSize: 'clamp(38px, 6.5vw, 76px)',
-                fontWeight: 500,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
-                color: '#111111',
-                textTransform: 'lowercase',
-                margin: '0 0 16px 0',
-              }}
-            >
-              {displayTitle}
-            </h1>
-
-            <p
-              style={{
-                fontFamily: "var(--font-sans, 'Inter', sans-serif)",
-                fontSize: 'clamp(14px, 1.8vw, 16px)',
-                color: 'rgba(17, 17, 17, 0.65)',
-                lineHeight: 1.6,
-                margin: '0 0 32px 0',
-                maxWidth: '440px',
-              }}
-            >
-              {displayDesc}
-            </p>
-
-            {/* Pill Buttons */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '12px',
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleNavigateHome}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 24px',
-                  borderRadius: '999px',
-                  backgroundColor: '#111111',
-                  color: '#F6F4EF',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  fontFamily: "var(--font-inter, 'Inter', sans-serif)",
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  minHeight: '44px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#262626';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#111111';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <Home size={15} />
-                <span>về trang chủ</span>
-                <ArrowUpRight size={15} />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleReload}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 22px',
-                  borderRadius: '999px',
-                  backgroundColor: 'transparent',
-                  color: '#111111',
-                  border: '1px solid rgba(17, 17, 17, 0.2)',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  fontFamily: "var(--font-inter, 'Inter', sans-serif)",
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  minHeight: '44px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.5)';
-                  e.currentTarget.style.backgroundColor = 'rgba(17, 17, 17, 0.04)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.2)';
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <RefreshCw size={14} />
-                <span>tải lại</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Right: Seamless Floating Pixel Mascot (No White Box Container) */}
-          <div
+          <button
+            type="button"
+            onClick={handleNavigateHome}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
+              display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'transparent',
+              gap: '8px',
+              padding: '12px 26px',
+              borderRadius: '999px',
+              backgroundColor: '#111111',
+              color: '#F6F4EF',
+              fontSize: '14px',
+              fontWeight: 500,
+              fontFamily: "var(--font-inter, 'Inter', sans-serif)",
               border: 'none',
-              boxShadow: 'none',
-              padding: '8px 16px',
-              flexShrink: 0,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              minHeight: '44px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#262626';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#111111';
+              e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <div style={{ marginBottom: '14px' }}>
-              <PixelMascot mood={config.mood} size={105} />
-            </div>
+            <Home size={15} />
+            <span>về trang chủ</span>
+            <ArrowUpRight size={15} />
+          </button>
 
-            <div
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: '11px',
-                color: 'rgba(17, 17, 17, 0.55)',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                userSelect: 'none',
-              }}
-            >
-              <span
-                style={{
-                  width: '5px',
-                  height: '5px',
-                  borderRadius: '50%',
-                  backgroundColor: '#111111',
-                  display: 'inline-block',
-                }}
-              />
-              STATE // {config.codeText}
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={handleReload}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              borderRadius: '999px',
+              backgroundColor: 'transparent',
+              color: '#111111',
+              border: '1px solid rgba(17, 17, 17, 0.2)',
+              fontSize: '14px',
+              fontWeight: 500,
+              fontFamily: "var(--font-inter, 'Inter', sans-serif)",
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              minHeight: '44px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.5)';
+              e.currentTarget.style.backgroundColor = 'rgba(17, 17, 17, 0.04)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'rgba(17, 17, 17, 0.2)';
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <RefreshCw size={14} />
+            <span>tải lại</span>
+          </button>
         </div>
       </section>
 

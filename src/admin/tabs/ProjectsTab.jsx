@@ -15,6 +15,8 @@ import {
   ArrowUp,
   ArrowDown,
   GripVertical,
+  Save,
+  RotateCcw,
 } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import api from '../../services/api';
@@ -22,11 +24,15 @@ import { uploadToCloudinary } from '../../services/cloudinary';
 import { usePortfolio, isProjectMatch, isProjectPublic } from '../../context/PortfolioContext';
 import AdminMacModal from '../components/AdminMacModal';
 
-export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
+export default function ProjectsTab({ projects = [], onRefresh, onProjectsReordered, showToast }) {
   const { updateProjects: contextUpdateProjects, projects: ctxProjects } = usePortfolio();
 
   // Track if user has made local mutations (toggle, reorder) — prevents context sync from overwriting
   const hasLocalMutation = useRef(false);
+  const originalOrderRef = useRef(null);
+
+  const [hasOrderChanges, setHasOrderChanges] = useState(false);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   const [localProjects, setLocalProjects] = useState(() => {
     if (projects && projects.length > 0) return projects;
@@ -34,14 +40,20 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
   });
 
   useEffect(() => {
-    // Only sync from props/context on initial load, not after user mutations
-    if (hasLocalMutation.current) return;
+    // Only sync from props/context when there are no unsaved reorder changes
+    if (hasOrderChanges) return;
     if (projects && projects.length > 0) {
       setLocalProjects(projects);
+      if (!originalOrderRef.current) {
+        originalOrderRef.current = [...projects];
+      }
     } else if (ctxProjects && ctxProjects.length > 0) {
       setLocalProjects(ctxProjects);
+      if (!originalOrderRef.current) {
+        originalOrderRef.current = [...ctxProjects];
+      }
     }
-  }, [projects, ctxProjects]);
+  }, [projects, ctxProjects, hasOrderChanges]);
 
   // Helper: persist list to localStorage + context (without re-mapping)
   const persistProjects = useCallback((updatedList) => {
@@ -539,8 +551,8 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
     }
   };
 
-  // ─── Di chuyển dự án đến vị trí chỉ định (1-based) ───
-  const handleMoveToPosition = async (projectId, newPos) => {
+  // ─── Di chuyển dự án đến vị trí chỉ định (1-based) — Chỉ thay đổi cục bộ, KHÔNG spam API ───
+  const handleMoveToPosition = (projectId, newPos) => {
     const total = localProjects.length;
     const clampedPos = Math.max(1, Math.min(total, newPos));
     const currentIndex = localProjects.findIndex((p) => isProjectMatch(p, projectId));
@@ -557,16 +569,13 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       sort_order: idx + 1,
     }));
 
-    persistProjects(updatedWithOrder);
-    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${clampedPos}!`, 'success');
-    try {
-      api.updateProject(movedItem.id, { sort_order: clampedPos }).catch(() => {});
-    } catch (e) {
-      console.warn('Lỗi đồng bộ sort_order:', e);
-    }
+    hasLocalMutation.current = true;
+    setLocalProjects(updatedWithOrder);
+    setHasOrderChanges(true);
+    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${clampedPos} (chưa lưu)`, 'info');
   };
 
-  // ─── Drag & Drop Sắp xếp Thứ tự Dự án ───
+  // ─── Drag & Drop Sắp xếp Thứ tự Dự án — Chỉ thay đổi cục bộ ───
   const handleDragStart = (e, idx) => {
     setDraggedIndex(idx);
     e.dataTransfer.effectAllowed = 'move';
@@ -602,16 +611,47 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
       sort_order: idx + 1,
     }));
 
-    persistProjects(updatedWithOrder);
+    hasLocalMutation.current = true;
+    setLocalProjects(updatedWithOrder);
+    setHasOrderChanges(true);
     setDraggedIndex(null);
     setDragOverIndex(null);
-    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${targetIdx + 1}!`, 'success');
+    showToast(`Đã chuyển "${movedItem.title}" sang vị trí #${targetIdx + 1} (chưa lưu)`, 'info');
+  };
 
+  // ─── Lưu Thứ Tự Dự Án Lên Máy Chủ (Gửi API 1 lần duy nhất) ───
+  const handleSaveOrder = async () => {
+    setIsSavingOrder(true);
     try {
-      api.updateProject(movedItem.id, { sort_order: targetIdx + 1 }).catch(() => {});
+      const orders = localProjects.map((p, idx) => ({
+        id: p.id,
+        sort_order: idx + 1,
+      }));
+
+      await api.reorderProjects(orders);
+
+      persistProjects(localProjects);
+      if (onProjectsReordered) {
+        onProjectsReordered(localProjects);
+      }
+      originalOrderRef.current = [...localProjects];
+      setHasOrderChanges(false);
+      showToast('Đã lưu thứ tự dự án thành công!', 'success');
     } catch (err) {
-      console.warn('Lỗi đồng bộ drag drop order:', err);
+      console.error('Lỗi lưu thứ tự dự án:', err);
+      showToast('Lỗi khi lưu thứ tự dự án lên máy chủ.', 'error');
+    } finally {
+      setIsSavingOrder(false);
     }
+  };
+
+  // ─── Hủy Bỏ Thay Đổi Thứ Tự (Quay về thứ tự ban đầu) ───
+  const handleCancelOrder = () => {
+    if (originalOrderRef.current && originalOrderRef.current.length > 0) {
+      setLocalProjects([...originalOrderRef.current]);
+    }
+    setHasOrderChanges(false);
+    showToast('Đã hủy thay đổi thứ tự.', 'info');
   };
 
   return (
@@ -1885,6 +1925,119 @@ export default function ProjectsTab({ projects = [], onRefresh, showToast }) {
           </div>
         </div>
       </AdminMacModal>
+      {/* ─── Sticky Bottom Bar: Lưu Thứ Tự Dự Án ─── */}
+      {hasOrderChanges && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 20,
+            padding: '12px 22px',
+            background: 'rgba(15, 23, 42, 0.96)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderRadius: 14,
+            boxShadow: '0 12px 36px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+            color: '#fff',
+            maxWidth: '92vw',
+            width: 580,
+            boxSizing: 'border-box',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <span
+              style={{
+                width: 9,
+                height: 9,
+                borderRadius: '50%',
+                background: '#f59e0b',
+                boxShadow: '0 0 10px #f59e0b',
+                flexShrink: 0,
+              }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#f8fafc' }}>
+                Đã thay đổi vị trí thứ tự dự án
+              </span>
+              <span style={{ fontSize: 11.5, color: '#94a3b8' }}>
+                Bấm lưu để đồng bộ lên máy chủ, tab Tổng Quan và Trang Chủ
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={handleCancelOrder}
+              disabled={isSavingOrder}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 14px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: 8,
+                color: '#e2e8f0',
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+            >
+              <RotateCcw size={13} />
+              <span>Hủy</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSaveOrder}
+              disabled={isSavingOrder}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 18px',
+                background: '#3b82f6',
+                border: 'none',
+                borderRadius: 8,
+                color: '#fff',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: isSavingOrder ? 'not-allowed' : 'pointer',
+                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.45)',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!isSavingOrder) e.currentTarget.style.background = '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                if (!isSavingOrder) e.currentTarget.style.background = '#3b82f6';
+              }}
+            >
+              {isSavingOrder ? (
+                <>
+                  <Loader2 size={14} className="admin-spinner" />
+                  <span>Đang lưu...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={15} />
+                  <span>Lưu Thứ Tự</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

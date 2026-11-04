@@ -12,10 +12,10 @@ const DEFAULT_PHOTOS = [
   },
   {
     id: 2,
-    title: 'In The Elements',
-    subtitle: 'Observation, texture, and field research',
-    src: '/images/clothesline/photo2.webp',
-    fallbackSrc: 'https://framerusercontent.com/images/AqWlfbJga6pA8kddv07uVzPsqdE.png?width=900&height=1200',
+    title: 'Kinetic Vista',
+    subtitle: 'Speeding train window & open sky',
+    src: '/assets/gallery/pin-13.jpg',
+    fallbackSrc: '/assets/gallery/pin-13.jpg',
     t: 0.31, // 31% along the wire
   },
   {

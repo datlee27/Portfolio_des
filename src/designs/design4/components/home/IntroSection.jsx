@@ -20,7 +20,7 @@ export default function IntroSection() {
     <section id="d4-intro" className="des4-intro-wrapper">
       <div className="des4-container" style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
         {/* Editorial Narrative - Centered Single Statement (Animate on Scroll) */}
-        <ScrollAnimation direction="up" viewport={{ amount: 0.35 }}>
+        <ScrollAnimation direction="up">
           <div
             style={{
               display: 'flex',
@@ -69,7 +69,7 @@ export default function IntroSection() {
       </div>
 
       {/* ─── CLOTHESLINE GALLERY (Full Width Screen Wire & Draggable) ─── */}
-      <ScrollAnimation direction="up" viewport={{ amount: 0.2 }}>
+      <ScrollAnimation direction="up" delay={0.08}>
         <ClotheslineGallery />
       </ScrollAnimation>
     </section>
