@@ -15,11 +15,11 @@ import { motion, AnimatePresence } from 'framer-motion';
  */
 
 const STRIP_COUNT = 5;
-const ENTER_DURATION = 0.55;
-const MIN_HOLD_DURATION = 500; // ms: cinematic floor
-const EXIT_DURATION = 0.55;
-const STAGGER = 0.04;
-const SAFETY_TIMEOUT = 3500; // ms: failsafe for dead network
+const ENTER_DURATION = 0.38;
+const MIN_HOLD_DURATION = 200; // ms: snappy & responsive, eliminates sluggish wait
+const EXIT_DURATION = 0.38;
+const STAGGER = 0.026;
+const SAFETY_TIMEOUT = 2400; // ms: failsafe for slow network
 
 const STRIP_COLORS = [
   '#0d1117',
@@ -37,7 +37,7 @@ const TARGET_LABELS = {
   lab: 'lab // creative digital experiments',
 };
 
-const EASING = [0.85, 0, 0.15, 1]; // Luxurious editorial bezier
+const EASING = [0.22, 1, 0.36, 1]; // Smooth out-cubic fast-in-slow-out physics
 
 export default function PageTransition({
   isActive,

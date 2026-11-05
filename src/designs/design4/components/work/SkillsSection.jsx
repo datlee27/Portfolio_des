@@ -23,9 +23,15 @@ export default function SkillsSection() {
       id="d4-skills"
       style={{
         position: 'relative',
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         background: '#FFFFFF',
         color: '#111111',
-        padding: '96px 0 80px',
+        padding: 'clamp(64px, 8vh, 100px) 0',
         overflow: 'hidden',
         borderTop: '1px solid rgba(17, 17, 17, 0.12)',
         userSelect: 'none',

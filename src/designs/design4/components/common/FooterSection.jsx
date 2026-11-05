@@ -35,7 +35,12 @@ export default function FooterSection() {
       style={{
         backgroundColor: '#F6F4EF',
         color: '#111111',
-        padding: 'clamp(64px, 8vw, 100px) 0 40px',
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: 'clamp(64px, 8vh, 100px) 0 clamp(24px, 3vh, 36px)',
         borderTop: '1px solid rgba(17, 17, 17, 0.12)',
         position: 'relative',
         width: '100%',
@@ -44,7 +49,16 @@ export default function FooterSection() {
         MozOsxFontSmoothing: 'grayscale',
       }}
     >
-      <div className="des4-container">
+      <div
+        className="des4-container"
+        style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          flex: 1,
+        }}
+      >
         {/* Main Footer Block */}
         <div
           style={{

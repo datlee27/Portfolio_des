@@ -18,7 +18,13 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
     <section
       id="d4-work"
       style={{
-        padding: '50px 0 60px',
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: 'clamp(60px, 8vh, 90px) 0',
         background: '#ffffff',
         overflow: 'hidden',
       }}

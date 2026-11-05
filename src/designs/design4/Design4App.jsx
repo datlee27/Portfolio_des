@@ -4,6 +4,8 @@ import './styles/design4.css';
 import CornerNav from './components/common/CornerNav';
 import PageTransition from './components/common/PageTransition';
 import FooterSection from './components/common/FooterSection';
+import PortfolioChatbot from './components/common/PortfolioChatbot';
+import PencilCursor from './components/common/PencilCursor';
 
 // Home Page Sections
 import HeroSection from './components/home/HeroSection';
@@ -20,7 +22,6 @@ const LabPage = lazy(() => import('./components/lab/LabPage'));
 
 // Common Utilities
 import ScrollEase from '../../components/common/ScrollEase';
-import ScrollBlurByAki from '../../components/common/ScrollBlurByAki';
 import { usePortfolio } from '@/context/PortfolioContext';
 
 export default function Design4App() {
@@ -85,7 +86,8 @@ export default function Design4App() {
       if (!targetHash) {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         if (window.lenis) {
-          window.lenis.scrollTo(0, { immediate: true });
+          window.lenis.scrollTo(0, { immediate: true, force: true });
+          window.lenis.resize();
         }
       }
     }
@@ -100,6 +102,9 @@ export default function Design4App() {
       targetPath: null,
       targetHash: null,
     });
+    if (typeof window !== 'undefined' && window.lenis) {
+      window.lenis.resize();
+    }
   }, []);
 
   // Listen to browser Back/Forward (popstate) — no transition on back/forward
@@ -233,10 +238,17 @@ export default function Design4App() {
     ];
 
     const preload = () => {
+      // 1. Preload critical images
       criticalMedia.forEach((src) => {
         const img = new Image();
         img.src = src;
       });
+
+      // 2. Pre-fetch lazy page chunks into browser cache for zero-latency transitions
+      import('./components/work/WorkPage');
+      import('./components/blog/BlogPageRedesign');
+      import('./components/about/AboutPage');
+      import('./components/lab/LabPage');
     };
 
     if (typeof window.requestIdleCallback === 'function') {
@@ -248,6 +260,9 @@ export default function Design4App() {
 
   return (
     <div className="des4-root">
+      {/* ─── Framer-inspired Interactive Pencil Cursor ─── */}
+      <PencilCursor />
+
       {/* ─── Horizontal Interlaced Black & Orange Strip Preload & Transition ─── */}
       <PageTransition
         isActive={transition.isActive}
@@ -266,6 +281,9 @@ export default function Design4App() {
         onOpenLab={() => navigateWithTransition('lab', '/lab')}
         onGoHome={() => navigateWithTransition('main', '/')}
       />
+
+      {/* AI Chatbot Assistant: active on home, work, about; strictly hidden on /blog and /lab */}
+      <PortfolioChatbot activeView={activeView} />
 
       {/* Smooth inertia scroll with snappy response (intensity 40) */}
       {(activeView === 'main' || activeView === 'work' || activeView === 'about') && <ScrollEase intensity={40} />}

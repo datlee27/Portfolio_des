@@ -8,7 +8,13 @@ export default function WhatIDoSection() {
     <section
       id="d4-whatido"
       style={{
-        padding: '96px 0 80px',
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: 'clamp(64px, 8vh, 100px) 0',
         background: '#ECE8DE',
         color: '#111111',
         position: 'relative',

@@ -92,7 +92,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
             borderBottom: activeView === 'work' ? '2px solid #fe3c01' : 'none',
             paddingBottom: activeView === 'work' ? 2 : 0,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            import('../work/WorkPage');
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           work{activeView === 'work' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
@@ -125,7 +128,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
             borderBottom: activeView === 'blog' ? '2px solid #fe3c01' : 'none',
             paddingBottom: activeView === 'blog' ? 2 : 0,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            import('../blog/BlogPageRedesign');
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           blog{activeView === 'blog' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
@@ -166,7 +172,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
             borderBottom: activeView === 'about' ? '2px solid #fe3c01' : 'none',
             paddingBottom: activeView === 'about' ? 2 : 0,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            import('../about/AboutPage');
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           about{activeView === 'about' && <span style={{ color: '#fe3c01', marginLeft: 2 }}>*</span>}
@@ -198,7 +207,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
             mixBlendMode: 'difference',
             cursor: 'pointer',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            import('../lab/LabPage');
+          }}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           lab
