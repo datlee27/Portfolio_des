@@ -36,6 +36,7 @@ import {
 import { featuredProjects, siteMeta } from '../../data/homeData';
 import { usePortfolio, isProjectPublic } from '../../../../context/PortfolioContext';
 import ProjectModalD4 from '../common/ProjectModalD4';
+import ModalErrorBoundary from '@/components/common/ModalErrorBoundary';
 import NotesModalContent from './NotesModalContent';
 import HoverBloomCanvas from './HoverBloomCanvas';
 
@@ -2612,10 +2613,12 @@ export default function LabPage({ onBack }) {
 
       {/* Project Detail Modal */}
       {selectedProject && (
-        <ProjectModalD4
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ModalErrorBoundary onClose={() => setSelectedProject(null)}>
+          <ProjectModalD4
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        </ModalErrorBoundary>
       )}
     </Wrapper>
   );

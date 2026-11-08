@@ -23,6 +23,23 @@ export class GlobalErrorBoundary extends Component {
   componentDidMount() {
     // Catch global unhandled promise rejections (async/await uncaught errors)
     this.handleUnhandledRejection = (event) => {
+      const reasonMsg = String(event?.reason?.message || event?.reason || '').toLowerCase();
+      // Filter out benign, non-fatal rejections (aborts, video play interruptions, network offline warnings, third-party widgets)
+      if (
+        reasonMsg.includes('abort') ||
+        reasonMsg.includes('play()') ||
+        reasonMsg.includes('interrupted') ||
+        reasonMsg.includes('chatbase') ||
+        reasonMsg.includes('failed to fetch') ||
+        reasonMsg.includes('networkerror') ||
+        reasonMsg.includes('resizeobserver') ||
+        reasonMsg.includes('the element has no supported sources') ||
+        reasonMsg.includes('media_element_error')
+      ) {
+        console.warn('[GlobalErrorBoundary] Suppressed benign unhandled rejection:', event.reason);
+        return;
+      }
+
       console.error('[GlobalErrorBoundary] Unhandled Promise Rejection:', event.reason);
       const reasonError = event.reason instanceof Error ? event.reason : new Error(String(event.reason || 'Unhandled Async Rejection'));
       // Prevent browser default white crash if not handled
@@ -37,8 +54,22 @@ export class GlobalErrorBoundary extends Component {
 
     // Catch global window errors (script failures, network chunk fails)
     this.handleWindowError = (event) => {
-      // Ignore routine resize or image load warnings
-      if (!event.error && !event.message) return;
+      const msg = String(event?.message || event?.error?.message || '').toLowerCase();
+      // Filter out benign routine resize, third-party script, or media load errors
+      if (
+        !msg ||
+        msg.includes('resizeobserver') ||
+        msg.includes('script error') ||
+        msg.includes('interrupted by a call to pause') ||
+        msg.includes('play() request was rejected') ||
+        msg.includes('chatbase') ||
+        msg.includes('the element has no supported sources') ||
+        msg.includes('media_element_error') ||
+        msg.includes('abort')
+      ) {
+        return;
+      }
+
       console.error('[GlobalErrorBoundary] Global Window Error:', event.error || event.message);
       if (!this.state.hasError) {
         this.setState({

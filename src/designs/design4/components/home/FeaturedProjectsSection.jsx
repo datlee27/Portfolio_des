@@ -6,6 +6,7 @@ import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { featuredProjects } from '../../data/homeData';
 import { usePortfolio, isProjectPublic } from '@/context/PortfolioContext';
 import ProjectModalD4 from '../common/ProjectModalD4';
+import ModalErrorBoundary from '@/components/common/ModalErrorBoundary';
 import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
 export default function FeaturedProjectsSection({ onOpenWork }) {
@@ -18,7 +19,6 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
     <section
       id="d4-work"
       style={{
-        minHeight: '100vh',
         minHeight: '100dvh',
         boxSizing: 'border-box',
         display: 'flex',
@@ -386,10 +386,12 @@ export default function FeaturedProjectsSection({ onOpenWork }) {
 
       {/* macOS TitleBar Project Details Modal */}
       {selectedProject && (
-        <ProjectModalD4
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ModalErrorBoundary onClose={() => setSelectedProject(null)}>
+          <ProjectModalD4
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        </ModalErrorBoundary>
       )}
     </section>
   );

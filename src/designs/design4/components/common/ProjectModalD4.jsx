@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, ArrowUpRight, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 
+function formatVideoUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  // Cloudinary video transformation: automatically deliver as MP4 with f_auto,q_auto
+  if (trimmed.includes('res.cloudinary.com') && trimmed.includes('/video/upload/')) {
+    let converted = trimmed;
+    if (!converted.includes('/video/upload/f_auto') && !converted.includes('/video/upload/q_auto')) {
+      converted = converted.replace('/video/upload/', '/video/upload/f_auto,q_auto/');
+    }
+    // Apple MOV containers often use HEVC (hvc1) which breaks standard Chromium browsers.
+    // Cloudinary automatically transcodes to universal H.264 MP4 when requesting .mp4 extension!
+    converted = converted.replace(/\.mov$/i, '.mp4');
+    return converted;
+  }
+  return trimmed;
+}
+
 function getEmbedVideo(url) {
-  if (!url) return null;
-  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  const ytMatch = trimmed.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
   if (ytMatch) {
     return {
       type: 'youtube',
       embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0`,
     };
   }
-  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/i);
+  const vimeoMatch = trimmed.match(/vimeo\.com\/(?:video\/)?([0-9]+)/i);
   if (vimeoMatch) {
     return {
       type: 'vimeo',
@@ -20,7 +38,8 @@ function getEmbedVideo(url) {
   }
   return {
     type: 'html5',
-    url,
+    url: formatVideoUrl(trimmed),
+    rawUrl: trimmed,
   };
 }
 
@@ -35,49 +54,49 @@ export default function ProjectModalD4({ project, onClose }) {
     setCurrentSlideIndex(0);
   }, [project?.id]);
 
-  if (!project) return null;
-
-  const projectTitle = project.title || project.name || 'Untitled Project';
-  const projectSubtitle = project.subtitle || project.code || 'Selected Project';
-  const projectClient = project.client || 'Personal / Open-Source';
-  const projectYear = project.year || '2025 – 2026';
-  const projectType = project.type || project.tags?.[0] || 'Fullstack Web Application';
-  const projectCredits = Array.isArray(project.tags)
-    ? project.tags.join(', ')
-    : project.credits || 'React, Vite, Node.js';
-  const projectDescription = project.description || project.summary || '';
+  const projectTitle = project?.title || project?.name || 'Untitled Project';
+  const projectSubtitle = project?.subtitle || project?.code || 'Selected Project';
+  const projectClient = project?.client || 'Personal / Open-Source';
+  const projectYear = project?.year || '2025 – 2026';
+  const projectTags = Array.isArray(project?.tags) ? project.tags : [];
+  const projectType = project?.type || projectTags[0] || 'Fullstack Web Application';
+  const projectCredits = projectTags.length > 0
+    ? projectTags.join(', ')
+    : project?.credits || 'React, Vite, Node.js';
+  const projectDescription = project?.description || project?.summary || '';
   const projectCover =
-    project.image ||
-    project.image_url ||
-    project.coverImage ||
+    project?.image ||
+    project?.image_url ||
+    project?.coverImage ||
     'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80';
-  const liveUrl = project.deploy || project.liveUrl || '';
-  const githubUrl = project.github || project.githubUrl || '';
+  const liveUrl = project?.deploy || project?.liveUrl || '';
+  const githubUrl = project?.github || project?.githubUrl || '';
 
   // Extract body images (up to 6)
   let rawBodyImages = [];
-  if (Array.isArray(project.body_images)) {
+  if (Array.isArray(project?.body_images)) {
     rawBodyImages = project.body_images;
-  } else if (typeof project.body_images === 'string' && project.body_images.startsWith('[')) {
+  } else if (typeof project?.body_images === 'string' && project.body_images.startsWith('[')) {
     try {
       rawBodyImages = JSON.parse(project.body_images);
     } catch {
       rawBodyImages = [];
     }
-  } else if (typeof project.body_images === 'string' && project.body_images.trim().length > 0) {
+  } else if (typeof project?.body_images === 'string' && project.body_images.trim().length > 0) {
     rawBodyImages = project.body_images.split(',').map((s) => s.trim()).filter(Boolean);
-  } else if (Array.isArray(project.images)) {
+  } else if (Array.isArray(project?.images)) {
     rawBodyImages = project.images;
   }
   const bodyImages = (Array.isArray(rawBodyImages) ? rawBodyImages : [])
     .filter((img) => typeof img === 'string' && img.trim().length > 0)
     .slice(0, 6);
 
-  // Extract video demo
-  const videoDemo = (project.video_demo || project.video_url || project.video || '').trim();
+  // Extract video demo safely
+  const rawVideo = project?.video_demo || project?.video_url || project?.video || '';
+  const videoDemo = typeof rawVideo === 'string' ? rawVideo.trim() : '';
 
   // Combine into slides list: [Cover Image, ...Body Images, Video Demo (if any)]
-  const slides = [
+  const slides = project ? [
     ...(projectCover ? [{ type: 'image', url: projectCover, label: 'Ảnh đại diện (Cover)' }] : []),
     ...bodyImages.map((img, i) => ({
       type: 'image',
@@ -85,13 +104,17 @@ export default function ProjectModalD4({ project, onClose }) {
       label: `Ảnh chi tiết (${i + 1}/${bodyImages.length})`,
     })),
     ...(videoDemo ? [{ type: 'video', url: videoDemo, label: 'Video Demo' }] : []),
-  ];
+  ] : [];
 
-  // Clamp current index
-  const safeCurrentIndex = Math.min(Math.max(0, currentSlideIndex), Math.max(0, slides.length - 1));
-  const currentSlide = slides[safeCurrentIndex] || slides[0];
+  // Clamp current index safely
+  const safeCurrentIndex = slides.length > 0
+    ? Math.min(Math.max(0, currentSlideIndex), slides.length - 1)
+    : 0;
+  const currentSlide = slides[safeCurrentIndex] || slides[0] || { type: 'image', url: projectCover, label: 'Ảnh đại diện' };
 
   useEffect(() => {
+    if (!project) return;
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
       if (slides.length > 1) {
@@ -125,7 +148,9 @@ export default function ProjectModalD4({ project, onClose }) {
         window.lenis.start();
       }
     };
-  }, [slides.length, onClose]);
+  }, [project, slides.length, onClose]);
+
+  if (!project) return null;
 
   // Mouse Drag handlers for desktop Swiper
   const handleMouseDown = (e) => {
@@ -727,11 +752,15 @@ export default function ProjectModalD4({ project, onClose }) {
                               </div>
                             );
                           }
+                          const safeVideoUrl = videoInfo?.url || s.url;
                           return (
                             <video
                               controls
                               playsInline
-                              src={s.url}
+                              preload="metadata"
+                              onError={(e) => {
+                                console.warn('[ProjectModalD4] Video load notice:', safeVideoUrl, e);
+                              }}
                               style={{
                                 width: '100%',
                                 height: '100%',
@@ -739,7 +768,13 @@ export default function ProjectModalD4({ project, onClose }) {
                                 display: 'block',
                                 background: '#000',
                               }}
-                            />
+                            >
+                              <source src={safeVideoUrl} type="video/mp4" />
+                              {s.url && s.url !== safeVideoUrl && (
+                                <source src={s.url} type="video/quicktime" />
+                              )}
+                              Trình duyệt của bạn không hỗ trợ phát trực tiếp định dạng video này.
+                            </video>
                           );
                         })()
                       )}

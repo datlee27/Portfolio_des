@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
+import { ArrowUpRight, Eye, ExternalLink, Layers, FileText } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { featuredProjects } from '../../data/homeData';
 import { usePortfolio, isProjectPublic } from '@/context/PortfolioContext';
@@ -7,10 +7,11 @@ import FooterSection from '../common/FooterSection';
 import PDFViewer from '../common/PDFViewer';
 import SkillsSection from './SkillsSection';
 import ProjectModalD4 from '../common/ProjectModalD4';
+import ModalErrorBoundary from '@/components/common/ModalErrorBoundary';
 import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { optimizeCloudinaryUrl } from '@/services/cloudinary';
 
-export default function WorkPage({ onGoHome }) {
+export default function WorkPage({ onGoHome: _onGoHome }) {
   const [selectedCategory, setSelectedCategory] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.toLowerCase();
@@ -355,10 +356,12 @@ export default function WorkPage({ onGoHome }) {
 
       {/* macOS TitleBar Project Details Modal */}
       {selectedProject && (
-        <ProjectModalD4
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ModalErrorBoundary onClose={() => setSelectedProject(null)}>
+          <ProjectModalD4
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        </ModalErrorBoundary>
       )}
     </div>
   );

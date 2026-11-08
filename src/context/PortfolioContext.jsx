@@ -142,7 +142,8 @@ export function mapApiProject(p, idx = 0) {
     .filter((img) => typeof img === 'string' && img.trim().length > 0)
     .slice(0, 6);
 
-  const videoDemo = (p.video_demo || p.video_url || p.video || '').trim();
+  const rawVideo = p.video_demo || p.video_url || p.video || '';
+  const videoDemo = typeof rawVideo === 'string' ? rawVideo.trim() : '';
   const isPublic = isProjectPublic(p);
 
   return {
