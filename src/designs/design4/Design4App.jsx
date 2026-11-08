@@ -6,6 +6,7 @@ import PageTransition from './components/common/PageTransition';
 import FooterSection from './components/common/FooterSection';
 import PortfolioChatbot from './components/common/PortfolioChatbot';
 import PencilCursor from './components/common/PencilCursor';
+import InitialLoader from './components/common/InitialLoader';
 
 // Home Page Sections
 import HeroSection from './components/home/HeroSection';
@@ -28,6 +29,12 @@ export default function Design4App() {
   const { loading: portfolioLoading } = usePortfolio();
   const [isPageReady, setIsPageReady] = useState(true);
   const isTransitioningRef = useRef(false);
+
+  // Show initial loader only on first visit per session (not on tab switch / navigate back)
+  const [showInitialLoader, setShowInitialLoader] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !sessionStorage.getItem('portfolio-loaded');
+  });
 
   // Determine initial view from URL path
   const [activeView, setActiveView] = useState(() => {
@@ -260,6 +267,11 @@ export default function Design4App() {
 
   return (
     <div className="des4-root">
+      {/* ─── Initial page load screen (first visit only) ─── */}
+      {showInitialLoader && (
+        <InitialLoader onComplete={() => setShowInitialLoader(false)} />
+      )}
+
       {/* ─── Framer-inspired Interactive Pencil Cursor ─── */}
       <PencilCursor />
 

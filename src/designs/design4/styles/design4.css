@@ -1541,93 +1541,56 @@
   .des4-corner-group {
     gap: 12px !important;
   }
-}
 
-/* ═══════════════════════════════════════════════════════════════════════
-   Chatbase AI Assistant Global Collision Prevention
-   ═══════════════════════════════════════════════════════════════════════ */
-/* 1. Never show Chatbase's default circular button anywhere */
-#chatbase-bubble-button {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-/* 2. Position Chatbase popup window cleanly above 'lab' button */
-#chatbase-bubble-window {
-  position: fixed !important;
-  bottom: calc(clamp(16px, 3.5vw, 32px) + 58px + env(safe-area-inset-bottom, 0px)) !important;
-  right: calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-right, 0px)) !important;
-  max-width: 390px !important;
-  width: 390px !important;
-  height: 560px !important;
-  max-height: calc(100vh - 120px) !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(17, 17, 17, 0.12) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-  z-index: 99998 !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-@media (max-width: 768px) {
-  #chatbase-bubble-window {
-    bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
-    right: 12px !important;
-    left: 12px !important;
-    width: calc(100vw - 24px) !important;
-    max-width: calc(100vw - 24px) !important;
-    height: 72dvh !important;
-    max-height: calc(100dvh - 84px) !important;
-    border-radius: 14px !important;
-    z-index: 99998 !important;
+  /* ── Hide lab button on mobile ── */
+  .des4-lab-btn-mobile-hidden {
+    display: none !important;
   }
-}
 
+  /* ── Project cards: reduce padding & spacing on mobile ── */
+  .des4-work-card-body {
+    padding: 16px 14px;
+  }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   Chatbase AI Assistant Global Collision Prevention
-   ═══════════════════════════════════════════════════════════════════════ */
-/* 1. Never show Chatbase's default circular button anywhere */
-#chatbase-bubble-button {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
+  .des4-work-card-top-info {
+    margin-bottom: 12px;
+  }
 
-/* 2. Position Chatbase popup window cleanly above 'lab' button */
-#chatbase-bubble-window {
-  position: fixed !important;
-  bottom: calc(clamp(16px, 3.5vw, 32px) + 58px + env(safe-area-inset-bottom, 0px)) !important;
-  right: calc(clamp(16px, 4vw, 36px) + env(safe-area-inset-right, 0px)) !important;
-  max-width: 390px !important;
-  width: 390px !important;
-  height: 560px !important;
-  max-height: calc(100vh - 120px) !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(17, 17, 17, 0.12) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-  z-index: 99998 !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
+  .des4-work-card-title {
+    font-size: 20px;
+    min-height: auto;
+    margin-bottom: 8px;
+  }
 
-@media (max-width: 768px) {
-  #chatbase-bubble-window {
-    bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
-    right: 12px !important;
-    left: 12px !important;
-    width: calc(100vw - 24px) !important;
-    max-width: calc(100vw - 24px) !important;
-    height: 72dvh !important;
-    max-height: calc(100dvh - 84px) !important;
-    border-radius: 14px !important;
-    z-index: 99998 !important;
+  .des4-work-card-desc {
+    height: auto;
+    max-height: 56px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .des4-work-tags-list {
+    min-height: auto;
+    margin-bottom: 12px;
+    gap: 4px;
+  }
+
+  .des4-work-card-bottom-info {
+    padding-top: 12px;
+  }
+
+  .des4-work-btn-primary,
+  .des4-work-btn-secondary {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .des4-work-grid-section {
+    padding: 32px 0 60px;
+  }
+
+  .des4-work-projects-grid {
+    gap: 16px;
   }
 }

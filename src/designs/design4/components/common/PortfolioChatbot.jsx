@@ -6,11 +6,13 @@ const CHATBASE_BOT_ID = import.meta.env.VITE_CHATBASE_BOT_ID || 'c9zgwCRkU8lje3A
 export default function PortfolioChatbot({ activeView }) {
   const [isHovered, setIsHovered] = useState(false);
   const scriptLoadedRef = useRef(false);
+  // Track whether the user has explicitly opened the chat — never auto-open
+  const userOpenedRef = useRef(false);
 
   // Hidden on /blog and /lab per user specification
   const isExcludedView = activeView === 'blog' || activeView === 'lab';
 
-  // Manage Chatbase script lifecycle and view changes
+  // Manage Chatbase script lifecycle
   useEffect(() => {
     // 1. Setup Window Proxy Queue if not initialized yet
     if (typeof window !== 'undefined') {
@@ -44,6 +46,16 @@ export default function PortfolioChatbot({ activeView }) {
       script.async = true;
       script.onload = () => {
         scriptLoadedRef.current = true;
+        // After script loads, always close the window — Chatbase may auto-open it
+        // Only suppress if user hasn't explicitly opened it in this session
+        setTimeout(() => {
+          if (!userOpenedRef.current && window.chatbase) {
+            try { window.chatbase('close'); } catch { /* ignore */ }
+          }
+          // Always hide the default Chatbase bubble button
+          const btn = document.getElementById('chatbase-bubble-button');
+          if (btn) btn.style.setProperty('display', 'none', 'important');
+        }, 100);
       };
       document.body.appendChild(script);
     };
@@ -59,6 +71,7 @@ export default function PortfolioChatbot({ activeView }) {
       if (!scriptLoadedRef.current) {
         loadScript();
       }
+      userOpenedRef.current = true;
       if (window.chatbase) {
         window.chatbase('open');
       }
@@ -71,38 +84,47 @@ export default function PortfolioChatbot({ activeView }) {
       if (timer) clearTimeout(timer);
       window.removeEventListener('open-portfolio-chat', handleTriggerOpen);
     };
-  }, [isExcludedView]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Handle visibility changes when activeView changes to/from blog or lab
+  // Handle visibility changes when activeView changes — NEVER auto-open
   useEffect(() => {
-    const bubbleWindow = document.getElementById('chatbase-bubble-window');
     const bubbleButton = document.getElementById('chatbase-bubble-button');
 
     if (isExcludedView) {
       // Force close and hide on /blog and /lab
       try {
-        if (window.chatbase) {
-          window.chatbase('close');
-        }
-      } catch {
-        // ignore
-      }
-      if (bubbleWindow) {
-        bubbleWindow.style.setProperty('display', 'none', 'important');
-      }
-      if (bubbleButton) {
-        bubbleButton.style.setProperty('display', 'none', 'important');
-      }
+        if (window.chatbase) window.chatbase('close');
+      } catch { /* ignore */ }
+
+      const bubbleWindow = document.getElementById('chatbase-bubble-window');
+      if (bubbleWindow) bubbleWindow.style.setProperty('display', 'none', 'important');
+      if (bubbleButton) bubbleButton.style.setProperty('display', 'none', 'important');
     } else {
-      // Restore window visibility state when navigating back
-      if (bubbleWindow) {
-        bubbleWindow.style.removeProperty('display');
+      // Coming back to a chatbot-enabled view:
+      // - Only close the window (don't auto-open it)
+      // - Reset userOpened flag so it doesn't auto-restore a previously open state
+      if (!userOpenedRef.current) {
+        try {
+          if (window.chatbase) window.chatbase('close');
+        } catch { /* ignore */ }
+        const bubbleWindow = document.getElementById('chatbase-bubble-window');
+        if (bubbleWindow) bubbleWindow.style.setProperty('display', 'none', 'important');
       }
-      // Guarantee Chatbase default button remains permanently hidden
-      if (bubbleButton) {
-        bubbleButton.style.setProperty('display', 'none', 'important');
-      }
+      // Always hide Chatbase's own default bubble button
+      if (bubbleButton) bubbleButton.style.setProperty('display', 'none', 'important');
     }
+  }, [isExcludedView]);
+
+  // Reset userOpened state each time we switch away from an excluded view back to a chatbot view
+  // This ensures navigating blog → about doesn't auto-reopen
+  const prevExcludedRef = useRef(isExcludedView);
+  useEffect(() => {
+    if (prevExcludedRef.current === true && isExcludedView === false) {
+      // Just transitioned back to a chatbot page — reset open state
+      userOpenedRef.current = false;
+    }
+    prevExcludedRef.current = isExcludedView;
   }, [isExcludedView]);
 
   const handleOpenChat = () => {
@@ -115,11 +137,16 @@ export default function PortfolioChatbot({ activeView }) {
       script.async = true;
       script.onload = () => {
         scriptLoadedRef.current = true;
+        userOpenedRef.current = true;
+        const btn = document.getElementById('chatbase-bubble-button');
+        if (btn) btn.style.setProperty('display', 'none', 'important');
         if (window.chatbase) window.chatbase('open');
       };
       document.body.appendChild(script);
+      return;
     }
 
+    userOpenedRef.current = true;
     if (window.chatbase) {
       window.chatbase('open');
     }
@@ -169,7 +196,7 @@ export default function PortfolioChatbot({ activeView }) {
               animation: 'chatFabFadeIn 0.2s ease-out forwards',
             }}
           >
-            <span>Hỏi AI về kinh nghiệm & tech stack của Đạt</span>
+            <span>Hỏi AI về kinh nghiệm &amp; tech stack của Đạt</span>
             <span style={{ color: '#fe3c01' }}>↵</span>
           </div>
         )}
@@ -201,9 +228,6 @@ export default function PortfolioChatbot({ activeView }) {
             outline: 'none',
           }}
         >
-
-
-
           {/* Label in Editorial JetBrains Mono */}
           <span
             style={{
@@ -240,4 +264,3 @@ export default function PortfolioChatbot({ activeView }) {
     </>
   );
 }
-

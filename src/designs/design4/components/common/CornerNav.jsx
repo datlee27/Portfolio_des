@@ -182,10 +182,10 @@ export default function CornerNav({ onOpenLab, activeView, onGoHome, onOpenWork,
         </button>
       )}
 
-      {/* Bottom Right: lab — hidden on blog page */}
+      {/* Bottom Right: lab — hidden on blog page and on mobile */}
       {activeView !== 'blog' && (
         <button
-          className="des4-corner-anchor"
+          className="des4-corner-anchor des4-lab-btn-mobile-hidden"
           aria-label="Open experiments lab"
           onClick={() => {
             if (onOpenLab) onOpenLab();
